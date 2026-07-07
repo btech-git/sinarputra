@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @property integer $id
+ * @property integer $cn_ordinal
+ * @property integer $cn_month
+ * @property integer $cn_year
+ * @property string $date
+ * @property string $reference_number
+ * @property string $tax_number
+ * @property string $note
+ * @property string $due_date
+ * @property string $datetime_created
+ * @property string $discount
+ * @property string $rounding_nominal
+ * @property string $grand_total
+ * @property string $total_payment
+ * @property string $remaining_payment
+ * @property string $tax_percentage
+ * @property integer $customer_id
+ * @property integer $employee_id_salesman
+ * @property integer $is_tax
+ * @property integer $is_tax_income
+ * @property integer $is_inactive
+ * @property integer $admin_id
+ *
+ * @property MaterialInvoiceDetail[] $materialInvoiceDetails
+ * @property Customer $customer
+ * @property Employee $employeeIdSalesman
+ * @property Admin $admin
+ * @property MaterialPaymentDetail[] $materialPaymentDetails
+ * @property MaterialReceiptDetail[] $materialReceiptDetails
+ */
+class MaterialInvoiceHeaderBase extends MonthlyTransactionActiveRecord {
+
+    public function tableName() {
+        return 'tblsp_material_invoice_header';
+    }
+
+    public function rules() {
+        return array(
+            array('cn_ordinal, cn_month, cn_year, date, datetime_created, customer_id', 'required'),
+            array('cn_ordinal, cn_month, cn_year, customer_id, employee_id_salesman, is_tax, is_tax_income, is_inactive, admin_id', 'numerical', 'integerOnly' => true),
+            array('reference_number', 'length', 'max' => 60),
+            array('tax_number', 'length', 'max' => 20),
+            array('discount, rounding_nominal, grand_total, total_payment, remaining_payment', 'length', 'max' => 18),
+            array('tax_percentage', 'length', 'max' => 10),
+            array('note, due_date', 'safe'),
+            // The following rule is used by search().
+            array('id, cn_ordinal, cn_month, cn_year, date, reference_number, tax_number, note, due_date, datetime_created, discount, rounding_nominal, grand_total, total_payment, remaining_payment, tax_percentage, customer_id, employee_id_salesman, is_tax, is_tax_income, is_inactive, admin_id', 'safe', 'on' => 'search'),
+        );
+    }
+
+    public function relations() {
+        return array(
+            'materialInvoiceDetails' => array(self::HAS_MANY, 'MaterialInvoiceDetail', 'material_invoice_header_id'),
+            'customer' => array(self::BELONGS_TO, 'Customer', 'customer_id'),
+            'employeeIdSalesman' => array(self::BELONGS_TO, 'Employee', 'employee_id_salesman'),
+            'admin' => array(self::BELONGS_TO, 'Admin', 'admin_id'),
+            'materialPaymentDetails' => array(self::HAS_MANY, 'MaterialPaymentDetail', 'material_invoice_header_id'),
+            'materialReceiptDetails' => array(self::HAS_MANY, 'MaterialReceiptDetail', 'material_invoice_header_id'),
+        );
+    }
+
+    public function attributeLabels() {
+        return array(
+            'id' => 'ID',
+            'cn_ordinal' => 'Cn Ordinal',
+            'cn_month' => 'Cn Month',
+            'cn_year' => 'Cn Year',
+            'date' => 'Date',
+            'reference_number' => 'Reference Number',
+            'tax_number' => 'Tax Number',
+            'note' => 'Note',
+            'due_date' => 'Due Date',
+            'datetime_created' => 'Datetime Created',
+            'discount' => 'Discount',
+            'rounding_nominal' => 'Rounding Nominal',
+            'grand_total' => 'Grand Total',
+            'total_payment' => 'Total Payment',
+            'remaining_payment' => 'Remaining Payment',
+            'tax_percentage' => 'Tax Percentage',
+            'customer_id' => 'Customer',
+            'employee_id_salesman' => 'Employee Id Salesman',
+            'is_tax' => 'Is Tax',
+            'is_tax_income' => 'Is Tax Income',
+            'is_inactive' => 'Is Inactive',
+            'admin_id' => 'Admin',
+        );
+    }
+
+    public function search() {
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.cn_ordinal', $this->cn_ordinal);
+        $criteria->compare('t.cn_month', $this->cn_month);
+        $criteria->compare('t.cn_year', $this->cn_year);
+        $criteria->compare('t.date', $this->date, true);
+        $criteria->compare('t.reference_number', $this->reference_number, true);
+        $criteria->compare('t.tax_number', $this->tax_number, true);
+        $criteria->compare('t.note', $this->note, true);
+        $criteria->compare('t.due_date', $this->due_date, true);
+        $criteria->compare('t.datetime_created', $this->datetime_created, true);
+        $criteria->compare('t.discount', $this->discount, true);
+        $criteria->compare('t.rounding_nominal', $this->rounding_nominal, true);
+        $criteria->compare('t.grand_total', $this->grand_total, true);
+        $criteria->compare('t.total_payment', $this->total_payment, true);
+        $criteria->compare('t.remaining_payment', $this->remaining_payment, true);
+        $criteria->compare('t.tax_percentage', $this->tax_percentage, true);
+        $criteria->compare('t.customer_id', $this->customer_id);
+        $criteria->compare('t.employee_id_salesman', $this->employee_id_salesman);
+        $criteria->compare('t.is_tax', $this->is_tax);
+        $criteria->compare('t.is_tax_income', $this->is_tax_income);
+        $criteria->compare('t.is_inactive', $this->is_inactive);
+        $criteria->compare('t.admin_id', $this->admin_id);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
+
+}

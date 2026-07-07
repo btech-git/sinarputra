@@ -1,0 +1,46 @@
+<h1>Sale Order List</h1>
+    
+<div id="link">
+    <?php echo CHtml::link('Manage', array('admin')); ?>
+</div>
+
+<?php
+$this->widget('zii.widgets.grid.CGridView', array(
+    'id' => 'work-order-cutting-grid',
+    'dataProvider' => $saleHeaderDataProvider,
+    'filter' => $saleHeader,
+    'columns' => array(
+        array(
+            'name' => 'cn_ordinal',
+            'header' => 'SO #',
+            'filter' => '<div style="display: inline-block">' . CHtml::activeTextField($saleHeader, 'cn_ordinal', array('maxLength' => 4, 'size' => 2)) . '</div>' .
+            '<div style="display: inline-block"> &nbsp; /' . SaleHeader::CN_CONSTANT . '/ &nbsp; </div>' .
+            '<div style="display: inline-block">' . CHtml::activeDropDownList($saleHeader, 'cn_month', array(1 => 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'), array('empty' => '')) . '</div>' .
+            '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
+            '<div style="display: inline-block">' . CHtml::activeTextField($saleHeader, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
+            'value' => '$data->getCodeNumber(SaleHeader::CN_CONSTANT)',
+            'htmlOptions' => array('style' => 'width: 300px'),
+        ),
+        array(
+            'header' => 'Tanggal',
+            'name' => 'date',
+            'filter' => false, //CHtml::activeTextField($saleHeader, 'date'),
+            'value' => 'Yii::app()->dateFormatter->format("d MMMM yyyy", $data->date)',
+        ),
+        array(
+            'header' => 'Customer',
+            'filter' => CHtml::textField('CustomerCompany', $customerCompany),
+            'value' => 'CHtml::value($data, "customer.company")',
+        ),
+        'customer_order_number: Customer PO',
+        array(
+            'header' => '',
+            'type' => 'raw',
+            'value' => 'CHtml::link("Create", array("create", "saleHeaderId"=>$data->id))',
+            'htmlOptions' => array(
+                'style' => 'text-align: center;'
+            ),
+        ),
+    ),
+));
+?>

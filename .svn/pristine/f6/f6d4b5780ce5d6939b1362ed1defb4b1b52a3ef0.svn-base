@@ -1,0 +1,534 @@
+<?php
+
+class QuotationController extends Controller {
+
+    public function filters() {
+        return array(
+            'access',
+        );
+    }
+
+    public function filterAccess($filterChain) {
+        if ($filterChain->action->id === 'create') {
+            if (!(Yii::app()->user->checkAccess('quotationCreate')))
+                $this->redirect(array('/site/login'));
+        }
+        if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
+            if (!(Yii::app()->user->checkAccess('quotationEdit')))
+                $this->redirect(array('/site/login'));
+        }
+        if ($filterChain->action->id === 'admin'
+            || $filterChain->action->id === 'memo'
+            || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('quotationCreate') || Yii::app()->user->checkAccess('quotationEdit')))
+                $this->redirect(array('/site/login'));
+        }
+
+        $filterChain->run();
+    }
+
+    public function instantiate($id) {
+        if (empty($id))
+            $quotation = new Quotation(new QuotationHeader(), array(), array());
+        else {
+            $quotationHeader = $this->loadModel($id);
+            $quotation = new Quotation($quotationHeader, $quotationHeader->quotationDetailProducts, $quotationHeader->quotationDetailServices);
+        }
+
+        return $quotation;
+    }
+
+    public function loadModel($id) {
+        $model = QuotationHeader::model()->resetScope()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function loadState($quotation) {
+        if (isset($_POST['QuotationHeader'])) {
+            $quotation->header->attributes = $_POST['QuotationHeader'];
+        }
+        
+        if (isset($_POST['QuotationDetailProduct'])) {
+            foreach ($_POST['QuotationDetailProduct'] as $i => $item) {
+                if (isset($quotation->quotationDetailProducts[$i]))
+                    $quotation->quotationDetailProducts[$i]->attributes = $item;
+                else {
+                    $detail = new QuotationDetailProduct();
+                    $detail->attributes = $item;
+                    $quotation->quotationDetailProducts[] = $detail;
+                }
+            }
+            if (count($_POST['QuotationDetailProduct']) < count($quotation->quotationDetailProducts))
+                array_splice($quotation->quotationDetailProducts, $i + 1);
+        }
+        else
+            $quotation->quotationDetailProducts = array();
+
+        if (isset($_POST['QuotationDetailService'])) {
+            foreach ($_POST['QuotationDetailService'] as $i => $item) {
+                if (isset($quotation->quotationDetailServices[$i]))
+                    $quotation->quotationDetailServices[$i]->attributes = $item;
+                else {
+                    $detail = new QuotationDetailService();
+                    $detail->attributes = $item;
+                    $quotation->quotationDetailServices[] = $detail;
+                }
+            }
+            if (count($_POST['QuotationDetailService']) < count($quotation->quotationDetailServices))
+                array_splice($quotation->quotationDetailServices, $i + 1);
+        }
+        else
+            $quotation->quotationDetailServices = array();
+    }
+
+    public function actionCreate() {
+        $quotation = $this->instantiate(null);
+        $quotation->header->date = date('Y-m-d');
+        $quotation->header->admin_id = Yii::app()->user->id;
+        $quotation->header->created_datetime = date('Y-m-d H:i:s');
+
+        $customer = Search::bind(new Customer('search'), isset($_GET['Customer']) ? $_GET['Customer'] : array());
+        $customerDataProvider = $customer->search();
+
+        //stock cek
+        $receiveDetail = Search::bind(new ReceiveDetail(), isset($_GET['ReceiveDetail']) ? $_GET['ReceiveDetail'] : '');
+        $receiveDetailDataProvider = $receiveDetail->searchNotSelectedInCuttingDetailMaterial();
+        $receiveDetailDataProvider->criteria->order = 't.height ASC, t.length ASC';
+
+        $workOrderCuttingDetailMaterial = Search::bind(new WorkOrderCuttingDetailMaterial(), isset($_GET['WorkOrderCuttingDetailMaterial']) ? $_GET['WorkOrderCuttingDetailMaterial'] : '');
+        $workOrderCuttingDetailMaterialDataProvider = $workOrderCuttingDetailMaterial->searchProcessedStock();
+        $workOrderCuttingDetailMaterialDataProvider->criteria->order = 't.height ASC, t.length ASC';
+
+        $customerId = isset($_GET['QuotationHeader']['customer_id']) ? $_GET['QuotationHeader']['customer_id'] : '';
+
+        $quotationDetailProduct = Search::bind(new QuotationDetailProduct('search'), isset($_GET['QuotationDetailProduct']) ? $_GET['QuotationDetailProduct'] : array());
+        $quotationDetailProductDataProvider = $quotationDetailProduct->search();
+        $quotationDetailProductDataProvider->criteria->with = array(
+            'quotationHeader',
+        );
+        $quotationDetailProductDataProvider->criteria->order = 't.id DESC';
+        $quotationDetailProductDataProvider->criteria->compare('quotationHeader.customer_id', $customerId);
+        $quotationDetailProductDataProvider->criteria->compare('t.height_quote', $quotationDetailProduct->height_quote);
+        $quotationDetailProductDataProvider->criteria->compare('t.width_quote', $quotationDetailProduct->width_quote);
+        $quotationDetailProductDataProvider->criteria->compare('t.is_inactive', 0);
+
+        $quotationDetailService = Search::bind(new QuotationDetailService('search'), isset($_GET['QuotationDetailService']) ? $_GET['QuotationDetailService'] : array());
+        $quotationDetailServiceDataProvider = $quotationDetailService->search();
+        $quotationDetailServiceDataProvider->criteria->with = array(
+            'quotationHeader',
+        );
+        $quotationDetailServiceDataProvider->criteria->order = 't.id DESC';
+        $quotationDetailServiceDataProvider->criteria->compare('quotationHeader.customer_id', $customerId);
+        $quotationDetailServiceDataProvider->criteria->compare('t.height_quote', $quotationDetailService->height_quote);
+        $quotationDetailServiceDataProvider->criteria->compare('t.width_quote', $quotationDetailService->width_quote);
+        $quotationDetailServiceDataProvider->criteria->compare('t.is_inactive', 0);
+
+        if (isset($_POST['Submit']) && IdempotentManager::check()) {
+            $this->loadState($quotation);
+            $quotation->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($quotation->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($quotation->header->date)));
+            
+            $quotation->header->time_created = date('Y-m-d H:i:s');
+            if ($quotation->header->customer !== null) {
+                $quotation->header->employee_id_sales = $quotation->header->customer->employee_id;
+            }
+            if ($quotation->save(Yii::app()->db))
+                $this->redirect(array('view', 'id' => $quotation->header->id));
+        }
+
+        $this->render('create', array(
+            'quotation' => $quotation,
+            'customer' => $customer,
+            'customerDataProvider' => $customerDataProvider,
+            'receiveDetail' => $receiveDetail,
+            'receiveDetailDataProvider' => $receiveDetailDataProvider,
+            'workOrderCuttingDetailMaterial' => $workOrderCuttingDetailMaterial,
+            'workOrderCuttingDetailMaterialDataProvider' => $workOrderCuttingDetailMaterialDataProvider,
+            'customerId' => $customerId,
+            'quotationDetailProduct' => $quotationDetailProduct,
+            'quotationDetailProductDataProvider' => $quotationDetailProductDataProvider,
+            'quotationDetailService' => $quotationDetailService,
+            'quotationDetailServiceDataProvider' => $quotationDetailServiceDataProvider,
+        ));
+    }
+
+    public function actionUpdate($id) {
+        $quotation = $this->instantiate($id);
+        $quotation->header->admin_id_updated = Yii::app()->user->id;
+        $quotation->header->updated_datetime = date('Y-m-d H:i:s');
+
+        $customer = Search::bind(new Customer('search'), isset($_GET['Customer']) ? $_GET['Customer'] : array());
+        $customerDataProvider = $customer->search();
+
+        //stock cek
+        $receiveDetail = Search::bind(new ReceiveDetail(), isset($_GET['ReceiveDetail']) ? $_GET['ReceiveDetail'] : '');
+        $receiveDetailDataProvider = $receiveDetail->searchNotSelectedInCuttingDetailMaterial();
+        $receiveDetailDataProvider->criteria->compare('t.height', $receiveDetail->height);
+        $receiveDetailDataProvider->criteria->compare('t.width', $receiveDetail->width);
+        $receiveDetailDataProvider->criteria->compare('t.length', $receiveDetail->length);
+        $receiveDetailDataProvider->criteria->order = 't.height ASC, t.length ASC';
+
+        $workOrderCuttingDetailMaterial = Search::bind(new WorkOrderCuttingDetailMaterial(), isset($_GET['WorkOrderCuttingDetailMaterial']) ? $_GET['WorkOrderCuttingDetailMaterial'] : '');
+        $workOrderCuttingDetailMaterialDataProvider = $workOrderCuttingDetailMaterial->searchProcessedStock();
+        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.height', $workOrderCuttingDetailMaterial->height);
+        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.width', $workOrderCuttingDetailMaterial->width);
+        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.length', $workOrderCuttingDetailMaterial->length);
+        $workOrderCuttingDetailMaterialDataProvider->criteria->order = 't.height ASC, t.length ASC';
+
+        $customerId = isset($_GET['QuotationHeader']['customer_id']) ? $_GET['QuotationHeader']['customer_id'] : '';
+        
+        $quotationDetailProduct = Search::bind(new QuotationDetailProduct('search'), isset($_GET['QuotationDetailProduct']) ? $_GET['QuotationDetailProduct'] : array());
+        $quotationDetailProductDataProvider = $quotationDetailProduct->search();
+        $quotationDetailProductDataProvider->criteria->with = array(
+            'quotationHeader',
+        );
+        $quotationDetailProductDataProvider->criteria->order = 't.id DESC';
+        $quotationDetailProductDataProvider->criteria->compare('quotationHeader.customer_id', $customerId);
+        $quotationDetailProductDataProvider->criteria->compare('t.height_quote', $quotationDetailProduct->height_quote);
+        $quotationDetailProductDataProvider->criteria->compare('t.width_quote', $quotationDetailProduct->width_quote);
+
+        $quotationDetailService = Search::bind(new QuotationDetailService('search'), isset($_GET['QuotationDetailService']) ? $_GET['QuotationDetailService'] : array());
+        $quotationDetailServiceDataProvider = $quotationDetailService->search();
+        $quotationDetailServiceDataProvider->criteria->with = array(
+            'quotationHeader',
+        );
+        $quotationDetailServiceDataProvider->criteria->order = 't.id DESC';
+        $quotationDetailServiceDataProvider->criteria->compare('quotationHeader.customer_id', $customerId);
+        $quotationDetailServiceDataProvider->criteria->compare('t.height_quote', $quotationDetailService->height_quote);
+        $quotationDetailServiceDataProvider->criteria->compare('t.width_quote', $quotationDetailService->width_quote);
+
+        if (isset($_POST['Submit']) && IdempotentManager::check()) {
+            $this->loadState($quotation);
+            
+            if ($quotation->header->customer !== null) 
+                $quotation->header->employee_id_sales = $quotation->header->customer->employee_id;
+
+            if ($quotation->save(Yii::app()->db))
+                $this->redirect(array('view', 'id' => $quotation->header->id));
+        }
+
+        $this->render('update', array(
+            'quotation' => $quotation,
+            'customer' => $customer,
+            'customerDataProvider' => $customerDataProvider,
+            'receiveDetail' => $receiveDetail,
+            'receiveDetailDataProvider' => $receiveDetailDataProvider,
+            'workOrderCuttingDetailMaterial' => $workOrderCuttingDetailMaterial,
+            'workOrderCuttingDetailMaterialDataProvider' => $workOrderCuttingDetailMaterialDataProvider,
+            'customerId' => $customerId,
+            'quotationDetailProduct' => $quotationDetailProduct,
+            'quotationDetailProductDataProvider' => $quotationDetailProductDataProvider,
+            'quotationDetailService' => $quotationDetailService,
+            'quotationDetailServiceDataProvider' => $quotationDetailServiceDataProvider,
+        ));
+    }
+
+    public function actionView($id) {
+        $quotation = $this->loadModel($id);
+        $employeeSalesman = Employee::model()->resetScope()->findByPk($quotation->employee_id_sales);
+
+        $criteria = new CDbCriteria;
+        $criteria->compare('quotation_header_id', $id);
+        $detailProductDataProvider = new CActiveDataProvider('QuotationDetailProduct', array(
+            'criteria' => $criteria,
+        ));
+
+        $detailServiceDataProvider = new CActiveDataProvider('QuotationDetailService', array(
+            'criteria' => $criteria
+        ));
+
+        if (isset($_POST['Submit']) && (int)$quotation->is_confirmed !== 1) {
+            $quotation->is_confirmed = 1;
+
+            if ($quotation->save())
+                Yii::app()->user->setFlash('confirm', 'Your Quotations Order has been confirmed!!!');
+            else
+                Yii::app()->user->setFlash('confirm', 'Your Quotations Order failed to confirmed!!!');
+
+            $this->refresh();
+        } elseif (isset($_POST['Record']) && (int)$quotation->cancellation_remark === 0) {
+            $quotation->cancellation_remark = $_POST['QuotationHeader']['cancellation_remark'];
+            $quotation->update(array('cancellation_remark'));
+        }
+
+        $this->render('view', array(
+            'quotation' => $quotation,
+            'employeeSalesman' => $employeeSalesman,
+            'detailProductDataProvider' => $detailProductDataProvider,
+            'detailServiceDataProvider' => $detailServiceDataProvider
+        ));
+    }
+
+    public function actionMemo($id) {
+        $quotation = $this->loadModel($id);
+        $employeeSalesman = Employee::model()->resetScope()->findByPk($quotation->employee_id_sales);
+
+        $this->render('memo', array(
+            'quotation' => $quotation,
+            'employeeSalesman' => $employeeSalesman,
+        ));
+    }
+
+    public function actionAdmin() {
+        $quotation = Search::bind(new QuotationHeader('search'), isset($_GET['QuotationHeader']) ? $_GET['QuotationHeader'] : array());
+        $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
+
+        if (isset($_GET['pageSize'])) {
+            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+            unset($_GET['pageSize']);
+        }
+
+        $dataProvider = $quotation->resetScope()->searchWithPaging();
+
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        $dataProvider->criteria->with = array(
+            'customer:resetScope',
+            'employeeIdSales:resetScope',
+        );
+
+		$dataProvider->criteria->addCondition("customer.company LIKE :company");
+		$dataProvider->criteria->params[':company'] = "%{$customerCompany}%";
+        $dataProvider->criteria->order = 't.id DESC';
+
+        $this->render('admin', array(
+            'quotation' => $quotation,
+            'dataProvider' => $dataProvider,
+            'customerCompany' => $customerCompany,
+        ));
+    }
+
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
+            $quotation = $this->loadModel($id);
+            if ($quotation !== null) {
+                $quotation->is_inactive = ActiveRecord::INACTIVE;
+                $quotation->update(array('is_inactive'));
+                
+                foreach ($quotation->quotationDetails as $detail) {
+                    $detail->is_inactive = ActiveRecord::INACTIVE;
+                    $detail->update(array('is_inactive'));
+                }
+            }
+
+            if (!isset($_GET['ajax']))
+                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+        }
+        else
+            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+    }
+
+    public function actionAjaxJsonCodeNumber($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $quotation->generateCodeNumber($quotation->header->is_service, date('m'), date('y'));
+            $codeNumber = CHtml::encode($quotation->header->getCodeNumber($quotation->header->cnConstant));
+
+            echo CJSON::encode(array(
+                'codeNumber' => $codeNumber,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlResetDetail($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $type = Yii::app()->request->getParam('type');
+
+
+            if ($type == 1) {
+                $quotation->quotationDetailProducts = array();
+                $quotation->quotationDetailServices = array();
+
+                $this->renderPartial('_detailProduct', array(
+                    'quotation' => $quotation,
+                ));
+            } else {
+                $quotation->quotationDetailServices = array();
+                $quotation->quotationDetailProducts = array();
+
+                $this->renderPartial('_detailService', array(
+                    'quotation' => $quotation,
+                ));
+            }
+        }
+    }
+
+    public function actionAjaxJsonCustomer($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $customerId = (isset($_POST['QuotationHeader']['customer_id'])) ? $_POST['QuotationHeader']['customer_id'] : '';
+            $customer = Customer::model()->findByPk($customerId);
+
+            $object = array(
+                'customer_id' => CHtml::value($customer, 'id'),
+                'customer_name' => CHtml::value($customer, 'name'),
+                'customer_company' => CHtml::value($customer, 'company'),
+                'customer_address' => CHtml::value($customer, 'address_main'),
+                'customer_address_secondary' => CHtml::value($customer, 'address_secondary'),
+                'customer_phone' => CHtml::value($customer, 'phone'),
+                'customer_quotationsman' => CHtml::value($customer, 'employeeIdSalesman.name'),
+                'customer_credit_limit' => Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($customer, 'remainingCreditLimit')),
+                'customer_due_days' => CHtml::value($customer, 'invoice_due_days'),
+                'customer_employee_name' => CHtml::value($customer, 'employee.name'),
+                'employeeId' => CHtml::value($customer, 'employee_id'),
+                'customer_credit_limit' => Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($customer, 'credit_limit')),
+                'customer_outstanding' => Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($customer, 'outstandingCredit')),
+                'customer_remaining_limit' => Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($customer, 'remainingCreditLimit')),
+            );
+            echo CJSON::encode($object);
+        }
+    }
+
+    public function actionAjaxJsonGetTotalQuantity($id, $flag) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+            $this->loadState($quotation);
+
+            $object = array(
+                'totalQuantity' => CHtml::encode($quotation->getTotalQuantity($flag))
+            );
+
+            echo CJSON::encode($object);
+        }
+    }
+
+    public function actionAjaxJsonGetProductWeightRequest($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+            $this->loadState($quotation);
+
+            $object = array(
+                'weight' => round(CHtml::encode(CHtml::value($quotation->quotationDetailProducts[$index], 'weightRequest')), 2),
+                'total' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation->quotationDetailProducts[$index], 'total'))),
+                'totalDetailProduct' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation, 'totalDetailProduct'))),
+                'unitPrice' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation->quotationDetailProducts[$index], 'unit_price'))),
+                'grandTotal' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getGrandTotal())),
+            );
+
+            echo CJSON::encode($object);
+        }
+    }
+
+    public function actionAjaxJsonGetServiceWeightRequest($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+            $this->loadState($quotation);
+
+            $object = array(
+                'weight' => round(CHtml::encode(CHtml::value($quotation->quotationDetailServices[$index], 'weightRequest')), 2),
+                'total' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation->quotationDetailServices[$index], 'total'))),
+                'totalDetailProduct' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation, 'totalDetailService'))),
+                'unitPrice' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($quotation->quotationDetailServices[$index], 'unit_price'))),
+                'grandTotal' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getGrandTotal())),
+            );
+
+            echo CJSON::encode($object);
+        }
+    }
+
+    public function actionAjaxHtmlCheckStock($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+            $this->loadState($quotation);
+
+            $product = Product::model()->findByPk($_POST['QuotationDetailProduct'][$index]['product_id']);
+            if ($_POST['QuotationDetailProduct'][$index]['quantity'] > $product->getInventoryStockOnHand()) {
+                echo 'Quantity exceed available stock';
+            }
+        }
+    }
+
+    public function actionAjaxJsonTaxTotal($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $discountAmount = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getDiscountAmount()));
+            $taxPercentage = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getTaxPercentage()));
+            $taxValue = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getCalculatedTax()));
+            $totalBeforeTax = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getTotalBeforeTax()));
+            $grandTotal = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getGrandTotal()));
+
+            echo CJSON::encode(array(
+                'discountAmount' => $discountAmount,
+                'taxPercentage' => $taxPercentage,
+                'taxValue' => $taxValue,
+                'totalBeforeTax' => $totalBeforeTax,
+                'grandTotal' => $grandTotal,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlAddProduct($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+            $this->loadState($quotation);
+
+            $quotationDetailProduct = new QuotationDetailProduct();
+            $quotation->quotationDetailProducts[] = $quotationDetailProduct;
+
+            $this->renderPartial('_detailProduct', array(
+                'quotation' => $quotation,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlRemoveProduct($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $quotation->removeQuotationDetailProductAt($index);
+
+            $this->renderPartial('_detailProduct', array(
+                'quotation' => $quotation,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlAddService($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $quotation->quotationDetailServices[] = new QuotationDetailService();
+
+            $this->renderPartial('_detailService', array(
+                'quotation' => $quotation,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlRemoveService($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $quotation = $this->instantiate($id);
+
+            $this->loadState($quotation);
+
+            $quotation->removeQuotationDetailServiceAt($index);
+
+            $this->renderPartial('_detailService', array(
+                'quotation' => $quotation,
+            ));
+        }
+    }
+
+}

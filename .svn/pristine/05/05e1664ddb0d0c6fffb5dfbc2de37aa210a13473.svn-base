@@ -1,0 +1,137 @@
+<?php
+
+class ManualSaleReceiptDetailController extends Controller {
+
+    public function filters() {
+        return array(
+            'access',
+        );
+    }
+
+    public function filterAccess($filterChain) {
+        if ($filterChain->action->id === 'summary') {
+            if (!(Yii::app()->user->checkAccess('salePaymentReport')))
+                $this->redirect(array('/site/login'));
+        }
+
+        $filterChain->run();
+    }
+
+    public function actionSummary() {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+		
+        $saleInvoiceHeader = Search::bind(new ManualSaleInvoiceHeader('search'), isset($_GET['ManualSaleInvoiceHeader']) ? $_GET['ManualSaleInvoiceHeader'] : array());
+
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+        $pageSize = (isset($_GET['PageSize'])) ? $_GET['PageSize'] : '';
+        $currentPage = (isset($_GET['page'])) ? $_GET['page'] : '';
+        $currentSort = (isset($_GET['sort'])) ? $_GET['sort'] : '';
+    
+        $saleReceiptSummary = new ManualSaleReceiptSummary($saleInvoiceHeader->search());
+        $saleReceiptSummary->setupLoading();
+        $saleReceiptSummary->setupPaging($pageSize, $currentPage);
+        $saleReceiptSummary->setupSorting();
+        $saleReceiptSummary->setupFilter($startDate, $endDate);
+
+        if (isset($_POST['SaveToExcel'])) {
+            $this->saveToExcel($saleReceiptSummary, $startDate, $endDate);
+        }
+
+        $this->render('summary', array(
+            'saleInvoiceHeader' => $saleInvoiceHeader,
+            'saleReceiptSummary' => $saleReceiptSummary,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'currentSort' => $currentSort,
+        ));
+    }
+
+    protected function saveToExcel($saleReceiptSummary, $startDate, $endDate) {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+		
+        spl_autoload_unregister(array('YiiBase', 'autoload'));
+        include_once Yii::getPathOfAlias('ext.phpexcel.Classes') . DIRECTORY_SEPARATOR . 'PHPExcel.php';
+        spl_autoload_register(array('YiiBase', 'autoload'));
+
+        $objPHPExcel = new PHPExcel();
+
+        $documentProperties = $objPHPExcel->getProperties();
+        $documentProperties->setCreator('Sinar Putra Metalindo');
+        $documentProperties->setTitle('Laporan Outstanding Manual');
+
+        $worksheet = $objPHPExcel->setActiveSheetIndex(0);
+        $worksheet->setTitle('Laporan Outstanding Manual');
+
+        $worksheet->mergeCells('A1:N1');
+        $worksheet->mergeCells('A2:N2');
+        $worksheet->mergeCells('A3:N3');
+        $worksheet->getStyle('A1:N3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A1:N3')->getFont()->setBold(true);
+        $worksheet->setCellValue('A1', 'Sinar Putra Metalindo');
+        $worksheet->setCellValue('A2', 'Laporan Outstanding Per Customer Detail Manual');
+        $worksheet->setCellValue('A3', Yii::app()->dateFormatter->format('d MMMM yyyy', $startDate) . ' - ' . Yii::app()->dateFormatter->format('d MMMM yyyy', $endDate));
+
+        $worksheet->mergeCells('A4:N4');
+    
+        $worksheet->getStyle("A6:N6")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle("A6:N6")->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+
+        $worksheet->getStyle('A6:N6')->getFont()->setBold(true);
+
+        $worksheet->setCellValue('A6', 'No');
+        $worksheet->setCellValue('B6', 'Tgl Nota');
+        $worksheet->setCellValue('C6', 'Tgl TT');
+        $worksheet->setCellValue('D6', 'TOP (hari)');
+        $worksheet->setCellValue('E6', 'Tgl TOP');
+        $worksheet->setCellValue('F6', 'No Nota');
+        $worksheet->setCellValue('G6', 'Faktur Pajak');
+        $worksheet->setCellValue('H6', 'Kode Customer');
+        $worksheet->setCellValue('I6', 'Customer');
+        $worksheet->setCellValue('J6', 'Salesman');
+        $worksheet->setCellValue('K6', 'User');
+        $worksheet->setCellValue('L6', 'TOTAL');
+        $worksheet->setCellValue('M6', 'Pelunasan');
+        $worksheet->setCellValue('N6', 'Sisa');
+    
+        $counter = 7;
+        $number = 1;
+
+        foreach ($saleReceiptSummary->dataProvider->data as $header) {
+            $worksheet->setCellValue("A{$counter}", $number);
+            $number++;
+            $worksheet->setCellValue("B{$counter}", CHtml::encode($header->date));
+            $worksheet->setCellValue("C{$counter}", empty($header->manualSaleReceiptDetails) ? "" : CHtml::encode($header->manualSaleReceiptDetails[0]->manualSaleReceiptHeader->date_receipt));
+            $worksheet->setCellValue("D{$counter}", CHtml::encode(CHtml::value($header, 'customer.invoice_due_days')));
+            $worksheet->setCellValue("E{$counter}", empty($header->manualSaleReceiptDetails) ? "" : CHtml::encode($header->manualSaleReceiptDetails[0]->manualSaleReceiptHeader->due_date));
+            $worksheet->setCellValue("F{$counter}", CHtml::encode($header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT)));
+            $worksheet->setCellValue("G{$counter}", CHtml::encode(CHtml::value($header, 'tax_number')));
+            $worksheet->setCellValue("H{$counter}", CHtml::encode(CHtml::value($header, 'customer.code')));
+            $worksheet->setCellValue("I{$counter}", CHtml::encode(CHtml::value($header, 'customer.company')));
+            $worksheet->setCellValue("J{$counter}", CHtml::encode(CHtml::value($header, 'employeeIdSalesman.name')));
+            $worksheet->setCellValue("K{$counter}", CHtml::encode(CHtml::value($header, 'admin.name')));
+            $worksheet->setCellValue("L{$counter}", CHtml::encode(CHtml::value($header, 'grand_total')));
+            $worksheet->setCellValue("M{$counter}", CHtml::encode(CHtml::value($header, 'total_payment')));
+            $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($header, 'remaining')));
+
+            $counter++;
+        }
+
+        for ($col = 'A'; $col !== 'N'; $col++) {
+            $objPHPExcel->getActiveSheet()
+            ->getColumnDimension($col)
+            ->setAutoSize(true);
+        }
+
+        header('Content-Type: application/xls');
+        header('Content-Disposition: attachment;filename="Laporan Outstanding Per Customer Detail Manual.xls"');
+        header('Cache-Control: max-age=0');
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+
+        Yii::app()->end();
+    }
+}

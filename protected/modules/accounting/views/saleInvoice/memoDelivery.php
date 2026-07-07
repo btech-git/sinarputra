@@ -1,0 +1,236 @@
+<?php
+//$saleInvoice as SaleInvoice model
+//$deliveryNumber
+
+Yii::app()->clientScript->registerScript('memo', '
+    $("#header").addClass("hide");
+    $("#mainmenu").addClass("hide");
+    $(".breadcrumbs").addClass("hide");
+    $("#footer").addClass("hide");
+');
+Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/transaction/memo.css');
+Yii::app()->clientScript->registerCss('memo', '
+    @page {
+        size:auto;
+        margin: 5px 0px 0px 0px;
+    }
+    .hcolumn1 { width: 50% }
+    .hcolumn2 { width: 50% }
+
+    .hcolumn1header { width: 35% }
+    .hcolumn1value { width: 65% }
+    .hcolumn2header { width: 35% }
+    .hcolumn2value { width: 65% }
+
+    .sig1 { width: 50% }
+    .sig2 { width: 50% }
+    .sig3 { width: 25% }
+    
+    .memo-title
+    {
+        margin-left:15%;
+        font-size:12px;
+    }
+    
+    table.memo
+    {
+        border-left: 0px solid;
+        border-bottom: 0px solid;
+        border-right: 0px solid;
+    }
+    
+    ul, ol {
+        margin: 0px;
+        padding-left: 1.5em;
+    }
+');
+?>
+
+<?php $count = count($saleInvoice->saleInvoiceDetails); ?>
+
+<?php $pageSize = 15; ?>
+<?php $pageNumber = intval($count / $pageSize) + intval($count % $pageSize > 0); ?>
+<?php $pageNumber = ($pageNumber > 0) ? $pageNumber : 1; ?>
+
+<?php foreach (range(1, $pageNumber) as $num): ?>
+<div id="memoheader">
+    <div class="memo-logo"><img src="<?php echo Yii::app()->request->baseUrl; ?>/images/SPM LOGO FINAL.jpg" alt="" width="150%"/></div>
+    <div class="memo-title">
+        <table>
+            <tr>
+                <td style="text-align: left;">Workshop</td>
+                <td>:</td>
+                <td style="text-align: left;">Jl. Johar Blok F6 No. 3A-B Delta Silicon II Industrial Park </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="text-align: left;">Lippo Cikarang - Bekasi 17530 </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">Telp</td>
+                <td>:</td>
+                <td style="text-align: left;">(021) 89904100, 29577585-6 Fax : (021) 89904145, 29577583 </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">Email</td>
+                <td>:</td>
+                <td style="text-align: left;">sales@sinarputrametalindo.com </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="text-align: left;">&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<br />
+
+<div id="memoheader" style="width: 80%; padding-left: 50px">
+    <h3>
+        Delivery NO 
+        <?php echo $saleInvoice->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT_DELIVERY); ?>
+    </h3>
+</div>
+
+<br />
+
+<table style="width:90%; padding-left: 50px">
+    <tr>
+        <td style="border-left: 2px solid;border-top: 2px solid;width:10%;">Kepada Yth</td>
+        <td style="border-top: 2px solid;width:2%;">:</td>
+        <td style="border-top: 2px solid; width:38%;"><?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer.company')); ?></td>
+        <td style="border-left: 2px solid;border-top: 2px solid; width:15%">Tanggal</td>
+        <td style="border-top: 2px solid;width:2%">:</td>
+        <td style="border-right: 2px solid;border-top: 2px solid; width:33%;"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($saleInvoice, 'date')))); ?></td>
+    </tr>
+    <tr>
+        <td style="border-left: 2px solid;" colspan="3">
+            <?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer.address_main')); ?>
+            <?php //echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer.address_secondary')); ?>
+        </td>
+        <td style="border-left: 2px solid;">No. Purchase Order</td>
+        <td>:</td>
+        <td style="border-right: 2px solid;"><?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer_order_number')); ?></td>
+    </tr>
+    <tr>
+        <td style="border-left: 2px solid;" colspan="3"> Telepon <?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer.phone')); ?></td>
+        <td style="border-left: 2px solid;">NO. SPK</td>
+        <td>:</td>
+        <td style="border-right: 2px solid;">
+            <?php echo $saleInvoice->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT); ?>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-left: 2px solid;border-bottom: 2px solid;" colspan="3">Fax <?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer.fax')); ?></td>
+        <td style="border-left: 2px solid;border-bottom: 2px solid;">Jatuh Tempo</td>
+        <td style="border-bottom: 2px solid;">:</td>
+        <td style="border-right: 2px solid;border-bottom: 2px solid;"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($saleInvoice, 'due_date')))); ?></td>
+    </tr>
+</table>
+
+<table class="memo">
+    <tr id="theader">
+        <th style="border-left: 2px solid; width: 5%">No.</th>
+        <th>N a m a &nbsp; B a r a n g</th>
+        <th style="width: 15%">Qty</th>
+        <th style="border-right: 2px solid; width: 15%">Banyaknya (Kg)</th>
+    </tr>
+    <?php $counter = 0; ?>
+    <?php foreach ($saleInvoice->saleInvoiceDetails as $i => $detail): ?>
+        <?php if ($detail->is_inactive == 0): ?>
+            <?php if ($i <= $num * $pageSize - 1 && $i >= ($num - 1) * $pageSize): ?>
+                <tr class="titems">
+                    <td style="border-left: 2px solid; text-align: center"><?php echo $i + 1; ?></td>
+                    <td>
+                        <?php echo CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.job_number')); ?> - 
+                        <?php echo CHtml::encode(CHtml::value($detail, 'grade_name')); ?>
+
+                        <?php if ($detail->workOrderCuttingDetail->height_quote != 0.00 && $detail->workOrderCuttingDetail->length_quote != 0.00): ?>
+                            --
+                            <?php if ($detail->workOrderCuttingDetail->product_category_id == 2): ?>
+                                <?php echo 'Dia.'; ?>
+                            <?php endif; ?>
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.height_quote'))); ?>
+
+                            <?php if ($detail->workOrderCuttingDetail->product_category_id != 2): ?>
+                                x
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.width_quote'))); ?>
+                            <?php endif; ?>
+                            x
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.length_quote'))); ?>
+                            &nbsp;||&nbsp;
+                            <?php if ($detail->workOrderCuttingDetail->product_category_id == 2): ?>
+                                <?php echo 'Dia.'; ?>
+                            <?php endif; ?>
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.height_request'))); ?>
+
+                            <?php if ($detail->workOrderCuttingDetail->product_category_id != 2): ?>
+                                x
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.width_request'))); ?>
+                            <?php endif; ?>
+                            x
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.length_request'))); ?>
+
+                        <?php endif; ?>
+                    </td>
+
+                    <td style="text-align: center">
+                        <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'workOrderCuttingDetail.quantity'))); ?>
+                    </td>
+                    <td style="text-align: center; border-right: 2px solid">
+                        <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'workOrderCuttingDetail.weight'))); ?>
+                    </td>
+                </tr>
+                <?php $counter++; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <?php for ($i = 0; $i < $pageSize - $counter; $i++): ?>
+        <tr class="titems">
+            <td style="border-left: 2px solid;">&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td style="border-right: 2px solid;">&nbsp;</td>
+        </tr>
+    <?php endfor; ?>
+    <tr class="titems">
+        <td colspan ="2" style="border: 2px solid #555; text-align: right; font-weight: bold">TOTAL</td>
+        <td style="border: 2px solid #555; text-align: center; font-weight: bold;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $saleInvoice->totalQuantity)); ?>
+        </td>
+        <td style="border: 2px solid #555; text-align: center; font-weight: bold;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $saleInvoice->totalWeight)); ?>
+        </td>
+    </tr>
+</table>
+	<?php if ($num < $pageNumber): ?>
+		<div style="page-break-after: always"></div>
+	<?php endif; ?>
+
+<?php endforeach; ?>
+<div class="memoCatatan">Catatan: <?php echo CHtml::encode(CHtml::value($saleInvoice, 'note')); ?></div>
+
+<div class="memosig">
+    <div style="font-weight:bold; font-style: italic;" class="divtable">
+        <div  class="divtablecell">
+            <div>Penerima / Pembeli</div>
+        </div>
+        <div  class="divtablecell">
+            <div>Ekspedisi</div>
+        </div>
+        <div  class="divtablecell">
+            <div>Hormat Kami,</div>
+            <div style="height: 110px;"></div>
+            <div style="width: 30%; margin-left: auto; margin-right: auto;">
+                <div style="float: center;">
+                    <?php echo CHtml::encode(CHtml::value($saleInvoice, 'admin.name')); ?>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

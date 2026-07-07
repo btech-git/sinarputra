@@ -1,0 +1,322 @@
+<?php
+
+class SalePaymentComponent extends CComponent {
+
+    public $header;
+    public $details;
+
+    public function __construct($header, array $details) {
+        $this->header = $header;
+        $this->details = $details;
+    }
+
+    public function generateCodeNumber($currentMonth, $currentYear) {
+        $salePaymentHeader = SalePaymentHeader::model()->find(array(
+            'condition' => 'cn_year = :cn_year AND cn_month = :cn_month',
+            'params' => array(':cn_year' => $currentYear, ':cn_month' => $currentMonth),
+            'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
+        ));
+
+        if ($salePaymentHeader !== null) {
+            $this->header->setCodeNumber($salePaymentHeader->cn_ordinal, $salePaymentHeader->cn_month, $salePaymentHeader->cn_year);
+        }
+
+        $this->header->setCodeNumberByNext($currentMonth, $currentYear);
+    }
+
+    public function addInvoice($saleInvoiceHeaderId) {
+
+        $exist = FALSE;
+        $saleInvoiceHeader = SaleInvoiceHeader::model()->findByPk($saleInvoiceHeaderId);
+
+        if ($saleInvoiceHeader != null) {
+            foreach ($this->details as $detail) {
+                if ($detail->sale_invoice_header_id == $saleInvoiceHeader->id) {
+                    $exist = TRUE;
+                    break;
+                }
+            }
+
+            if (!$exist) {
+                $detail = new SalePaymentDetail;
+                $detail->sale_invoice_header_id = $saleInvoiceHeaderId;
+                $detail->income_tax = ((int)$saleInvoiceHeader->is_tax_income == 1) ? 2 : 0;
+                $this->details[] = $detail;
+            }
+        }
+        else
+            $this->header->addError('error', 'Invoice tidak ada di dalam detail');
+    }
+
+    public function removeDetailAt($index) {
+        array_splice($this->details, $index, 1);
+    }
+
+    public function resetDetail() {
+        $this->details = array();
+    }
+
+    public function save($dbConnection) {
+        $dbTransaction = $dbConnection->beginTransaction();
+        try {
+            $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
+            if ($valid)
+                $dbTransaction->commit();
+            else
+                $dbTransaction->rollback();
+        } catch (Exception $e) {
+            $dbTransaction->rollback();
+            $valid = false;
+            $this->header->addError('error', $e->getMessage());
+        }
+
+        return $valid;
+    }
+
+    public function delete($dbConnection) {
+        $dbTransaction = $dbConnection->beginTransaction();
+        try {
+            $valid = true;
+
+            foreach ($this->details as $detail)
+                $valid = $valid && $detail->delete();
+
+            $valid = $valid && $this->header->delete();
+
+            if ($valid)
+                $dbTransaction->commit();
+            else
+                $dbTransaction->rollback();
+        } catch (Exception $e) {
+            $dbTransaction->rollback();
+            $valid = false;
+        }
+
+        return $valid;
+    }
+
+    public function validate() {
+        $valid = $this->header->validate();
+
+        $valid = $this->validateDetailsCount() && $valid;
+        $valid = $this->validateDetailsUnique() && $valid;
+
+        if (count($this->details) > 0) {
+            foreach ($this->details as $detail) {
+                $fields = array('memo', 'amount', 'income_tax');
+                $valid = $detail->validate($fields) && $valid;
+            }
+        }
+        else
+            $valid = false;
+
+        return $valid;
+    }
+
+    public function validateDetailsCount() {
+        $valid = true;
+        if (count($this->details) === 0) {
+            $valid = false;
+            $this->header->addError('error', 'Form tidak ada data untuk insert database. Minimal satu data detail untuk melakukan penyimpanan.');
+        }
+
+        return $valid;
+    }
+
+    public function validateDetailsUnique() {
+        $valid = true;
+
+        $detailsCount = count($this->details);
+        for ($i = 0; $i < $detailsCount; $i++) {
+            for ($j = $i; $j < $detailsCount; $j++) {
+                if ($i === $j)
+                    continue;
+
+                if ($this->details[$i]->sale_invoice_header_id === $this->details[$j]->sale_invoice_header_id) {
+                    $valid = false;
+                    $this->header->addError('error', 'Invoice tidak boleh sama.');
+                    break;
+                }
+            }
+        }
+
+        return $valid;
+    }
+
+    public function flush() {
+        JournalAccounting::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT),
+            'transaction_type' => AccountingJournalHelper::SALE_PAYMENT,
+        ));
+
+        ReceivableLedger::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT),
+        ));
+        
+        $this->header->additional_payment_1 = $this->getTotalAdditionalPayment1();
+        $this->header->additional_payment_2 = $this->getTotalAdditionalPayment2();
+        $valid = $this->header->save(false);
+
+        foreach ($this->details as $detail) {
+            if ($detail->amount <= 0.00) {
+                continue;
+            }
+
+            if ($detail->isNewRecord) {
+                $detail->sale_payment_header_id = $this->header->id;
+            }
+
+            $valid = $detail->save(false) && $valid;
+
+            $saleInvoiceHeader = SaleInvoiceHeader::model()->findByPk($detail->sale_invoice_header_id);
+            if ((int)$detail->is_inactive === 0) {
+                $saleInvoiceHeader->total_payment = $saleInvoiceHeader->getPayment();
+                
+                $accountingJournalDebitAccount = AccountingJournalHelper::make(
+                    'debit', 
+                    $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT), 
+                    AccountingJournalHelper::SALE_PAYMENT, 
+                    $detail->account_id, 
+                    $detail->amount, 
+                    'Pelunasan ' . $this->header->customer->company,
+                    $detail->memo, 
+                    $this->header->date,
+                    $this->header->admin_id
+                );
+                $valid = $accountingJournalDebitAccount->save(false) && $valid;
+                
+                $accountingJournalCreditAdditional1 = AccountingJournalHelper::make(
+                    'credit', 
+                    $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT), 
+                    AccountingJournalHelper::SALE_PAYMENT, 
+                    $detail->account_id_additional_payment_1, 
+                    $detail->additional_payment_1, 
+                    'Pelunasan ' . $this->header->customer->company, 
+                    $detail->memo,
+                    $this->header->date,
+                    $this->header->admin_id
+                );
+                $valid = $accountingJournalCreditAdditional1->save(false) && $valid;
+                
+                $accountingJournalCreditAdditional2 = AccountingJournalHelper::make(
+                    'credit', 
+                    $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT), 
+                    AccountingJournalHelper::SALE_PAYMENT, 
+                    $detail->account_id_additional_payment_2, 
+                    $detail->additional_payment_2, 
+                    $detail->memo,
+                    'Pelunasan ' . $this->header->customer->company, 
+                    $this->header->date,
+                    $this->header->admin_id
+                );
+                $valid = $accountingJournalCreditAdditional2->save(false) && $valid;
+                
+                $receivableLedger = new ReceivableLedger();
+                $receivableLedger->transaction_number = $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT);
+                $receivableLedger->transaction_date = $this->header->date; 
+                $receivableLedger->note = $detail->saleInvoiceHeader->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT);
+                $receivableLedger->memo = $detail->memo;
+                $receivableLedger->debit = '0.00';
+                $receivableLedger->credit = $detail->amount + $detail->additional_payment_1 + $detail->additional_payment_2;
+                $receivableLedger->customer_id = $this->header->customer_id;
+                $receivableLedger->admin_id = $this->header->admin_id;
+                $receivableLedger->posting_datetime = date('Y-m-d H:i:s');
+                $valid = $receivableLedger->save(false) && $valid;
+
+            } else {
+                $saleInvoiceHeader->total_payment = 0.00;
+            }
+            $valid = $saleInvoiceHeader->update(array('total_payment')) && $valid;
+        }
+
+        $accountingJournalCreditTotalAmount = AccountingJournalHelper::make(
+            'credit', 
+            $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT,
+            $this->header->customer->account_id_receivable, 
+            $this->totalPayment,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalCreditTotalAmount->save(false) && $valid;
+
+        $accountingJournalTotalDebitAdditional1 = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT,
+            $this->header->customer->account_id_receivable, 
+            $this->totalAdditionalPayment1,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalTotalDebitAdditional1->save(false) && $valid;
+
+        $accountingJournalTotalDebitAdditional2 = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(SalePaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT,
+            $this->header->customer->account_id_receivable, 
+            $this->totalAdditionalPayment2,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalTotalDebitAdditional2->save(false) && $valid;
+
+        return $valid;
+    }
+
+    public function getTotalInvoice() {
+        return CHtml::value($this->header, 'saleInvoiceHeader.remaining');
+    }
+    
+    public function getTotalReceivable() {
+        $total = 0.00;
+
+        foreach ($this->details as $detail) {
+            $total += $detail->saleInvoiceHeader->remaining;
+        }
+
+        return $total;
+    }
+
+    public function getTotalPayment() {
+        $total = 0.00;
+
+        foreach ($this->details as $detail) {
+            $total += $detail->amount;
+        }
+
+        return $total;
+    }
+
+    public function getTotalAdditionalPayment1() {
+        $total = 0.00;
+
+        foreach ($this->details as $detail) {
+            $total += $detail->additional_payment_1;
+        }
+
+        return $total;
+    }
+
+    public function getTotalAdditionalPayment2() {
+        $total = 0.00;
+
+        foreach ($this->details as $detail) {
+            $total += $detail->additional_payment_2;
+        }
+
+        return $total;
+    }
+
+    public function getRemaining() {
+        
+        return $this->totalReceivable - $this->totalPayment - $this->totalAdditionalPayment1 - $this->totalAdditionalPayment2;
+    }
+}

@@ -1,0 +1,164 @@
+<?php
+
+class SalePaymentDetailController extends Controller {
+
+    public function filters() {
+        return array(
+            'access',
+        );
+    }
+
+    public function filterAccess($filterChain) {
+        if ($filterChain->action->id === 'summary') {
+            if (!(Yii::app()->user->checkAccess('salePaymentReport')))
+                $this->redirect(array('/site/login'));
+        }
+
+        $filterChain->run();
+    }
+
+    public function actionSummary() {
+		set_time_limit(0);
+		ini_set('memory_limit', '1024M');
+		
+        $salePaymentHeader = Search::bind(new SalePaymentHeader('search'), isset($_GET['SalePaymentHeader']) ? $_GET['SalePaymentHeader'] : array());
+        $saleId = isset($_GET['SaleId']) ? $_GET['SaleId'] : '';
+
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+        $pageSize = (isset($_GET['PageSize'])) ? $_GET['PageSize'] : '';
+        $currentPage = (isset($_GET['page'])) ? $_GET['page'] : '';
+        $currentSort = (isset($_GET['sort'])) ? $_GET['sort'] : '';
+    
+        $salePaymentSummary = new SalePaymentSummary($salePaymentHeader->search());
+        $salePaymentSummary->setupLoading();
+        $salePaymentSummary->setupPaging($pageSize, $currentPage);
+        $salePaymentSummary->setupSorting();
+        $salePaymentSummary->setupFilter($startDate, $endDate, $saleId);
+
+        if (isset($_POST['SaveToExcel'])) {
+            $this->saveToExcel($salePaymentSummary, $startDate, $endDate);
+        }
+
+        $this->render('summary', array(
+            'salePaymentHeader' => $salePaymentHeader,
+            'salePaymentSummary' => $salePaymentSummary,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'currentSort' => $currentSort,
+            'saleId' => $saleId,
+            
+        ));
+    }
+
+    protected function saveToExcel($salePaymentSummary, $startDate, $endDate) {
+		set_time_limit(0);
+		ini_set('memory_limit', '1024M');
+		
+        $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+        $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+        spl_autoload_unregister(array('YiiBase', 'autoload'));
+        include_once Yii::getPathOfAlias('ext.phpexcel.Classes') . DIRECTORY_SEPARATOR . 'PHPExcel.php';
+        spl_autoload_register(array('YiiBase', 'autoload'));
+
+        $objPHPExcel = new PHPExcel();
+
+        $documentProperties = $objPHPExcel->getProperties();
+        $documentProperties->setCreator('Sinar Putra Metalindo');
+        $documentProperties->setTitle('Laporan Pelunasan Detail');
+
+        $worksheet = $objPHPExcel->setActiveSheetIndex(0);
+        $worksheet->setTitle('Laporan Pelunasan Detail');
+
+        $worksheet->mergeCells('A1:U1');
+        $worksheet->mergeCells('A2:U2');
+        $worksheet->mergeCells('A3:U3');
+        $worksheet->getStyle('A1:U3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A1:U3')->getFont()->setBold(true);
+        $worksheet->setCellValue('A1', 'Sinar Putra Metalindo');
+        $worksheet->setCellValue('A2', 'Laporan Pelunasan Detail');
+        $worksheet->setCellValue('A3', Yii::app()->dateFormatter->format('d MMMM yyyy', $startDate) . ' - ' . Yii::app()->dateFormatter->format('d MMMM yyyy', $endDate));
+
+        $worksheet->mergeCells('A4:U4');
+    
+        $worksheet->getStyle("A6:U6")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle("A6:U6")->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+
+        $worksheet->getStyle('A6:U6')->getFont()->setBold(true);
+
+        $worksheet->setCellValue('A6', 'Tgl');
+        $worksheet->setCellValue('B6', 'NO Nota');
+        $worksheet->setCellValue('C6', 'Kode Customer');
+        $worksheet->setCellValue('D6', 'Customer');
+        $worksheet->setCellValue('E6', 'Jenis');
+        $worksheet->setCellValue('F6', 'Sales');
+        $worksheet->setCellValue('G6', 'Invoice');
+        $worksheet->setCellValue('H6', 'No Tax');
+        $worksheet->setCellValue('I6', 'Tgl INV');
+        $worksheet->setCellValue('J6', 'Tgl TT');
+        $worksheet->setCellValue('K6', 'TOP');
+        $worksheet->setCellValue('L6', 'Tgl JT');
+        $worksheet->setCellValue('M6', 'Jumlah');
+        $worksheet->setCellValue('N6', 'PPH 23');
+        $worksheet->setCellValue('O6', 'Selisih Bayar 1');
+        $worksheet->setCellValue('P6', 'Jumlah 1');
+        $worksheet->setCellValue('Q6', 'Selisih Bayar 2');
+        $worksheet->setCellValue('R6', 'Jumlah 2');
+        $worksheet->setCellValue('S6', 'User');
+        $worksheet->setCellValue('T6', 'Keterangan');
+        $worksheet->setCellValue('U6', 'Catatan');
+
+        $counter = 7;
+
+        foreach ($salePaymentSummary->dataProvider->data as $header) {
+            $lastId = '';
+            foreach ($header->salePaymentDetails as $detail) {
+                $saleReceiptDetail = SaleReceiptDetail::model()->findByAttributes(array('sale_invoice_header_id' => $detail->sale_invoice_header_id));
+                
+                $worksheet->setCellValue("A{$counter}", CHtml::encode($header->date));
+                $worksheet->setCellValue("B{$counter}", CHtml::encode($header->getCodeNumber(SalePaymentHeader::CN_CONSTANT)));
+                $worksheet->setCellValue("C{$counter}", CHtml::encode(CHtml::value($header, 'customer.code')));
+                $worksheet->setCellValue("D{$counter}", CHtml::encode(CHtml::value($header, 'customer.company')));
+                $worksheet->setCellValue("E{$counter}", CHtml::encode(CHtml::value($detail, 'paymentType.name')));
+                $worksheet->setCellValue("F{$counter}", CHtml::encode(CHtml::value($detail, 'saleInvoiceHeader.employeeIdSalesman.name')));
+                $worksheet->setCellValue("G{$counter}", CHtml::encode($detail->saleInvoiceHeader->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT)));
+                $worksheet->setCellValue("H{$counter}", CHtml::encode(CHtml::value($detail, 'saleInvoiceHeader.tax_number')));
+                $worksheet->setCellValue("I{$counter}", CHtml::encode($detail->saleInvoiceHeader->date));
+                $worksheet->setCellValue("J{$counter}", (empty($saleReceiptDetail->saleReceiptHeader->date_receipt)) ? '' : CHtml::encode($saleReceiptDetail->saleReceiptHeader->date_receipt));
+                $worksheet->setCellValue("K{$counter}", CHtml::encode(CHtml::value($header, 'customer.invoice_due_days')));
+                $worksheet->setCellValue("L{$counter}", (empty($saleReceiptDetail->saleReceiptHeader->due_date)) ? '' : CHtml::encode($saleReceiptDetail->saleReceiptHeader->due_date));
+                $worksheet->setCellValue("M{$counter}", CHtml::encode(CHtml::value($detail, 'amount')));
+                $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($detail, 'amountAfterIncomeTax')));
+                $worksheet->setCellValue("O{$counter}", CHtml::value($detail, 'accountIdAdditionalPayment1.name'));
+                $worksheet->setCellValue("P{$counter}", CHtml::value($detail, 'additional_payment_1'));
+                $worksheet->setCellValue("Q{$counter}", CHtml::value($detail, 'accountIdAdditionalPayment2.name'));
+                $worksheet->setCellValue("R{$counter}", CHtml::value($detail, 'additional_payment_2'));
+                $worksheet->setCellValue("S{$counter}", CHtml::encode(CHtml::value($header, 'admin.name')));
+                $worksheet->setCellValue("T{$counter}", CHtml::encode(CHtml::value($detail, 'memo')));
+                $worksheet->setCellValue("U{$counter}", CHtml::encode(CHtml::value($header, 'note')));
+
+                $lastId = $header->id; 
+                $counter++;
+            }
+
+        }
+
+        $counter++;
+
+        for ($col = 'A'; $col !== 'U'; $col++) {
+            $objPHPExcel->getActiveSheet()
+                    ->getColumnDimension($col)
+                    ->setAutoSize(true);
+        }
+
+        header('Content-Type: application/xls');
+        header('Content-Disposition: attachment;filename="Laporan Pelunasan Detail.xls"');
+        header('Cache-Control: max-age=0');
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+
+        Yii::app()->end();
+    }
+}

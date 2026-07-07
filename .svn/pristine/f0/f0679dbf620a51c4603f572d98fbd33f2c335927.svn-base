@@ -1,0 +1,119 @@
+<?php
+Yii::app()->clientScript->registerCss('_report', '
+    @page {
+        size:auto;
+        margin: 5px 0px 0px 0px;
+    }
+
+	.width2-1 { width: 9% }
+	.width2-2 { width: 9% }
+	.width2-3 { width: 10% }
+	.width2-4 { width: 7% }
+	.width2-5 { width: 5% }
+	.width2-6 { width: 5% }
+	.width2-7 { width: 5% }
+	.width2-8 { width: 5% }
+	.width2-9 { width: 5% }
+	.width2-10 { width: 5% }
+	.width2-11 { width: 10% }
+	.width2-12 { width: 9% }
+    .width2-13 { width: 10% }
+    .width2-14 { width: 6% }
+');
+?>
+
+<div style="font-weight: bold; text-align: center">
+    <div style="font-size: larger"><?php echo Yii::app()->name; ?></div>
+    <div style="font-size: larger">Laporan Penggunaan Material Awal SPK</div>
+    <div><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime($startDate))) . ' &nbsp;&ndash;&nbsp; ' . CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime($endDate))); ?></div>
+</div>
+
+<br />
+
+<table class="report">
+    <tr id="header1">
+        <th></th>
+        <th style="text-align: center" colspan="14">Material Awal</th>
+        <th style="text-align: center" colspan="8">Sisa <Potong</th>
+    </tr>
+    <tr id="header2">
+        <th class="width2-1" style="text-align: left;border-bottom: 2px solid;">TGL SPK</th>
+        <th class="width2-2" style="text-align: left;border-bottom: 2px solid;">NO SPK</th>
+        <th class="width2-3" style="text-align: left;border-bottom: 2px solid;">CUSTOMER</th>
+        <th class="width2-4" style="text-align: left;border-bottom: 2px solid;">JENIS</th>
+        <th class="width2-5" style="text-align: left;border-bottom: 2px solid;">TIPE</th>
+        <th class="width2-6" style="text-align: left;border-bottom: 2px solid;">T</th>
+        <th class="width2-7" style="text-align: left;border-bottom: 2px solid;">L</th>
+        <th class="width2-8" style="text-align: left;border-bottom: 2px solid;">P</th>
+        <th class="width2-6" style="text-align: left;border-bottom: 2px solid;">T</th>
+        <th class="width2-7" style="text-align: left;border-bottom: 2px solid;">L</th>
+        <th class="width2-8" style="text-align: left;border-bottom: 2px solid;">P</th>
+        <th class="width2-9" style="text-align: left;border-bottom: 2px solid;">PCS</th>
+        <th class="width2-10" style="text-align: left;border-bottom: 2px solid;">KGS</th>
+        <th class="width2-11" style="text-align: left;border-bottom: 2px solid;">NO REFF</th>
+        <th class="width2-12" style="text-align: left;border-bottom: 2px solid;">Process</th>
+    </tr>
+
+    <?php foreach ($workOrderCuttingSummary->dataProvider->data as $header): ?>
+
+        <?php if ($header->saleHeader->is_service == 1) : ?>
+            <?php foreach ($header->workOrderCuttingDetails as $service): ?>
+                <tr>
+                    <td class="width2-1"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMM yyyy', strtotime($header->date))); ?></td>
+                    <td class="width2-2" style="text-align: left"><?php echo CHtml::encode($header->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)); ?></td>
+                    <td class="width2-3" style="text-align: left"><?php echo CHtml::encode(CHtml::value($header, 'saleHeader.customer.company')); ?></td>
+                    <td class="width2-4"><?php echo CHtml::encode(CHtml::value($service, 'saleDetail.quotationDetailService.product_name')); ?></td>
+                    <td class="width2-5"></td>
+                    <td class="width2-6"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'height_request'))); ?></td>
+                    <td class="width2-7"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'width_request'))); ?></td>
+                    <td class="width2-8" ><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'length_request'))); ?></td>
+                    <td class="width2-6"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'height_quote'))); ?></td>
+                    <td class="width2-7"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'width_quote'))); ?></td>
+                    <td class="width2-8" ><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'length_quote'))); ?></td>
+                    <td class="width2-9" style="text-align: center; "><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'saleDetail.quotationDetailService.quantity_quote'))); ?></td>
+                    <td class="width2-10" style="text-align: center;"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($service, 'saleDetail.quotationDetailService.weight'))); ?></td>
+                    <td class="width2-11" style="text-align: left"><?php echo CHtml::encode(CHtml::value($header, 'saleHeader.customer_order_number')); ?></td>
+                    <td class="width2-12" style="text-align: left; ">
+                        <?php echo CHtml::encode((CHtml::value($service, 'saleDetail.quotationDetailService.is_miling') == 1) ? "M" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($service, 'saleDetail.quotationDetailService.is_grinding') == 1) ? "G" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($service, 'saleDetail.quotationDetailService.is_hardness') == 1) ? "FH" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($service, 'saleDetail.quotationDetailService.is_annelying') == 1) ? "ANNL" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($service, 'saleDetail.quotationDetailService.is_sidemiling') == 1) ? "SM" : ""); ?>
+                    </td>
+                    <td class="width2-13"><?php //echo $service->planFinish; ?></td>
+                    <td class="width2-14" style="text-align: right;"><?php //echo $service->planFinish > 0 ? CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($service, 'planSla'))) : ''; ?></td>
+                </tr>
+            <?php endforeach; ?>   
+        <?php else : ?>
+            <?php foreach ($header->workOrderCuttingDetails as $detail): ?>
+                <tr>
+                    <td class="width2-1"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMM yyyy', strtotime($header->date))); ?></td>
+                    <td class="width2-2" style="text-align: left"><?php echo CHtml::encode($header->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)); ?></td>
+                    <td class="width2-3" style="text-align: left"><?php echo CHtml::encode(CHtml::value($header, 'saleHeader.customer.company')); ?></td>
+                    <td class="width2-4" ><?php echo CHtml::encode(CHtml::value($detail, 'saleDetail.quotationDetailProduct.product_name_quote')); ?></td>
+                    <td class="width2-5" ><?php echo CHtml::encode(CHtml::value($detail, 'saleDetail.quotationDetailProduct.productCategory.name')); ?></td>
+                    <td class="width2-6"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'height_request'))); ?></td>
+                    <td class="width2-7"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'width_request'))); ?></td>
+                    <td class="width2-8" ><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'length_request'))); ?></td>
+                    <td class="width2-6"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'height_quote'))); ?></td>
+                    <td class="width2-7"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'width_quote'))); ?></td>
+                    <td class="width2-8" ><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'length_quote'))); ?></td>
+                    <td class="width2-9" style="text-align: center; "><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?></td>
+                    <td class="width2-10" style="text-align: center; "><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.0000', CHtml::value($detail, 'weight'))); ?></td>
+                    <td class="width2-11" style="text-align: left"><?php echo CHtml::encode(CHtml::value($header, 'saleHeader.customer_order_number')); ?></td>
+                    <td class="width2-12" style="text-align: left; ">
+                        <?php echo CHtml::encode((CHtml::value($detail, 'is_cut') == 1) ? "C" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($detail, 'saleDetail.quotationDetailProduct.is_miling') == 1) ? "M" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($detail, 'saleDetail.quotationDetailProduct.is_grinding') == 1) ? "G" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($detail, 'saleDetail.quotationDetailProduct.is_hardness') == 1) ? "FH" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($detail, 'saleDetail.quotationDetailProduct.is_annelying') == 1) ? "ANNL" : ""); ?>
+                        <?php echo CHtml::encode((CHtml::value($detail, 'saleDetail.quotationDetailProduct.is_sidemiling') == 1) ? "SM" : ""); ?>
+                    </td>
+                    <td class="width2-13" ><?php //echo $detail->planFinish; ?></td>
+                    <td class="width2-14" style="text-align: right;"><?php //echo $detail->planFinish > 0 ? CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'planSla'))) : ''; ?></td>
+
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</table>

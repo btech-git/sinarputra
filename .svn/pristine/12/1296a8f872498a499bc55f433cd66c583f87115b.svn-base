@@ -1,0 +1,173 @@
+<?php
+
+class DeliveryDailyController extends Controller {
+
+    public function filters() {
+        return array(
+            'access',
+        );
+    }
+
+    public function filterAccess($filterChain) {
+        if ($filterChain->action->id === 'summary') {
+            if (!(Yii::app()->user->checkAccess('deliveryReport')))
+                $this->redirect(array('/site/login'));
+        }
+
+        $filterChain->run();
+    }
+
+    public function actionSummary() {
+		set_time_limit(0);
+		ini_set('memory_limit', '1024M');
+		
+        $deliveryHeader = Search::bind(new DeliveryHeader('search'), isset($_GET['DeliveryHeader']) ? $_GET['DeliveryHeader'] : array());
+        $customerName = (isset($_GET['CustomerName'])) ? $_GET['CustomerName'] : '';
+
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+        $pageSize = (isset($_GET['PageSize'])) ? $_GET['PageSize'] : '';
+        $currentPage = (isset($_GET['page'])) ? $_GET['page'] : '';
+        $currentSort = (isset($_GET['sort'])) ? $_GET['sort'] : '';
+
+        $deliverySummary = new DeliverySummary($deliveryHeader->search());
+        $deliverySummary->setupLoading();
+        $deliverySummary->setupPaging($pageSize, $currentPage);
+        $deliverySummary->setupSorting();
+        $deliverySummary->setupFilter($startDate, $endDate, $customerName);
+
+        if (isset($_POST['SaveToExcel'])) {
+            $this->saveToExcel($deliverySummary, $startDate, $endDate);
+        }
+
+        $this->render('summary', array(
+            'deliveryHeader' => $deliveryHeader,
+            'deliverySummary' => $deliverySummary,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'currentSort' => $currentSort,
+            'customerName' => $customerName,
+        ));
+    }
+
+    protected function saveToExcel($deliverySummary, $startDate, $endDate) {
+		set_time_limit(0);
+		ini_set('memory_limit', '1024M');
+        
+        $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+        $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+        $startDate = Yii::app()->dateFormatter->format('d MMMM yyyy', $startDate);
+        $endDate = Yii::app()->dateFormatter->format('d MMMM yyyy', $endDate);
+
+        spl_autoload_unregister(array('YiiBase', 'autoload'));
+        include_once Yii::getPathOfAlias('ext.phpexcel.Classes') . DIRECTORY_SEPARATOR . 'PHPExcel.php';
+        spl_autoload_register(array('YiiBase', 'autoload'));
+
+        $objPHPExcel = new PHPExcel();
+
+        $documentProperties = $objPHPExcel->getProperties();
+        $documentProperties->setCreator('Sinar Putra Metalindo');
+        $documentProperties->setTitle('Delivery Daily');
+
+        $worksheet = $objPHPExcel->setActiveSheetIndex(0);
+        $worksheet->setTitle('Delivery Daily Report');
+
+        $worksheet->mergeCells('A1:AD1');
+        $worksheet->mergeCells('A2:AD2');
+        $worksheet->mergeCells('A3:AD3');
+        $worksheet->getStyle('A1:AD3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A1:AD3')->getFont()->setBold(true);
+        $worksheet->setCellValue('A1', 'PT. SINAR PUTRA METALINDO');
+        $worksheet->setCellValue('A2', 'Periode : ' . $startDate . ' - ' . $endDate);
+        $worksheet->setCellValue('A3', 'Delivery Daily Report');
+        $worksheet->getStyle("A4:AD4")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle("A4:AD4")->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+
+        $worksheet->getStyle('A4:AD4')->getFont()->setBold(true);
+        $worksheet->setCellValue('A4', 'NO');
+        $worksheet->setCellValue('B4', 'TGL SO');
+        $worksheet->setCellValue('C4', 'TGL SPK');
+        $worksheet->setCellValue('D4', 'TGL QC');
+        $worksheet->setCellValue('E4', 'TGL EST KIRIM');
+        $worksheet->setCellValue('F4', 'TGL SJ');
+        $worksheet->setCellValue('G4', 'QTY SPK');
+        $worksheet->setCellValue('H4', 'QTY OS PRODUKSI');
+        $worksheet->setCellValue('I4', 'CUSTOMER');
+        $worksheet->setCellValue('J4', 'NO DELIVERY');
+        $worksheet->setCellValue('K4', 'NO QTN');
+        $worksheet->setCellValue('L4', 'NO SPK');
+        $worksheet->setCellValue('M4', 'Job Number');
+        $worksheet->setCellValue('N4', 'NO PO');
+        $worksheet->setCellValue('O4', 'Tbl');
+        $worksheet->setCellValue('P4', 'Lbr');
+        $worksheet->setCellValue('Q4', 'Pjg');
+        $worksheet->setCellValue('R4', 'QTY');
+        $worksheet->setCellValue('S4', 'Berat');
+        $worksheet->setCellValue('T4', 'Sopir');
+        $worksheet->setCellValue('U4', 'KET');
+        $worksheet->setCellValue('V4', 'User');
+        $worksheet->setCellValue('W4', 'Salesman');
+        $worksheet->setCellValue('X4', 'Grade');
+        $worksheet->setCellValue('Y4', 'Type');
+        $worksheet->setCellValue('Z4', 'Kota Tujuan');
+        $worksheet->setCellValue('AA4', 'Tgl Kirim Invoice');
+        $worksheet->setCellValue('AB4', 'SJ Terkirim?');
+        $worksheet->setCellValue('AC4', 'Status SJ');
+        $worksheet->setCellValue('AD4', 'Jam');
+        $counter = 5;
+        $number = 1;
+
+        foreach ($deliverySummary->dataProvider->data as $header) {
+            foreach ($header->deliveryDetails as $detail){
+                $worksheet->setCellValue("A{$counter}", $number);
+                $number++;
+                $worksheet->setCellValue("B{$counter}", $header->workOrderCuttingHeader->saleHeader->date);
+                $worksheet->setCellValue("C{$counter}", $header->workOrderCuttingHeader->date);
+                $worksheet->setCellValue("D{$counter}", empty($header->quality_control_cutting_header_id) ? "0000-00-00" : $header->qualityControlCuttingHeader->date);
+                $worksheet->setCellValue("E{$counter}", $header->workOrderCuttingHeader->saleHeader->estimate_delivery_date);
+                $worksheet->setCellValue("F{$counter}", $header->date);
+                $worksheet->setCellValue("G{$counter}", CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.quantity')));
+                $worksheet->setCellValue("H{$counter}", CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.quantityCuttingQualityControlRemaining')));
+                $worksheet->setCellValue("I{$counter}", CHtml::encode(CHtml::value($header, 'workOrderCuttingHeader.saleHeader.customer.company')));
+                $worksheet->setCellValue("J{$counter}", CHtml::encode($header->getCodeNumber(DeliveryHeader::CN_CONSTANT)));
+                $worksheet->setCellValue("K{$counter}", CHtml::encode($detail->workOrderCuttingDetail->saleDetail->quotation_detail_product_id == NULL) ? $detail->workOrderCuttingDetail->saleDetail->quotationDetailService->quotationHeader->getCodeNumber(QuotationHeader::CN_CONSTANT) : $detail->workOrderCuttingDetail->saleDetail->quotationDetailProduct->quotationHeader->getCodeNumber(QuotationHeader::CN_CONSTANT));
+                $worksheet->setCellValue("L{$counter}", $header->workOrderCuttingHeader ? CHtml::encode($header->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)) : '');
+                $worksheet->setCellValue("M{$counter}", ($detail->work_order_cutting_detail_id != null) ? CHtml::value($detail, 'workOrderCuttingDetail.job_number') : '');
+                $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($header, 'workOrderCuttingHeader.saleHeader.customer_order_number')));
+                $worksheet->setCellValue("O{$counter}", CHtml::encode(CHtml::value($detail, 'height')));
+                $worksheet->setCellValue("P{$counter}", CHtml::encode(CHtml::value($detail, 'width')));
+                $worksheet->setCellValue("Q{$counter}", CHtml::encode(CHtml::value($detail, 'length')));
+                $worksheet->setCellValue("R{$counter}", CHtml::encode(CHtml::value($detail, 'quantity')));
+                $worksheet->setCellValue("S{$counter}", CHtml::encode(CHtml::value($detail, 'weight')));
+                $worksheet->setCellValue("T{$counter}", CHtml::encode(CHtml::value($header, 'driver')));
+                $worksheet->setCellValue("U{$counter}", CHtml::encode(CHtml::value($header, 'note')));
+                $worksheet->setCellValue("V{$counter}", CHtml::encode(CHtml::value($header, 'admin.name')));
+                $worksheet->setCellValue("W{$counter}", CHtml::encode(CHtml::value($header, 'workOrderCuttingHeader.saleHeader.employeeIdSalesman.name')));
+                $worksheet->setCellValue("X{$counter}", CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.product_name')));
+                $worksheet->setCellValue("Y{$counter}", CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.productCategory.name')));
+                $worksheet->setCellValue("Z{$counter}", CHtml::encode(CHtml::value($header, 'customer_city')));
+                $worksheet->setCellValue("AA{$counter}", CHtml::encode(CHtml::value($header, 'date_invoice_sent')));
+                $worksheet->setCellValue("AB{$counter}", CHtml::encode(CHtml::value($header, 'deliveryConfirmation')));
+                $worksheet->setCellValue("AC{$counter}", CHtml::encode(CHtml::value($header, 'delivery_status')));
+                $worksheet->setCellValue("AD{$counter}", CHtml::encode(CHtml::value($detail, '')));
+            
+                $counter++;
+            }
+        }
+
+        for ($col = 'A'; $col !== 'AD'; $col++) {
+            $objPHPExcel->getActiveSheet()
+            ->getColumnDimension($col)
+            ->setAutoSize(true);
+        }
+
+        header('Content-Type: application/xls');
+        header('Content-Disposition: attachment;filename="Delivery Daily Report.xls"');
+        header('Cache-Control: max-age=0');
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+
+        Yii::app()->end();
+    }
+}

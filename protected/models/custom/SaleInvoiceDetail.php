@@ -1,0 +1,120 @@
+<?php
+
+class SaleInvoiceDetail extends SaleInvoiceDetailBase {
+
+    const IS_USING_WEIGHT = 1;
+    const IS_USING_QUANTITY = 2;
+    const IS_USING_WEIGHT_LITERAL = 'Berat';
+    const IS_USING_QUANTITY_LITERAL = 'Pcs';
+
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    public function getMultiplicationStatus() {
+        return ($this->is_using_weight == 0) ? self::IS_USING_QUANTITY_LITERAL : self::IS_USING_WEIGHT_LITERAL;
+    }
+
+    public function getTotal() {
+
+        $optionMultiplication = ((int) $this->is_using_weight == self::IS_USING_QUANTITY) ? $this->quantity : $this->weight;
+
+        return $this->unit_price * $optionMultiplication + $this->rounding_amount;
+    }
+
+    public function getTotalWithTax() {
+
+        return round($this->total * ($this->saleInvoiceHeader->tax_percentage / 100), 0);
+    }
+
+    public function getTotalWithCoretax() {
+
+        return round($this->total * 11 / 12, 2);
+    }
+
+    public function getUnitPriceTax() {
+        return $this->unit_price / (1 + ($this->tax_percentage / 100));
+    }
+
+    public function getUnitPriceForTaxForm() {
+        return $this->total / $this->quantity;
+    }
+
+    public function searchForService() {
+        $criteria = new CDbCriteria;
+
+        $criteria->with = array(
+            'saleInvoiceHeader:resetScope' => array(
+                'with' => array(
+                    'deliveryHeader:resetScope' => array(
+                        'with' => array(
+                            'workOrderCuttingHeader:resetScope' => array(
+                                'with' => array(
+                                    'saleHeader:resetScope' => array(
+                                        'with' => array(
+                                            'quotationHeader:resetScope' => array(
+                                                'with' => 'customer:resetScope'
+                                            )
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        );
+
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.quantity', $this->quantity);
+        $criteria->compare('t.weight', $this->weight, true);
+        $criteria->compare('t.unit_price', $this->unit_price, true);
+        $criteria->compare('t.sale_invoice_header_id', $this->sale_invoice_header_id);
+        $criteria->compare('t.work_order_cutting_detail_id', $this->work_order_cutting_detail_id);
+        $criteria->compare('t.is_inactive', $this->is_inactive);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'Pagination' => array(
+                'PageSize' => 50
+            ),
+        ));
+    }
+
+    public function searchForProduct() {
+        $criteria = new CDbCriteria;
+        $criteria->with = array(
+            'saleInvoiceHeader:resetScope' => array(
+                'with' => array(
+                    'deliveryHeader:resetScope' => array(
+                        'with' => array(
+                            'workOrderCuttingHeader:resetScope' => array(
+                                'with' => array(
+                                    'saleHeader:resetScope' => array(
+                                        'with' => array(
+                                            'quotationHeader:resetScope' => array(
+                                                'with' => 'customer:resetScope'
+                                            )
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        );
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.unit_price', $this->unit_price, true);
+        $criteria->compare('t.sale_invoice_header_id', $this->sale_invoice_header_id);
+        $criteria->compare('t.is_inactive', $this->is_inactive);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'Pagination' => array(
+                'PageSize' => 50
+            ),
+        ));
+    }
+
+}

@@ -1,0 +1,40 @@
+<?php
+
+class ProductionMilingHeader extends ProductionMilingHeaderBase {
+
+    const CN_CONSTANT = 'PRDM';
+
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    public function searchForQualityControl() {
+        $criteria = new CDbCriteria;
+
+        $criteria->condition = "EXISTS (
+            SELECT wo.quantity - COALESCE(SUM(qc.quantity), 0) AS quantity_remaining, 
+            wo.id AS production_miling_detail_id
+            FROM " . ProductionMilingDetail::model()->tableName() . " wo
+            LEFT OUTER JOIN " . QualityControlMilingDetail::model()->tableName() . " qc
+            ON wo.id = qc.production_miling_detail_id
+            WHERE t.id = wo.production_miling_header_id AND t.is_inactive = 0
+            GROUP BY wo.id
+            HAVING quantity_remaining > 0
+        )
+        AND t.is_inactive = 0 AND t.date > '2021-12-31'";
+
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.cn_ordinal', $this->cn_ordinal);
+        $criteria->compare('t.cn_month', $this->cn_month);
+        $criteria->compare('t.cn_year', $this->cn_year);
+        $criteria->compare('t.date', $this->date, true);
+        $criteria->compare('t.note', $this->note, true);
+        $criteria->compare('t.production_planning_miling_header_id', $this->production_planning_miling_header_id);
+        $criteria->compare('t.admin_id', $this->admin_id);
+        $criteria->compare('t.is_inactive', $this->is_inactive);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
+}

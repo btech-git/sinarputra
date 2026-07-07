@@ -1,0 +1,317 @@
+<?php
+//$saleInvoice as SaleInvoice model
+//$deliveryNumber
+
+Yii::app()->clientScript->registerScript('memo', '
+    $("#header").addClass("hide");
+    $("#mainmenu").addClass("hide");
+    $(".breadcrumbs").addClass("hide");
+    $("#footer").addClass("hide");
+');
+Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/transaction/memo.css');
+Yii::app()->clientScript->registerCss('memo', '
+    @page {
+        size:auto;
+        margin: 5px 0px 0px 0px;
+    }
+    .hcolumn1 { width: 50% }
+    .hcolumn2 { width: 50% }
+
+    .hcolumn1header { width: 35% }
+    .hcolumn1value { width: 65% }
+    .hcolumn2header { width: 35% }
+    .hcolumn2value { width: 65% }
+
+    .sig1 { width: 50% }
+    .sig2 { width: 50% }
+    
+    .memo-title
+    {
+        margin-left:15%;
+        font-size:12px;
+    }
+    
+    table.memo
+    {
+        border-left: 0px solid;
+        border-bottom: 0px solid;
+        border-right: 0px solid;
+    }
+    
+    ul, ol {
+        margin: 0px;
+        padding-left: 1.5em;
+    }
+');
+?>
+
+<?php $count = count($saleInvoice->manualSaleInvoiceDetails); ?>
+
+<?php $pageSize = 15; ?>
+<?php $pageNumber = intval($count / $pageSize) + intval($count % $pageSize > 0); ?>
+<?php $pageNumber = ($pageNumber > 0) ? $pageNumber : 1; ?>
+
+<?php foreach (range(1, $pageNumber) as $num): ?>
+    <div id="memoheader" style="width: 90%; padding-left: 50px">
+        <div class="memo-logo"><img src="<?php echo Yii::app()->request->baseUrl; ?>/images/SPM LOGO FINAL.jpg" alt="" width="150%"/></div>
+        <div class="memo-title">
+            <table>
+                <tr>
+                    <td style="text-align: left;">Workshop</td>
+                    <td>:</td>
+                    <td style="text-align: left;">Jl. Johar Blok F6 No. 3A-B Delta Silicon II Industrial Park </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td style="text-align: left;">Lippo Cikarang - Bekasi 17530 </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Telp</td>
+                    <td>:</td>
+                    <td style="text-align: left;">(021) 89904100, 29577585-6 Fax : (021) 89904145, 29577583 </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Email</td>
+                    <td>:</td>
+                    <td style="text-align: left;">sales@sinarputrametalindo.com </td>
+                </tr>
+            </table>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div id="memoheader" style="width: 80%; padding-left: 50px">
+        <h3>INVOICE NO <?php echo $saleInvoice->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT); ?></h3>
+    </div>
+
+    <table style="width:90%; padding-left: 50px">
+        <tr>
+            <td style="border-left: 2px solid;border-top: 2px solid;width:13%;">Kepada Yth</td>
+            <td style="border-top: 2px solid;width:2%;">:</td>
+            <td style="border-top: 2px solid; width:38%;">
+                <?php echo CHtml::encode(CHtml::value($saleInvoice, 'customer.company')); ?>
+            </td>
+            <td style="border-left: 2px solid;border-top: 2px solid; width:15%">Tanggal</td>
+            <td style="border-top: 2px solid;width:2%">:</td>
+            <td style="border-right: 2px solid;border-top: 2px solid; width:30%;">
+                <?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($saleInvoice, 'date')))); ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-left: 2px solid;" colspan="3">
+                <?php echo nl2br(CHtml::encode(CHtml::value($saleInvoice, 'customer.completeTaxAddress'))); ?>
+            </td>
+            <td style="border-left: 2px solid;">PO #</td>
+            <td>:</td>
+            <td style="border-right: 2px solid;">
+                <?php if (empty($saleInvoice->work_order_cutting_header_id)): ?>
+                    <?php echo CHtml::encode(CHtml::value($saleInvoice, 'purchase_order_number')); ?>
+                <?php else: ?>
+                    <?php echo CHtml::encode(CHtml::value($saleInvoice, 'workOrderCuttingHeader.saleHeader.customer_order_number')); ?>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-left: 2px solid;" colspan="3"> Telepon <?php echo CHtml::encode(CHtml::value($saleInvoice, 'customer.phone')); ?></td>
+            <td style="border-left: 2px solid;"></td>
+            <td></td>
+            <td style="border-right: 2px solid;">
+                <?php //echo $saleInvoice->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT); ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-left: 2px solid" colspan="3">
+                Fax <?php echo CHtml::encode(CHtml::value($saleInvoice, 'customer.fax')); ?>
+            </td>
+            <td style="border-left: 2px solid">Jatuh Tempo</td>
+            <td>:</td>
+            <td style="border-right: 2px solid">
+                <?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($saleInvoice, 'due_date')))); ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-left: 2px solid;border-bottom: 2px solid;" colspan="3">
+                Catatan: <?php echo nl2br(CHtml::encode(CHtml::value($saleInvoice, 'note'))); ?>
+            </td>
+            <td style="border-left: 2px solid;border-bottom: 2px solid;">F. Pajak</td>
+            <td style="border-bottom: 2px solid;">:</td>
+            <td style="border-right: 2px solid;border-bottom: 2px solid;">
+                <?php echo CHtml::encode(CHtml::value($saleInvoice, 'tax_number')); ?>
+            </td>
+        </tr>
+    </table>
+
+    <table class="memo" style="width:90%">
+        <tr id="theader">
+            <th style="width: 3%; border-left: 2px solid">No.</th>
+            <th>N a m a &nbsp;&nbsp; B a r a n g</th>
+            <th style="width: 5%">Qty</th>
+            <th style="width: 5%">Banyaknya (Kg)</th>
+            <th style="width: 15%">Harga Satuan (Rp)</th>
+            <th style="width: 15%; border-right: 2px solid;">Jumlah (Rp)</th>
+        </tr>
+        <?php $counter = 0; ?>
+        <?php foreach ($saleInvoice->manualSaleInvoiceDetails as $i => $detail): ?>
+            <?php if ($detail->is_inactive == 0): ?>
+                <?php if ($i <= $num * $pageSize - 1 && $i >= ($num - 1) * $pageSize): ?>
+                    <tr class="titems">
+                        <td style="border-left: 2px solid; text-align: center"><?php echo $i + 1; ?></td>
+                        <td>
+                            <?php echo CHtml::encode(CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.job_number')); ?> - 
+                            <?php echo CHtml::encode(CHtml::value($detail, 'grade_name')); ?>
+
+                            <?php if ($detail->deliveryDetail->workOrderCuttingDetail->height_quote != 0.00 && $detail->deliveryDetail->workOrderCuttingDetail->length_quote != 0.00): ?>
+                                --
+                                <?php if ($detail->deliveryDetail->workOrderCuttingDetail->product_category_id == 2): ?>
+                                    <?php echo 'Dia.'; ?>
+                                <?php endif; ?>
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.height_quote'))); ?>
+
+                                <?php if ($detail->deliveryDetail->workOrderCuttingDetail->product_category_id != 2): ?>
+                                    x
+                                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.width_quote'))); ?>
+                                <?php endif; ?>
+                                x
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.length_quote'))); ?>
+                                &nbsp;||&nbsp;
+                                <?php if ($detail->deliveryDetail->workOrderCuttingDetail->product_category_id == 2): ?>
+                                    <?php echo 'Dia.'; ?>
+                                <?php endif; ?>
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.height_request'))); ?>
+
+                                <?php if ($detail->deliveryDetail->workOrderCuttingDetail->product_category_id != 2): ?>
+                                    x
+                                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.width_request'))); ?>
+                                <?php endif; ?>
+                                x
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'deliveryDetail.workOrderCuttingDetail.length_request'))); ?>
+                            <?php endif; ?> ||
+                            (<?php echo CHtml::encode($detail->deliveryDetail->deliveryHeader->getCodeNumber(DeliveryHeader::CN_CONSTANT)); ?>)
+                        </td>
+
+                        <td style="text-align: center">
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?>
+                        </td>
+                        <td style="text-align: right">
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'weight'))); ?>
+                        </td>
+
+                        <?php if ((int)$saleInvoice->is_tax === 0): ?>
+                            <td style="text-align: right">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?>
+                            </td>
+                            <td style="text-align: right;border-right: 2px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
+                            </td>
+                        <?php else : ?>
+                            <td style="text-align: right">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?>
+                            </td>
+                            <td style="text-align: right; border-right: 2px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                    <?php $counter++; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+		<?php for ($i = 0; $i < $pageSize - $counter; $i++): ?>
+            <tr class="titems">
+                <td style="border-left: 2px solid;">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="border-right: 2px solid;">&nbsp;</td>
+            </tr>
+        <?php endfor; ?>
+        <tr>
+            <td colspan="6" style="border-top: 2px solid #555; ">&nbsp;</td>
+        </tr>
+    </table>
+
+    <?php if ($num < $pageNumber): ?>
+        <div style="page-break-after: always"></div>
+    <?php endif; ?>
+<?php endforeach; ?>
+        
+<table class="memo" style="width:90%">
+    <tr class="titems">
+        <td colspan="4" style="text-align: left; font-weight: bold; border-left:0px solid;border-right:0px solid;">
+            Keterangan
+        </td>
+        <td style="text-align: right; font-weight: bold;border-left: 2px solid">Sub Total</td>
+        <td style="text-align: right; font-weight: bold;border-right: 2px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'subTotal'))); ?>
+        </td>
+    </tr>
+    <tr class="titems">
+        <td colspan="4" style="text-align: left; border-left:0px solid;border-right:0px solid;">
+            <ul>
+                <li>Invoice ini tidak berlaku sebagai tanda pembayaran, Kwitansi akan diserahkan pada saat / setelah pembayaran dilakukan.</li>
+            </ul>
+        </td>
+        <td style="text-align: right; font-weight: bold;border-left: 2px solid;">Discount</td>
+        <td style="text-align: right; font-weight: bold;border-right: 2px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'discount'))); ?>
+        </td>
+    </tr>
+    <tr class="titems">
+        <td colspan="4" style="text-align: left; border-left:0px solid;border-right:0px solid;">
+            <ul>
+                <li>BCA KCP Ricci A/C 644.066.5665 A/N PT.SINAR PUTRA METALINDO</li>
+            </ul>
+        </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold;border-left: 2px solid;"> PPN <?php echo CHtml::encode(CHtml::value($saleInvoice, 'tax_percentage')); ?>% </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold; border-right: 2px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'calculatedTax'))); ?>
+        </td>
+    </tr>
+    <tr class="titems">
+        <td colspan="4" style="text-align: left; border-left:0px solid;border-right:0px solid;">
+            <ul>
+                <li>Pembayaran cek/giro harus dicross dan ditujukan atas nama PT SINAR PUTRA METALINDO</li>
+            </ul>
+        </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold;border-left: 2px solid;"> PPh 2% </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold; border-right: 2px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'calculatedTaxIncome'))); ?>
+        </td>
+    </tr>
+    <tr class="titems">
+        <td colspan="4" style="text-align: left; border-left:0px solid;border-right:0px solid;">
+            <ul >
+                <li>Pembayaran dengan cek/giro dianggap sah setelah cek/giro tersebut diuangkan atau setelah clearing oleh Bank</li>
+            </ul>
+        </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold; border-bottom: 2px solid; border-left: 2px solid;">Grand Total </td>
+        <td style="border-top: 0px solid #555; text-align: right; font-weight: bold; border-bottom: 2px solid; border-right: 2px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'grandTotal'))); ?>
+        </td>
+    </tr>
+    <tr class="titems">
+        <td colspan="6" style="text-align: left; border-left:0px solid;border-right:0px solid;">
+            <ul >
+                <li>Bukti Setor / Transfer mohon di email ke: <b>finance@sinarputrametalindo.com</b></li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<div class="memosig">
+    <div style="font-weight:bold; font-style: italic; " class="divtable">
+        <div style="" class="divtablecell sig1"></div>
+        <div style="" class="divtablecell sig2">
+            <div>Dibuat Oleh,</div>
+            <div style="height: 110px;"></div>
+            <div style="width: 30%; margin-left: auto; margin-right: auto;">
+                <div style="float: center;">
+                    <?php echo CHtml::encode(CHtml::value($saleInvoice, 'admin.name')); ?>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

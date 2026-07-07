@@ -1,0 +1,64 @@
+<?php
+
+class QualityControlMilingHeader extends QualityControlMilingHeaderBase {
+
+    const CN_CONSTANT = 'QCM';
+
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    public function getTotalQuantity() {
+        $total = 0;
+
+        foreach ($this->qualityControlMilingDetails as $detail)
+            $total += $detail->quantity;
+
+        return $total;
+    }
+
+    public function searchForWorkOrderReplacement() {
+        $dataProvider = $this->search();
+
+        $dataProvider->criteria->addCondition("
+            t.id NOT IN (
+                SELECT si.quality_control_miling_header_id
+                FROM " . WorkOrderReplacementHeader::model()->tableName() . " si
+                WHERE si.is_inactive = 0 AND t.id = si.quality_control_miling_header_id 
+            ) AND EXISTS (
+                SELECT d.control_result
+                FROM " . QualityControlMilingDetail::model()->tableName() . " d
+                WHERE t.id = d.quality_control_miling_header_id
+                HAVING d.control_result = 'NG'
+            ) AND t.is_inactive = 0 AND t.date > '2021-12-31'
+        ");
+
+        return $dataProvider;
+    }
+
+    public function searchForDelivery() {
+        $criteria = new CDbCriteria;
+
+        $criteria->condition = "t.date > '2022-12-31'";
+
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.cn_ordinal', $this->cn_ordinal);
+        $criteria->compare('t.cn_month', $this->cn_month);
+        $criteria->compare('t.cn_year', $this->cn_year);
+        $criteria->compare('t.date', $this->date, true);
+        $criteria->compare('t.note', $this->note, true);
+        $criteria->compare('t.production_miling_header_id', $this->production_miling_header_id);
+        $criteria->compare('t.work_order_cutting_header_id', $this->work_order_cutting_header_id);
+        $criteria->compare('t.admin_id', $this->admin_id);
+        $criteria->compare('t.is_delivered', 0);
+        $criteria->compare('t.is_inactive', 0);
+
+        $criteria->with = "workOrderCuttingHeader";
+        $criteria->together = true;
+        $criteria->compare('workOrderCuttingHeader.is_miling_additional', 1);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
+}

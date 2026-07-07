@@ -1,0 +1,428 @@
+<?php
+//$quotation as QuotationHeader model
+
+Yii::app()->clientScript->registerScript('memo', '
+    $("#header").addClass("hide");
+    $("#mainmenu").addClass("hide");
+    $(".breadcrumbs").addClass("hide");
+    $("#footer").addClass("hide");
+');
+Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/transaction/memo.css');
+Yii::app()->clientScript->registerCss('memo', '
+body {
+    font-size:10px;
+}  
+
+@page {
+    size:auto;
+    margin: 5px 0px 0px 0px;
+}    
+
+    .hcolumn1 { width: 50% }
+    .hcolumn2 { width: 50% }
+
+    .hcolumn1header { width: 35% }
+    .hcolumn1value { width: 65% }
+    .hcolumn2header { width: 35% }
+    .hcolumn2value { width: 65% }
+
+    .sig1 { width: 25% }
+    .sig2 { width: 25% }
+    .sig3 { width: 25% }
+    .sig4 { width: 25% }
+
+    table.memo, table.memo tr.theader th, table.memo tr.titems td {
+        border-left: 1px solid;
+        border-right: 1px solid;
+        vertical-align:text-top;
+    }
+
+    table.memo tr.theader th {
+        text-align: center;
+        border-bottom: 2px solid;
+    }
+');
+?>
+
+<?php $count = count(empty($quotation->quotationDetailProducts) ? $quotation->quotationDetailServices : $quotation->quotationDetailProducts); ?>
+
+<?php $pageSize = 15; ?>
+<?php $pageNumber = intval($count / $pageSize) + intval($count % $pageSize > 0); ?>
+<?php $pageNumber = ($pageNumber > 0) ? $pageNumber : 1; ?>
+
+<?php foreach (range(1, $pageNumber) as $num): ?>
+    <div id="memoheader">
+        <div class="memo-logo"><img src="<?php echo Yii::app()->request->baseUrl; ?>/images/SPM LOGO FINAL.jpg" alt="" height="90px"/></div>
+        <div class="memo-title">
+            <div style="font-size: larger; text-transform: uppercase">PT. Sinar Putra Metalindo</div>
+            <div style="font-size: 1.5em">PENAWARAN</div>
+        </div>
+        <div class="memo-logo" style="width: 20%; float:right; height: 120px;"><img src="<?php echo Yii::app()->request->baseUrl; ?>/images/ISO9001.png" alt="" height="90px"/></div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    
+    <br /><br />
+
+    <div class="memonote" style="width: 100%;">
+        <span>Dengan Hormat,</span><br />
+        <span>Sesuai permintaan dari bapak / ibu , maka kami tawarkan material sebagai berikut :</span>
+    </div>
+    
+    <br />
+    
+    <div class="memonote">
+        <div class="divtable">
+            <div class="divtablecell hcolumn1">
+                <div class="divtable">
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn1header" style="font-weight: bold">Quotation #</div>
+                        <div class="divtablecell info hcolumn1value"><?php echo CHtml::encode($quotation->getCodeNumber(QuotationHeader::CN_CONSTANT)); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn1header" style="font-weight: bold">Tanggal</div>
+                        <div class="divtablecell info hcolumn1value"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($quotation, 'date')))); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">New/Replacement</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'transactionStatus')); ?></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divtablecell hcolumn2">
+                <div class="divtable">
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Customer</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'customer.company')); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">PIC Customer</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'customer.name')); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Alamat Pusat</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo nl2br(CHtml::encode(CHtml::value($quotation, 'customer.address_main'))); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Alamat Kirim</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo nl2br(CHtml::encode(CHtml::value($quotation, 'customer.address_secondary'))); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Kota</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'customer.city')); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Telp.</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'customer.phone')); ?></div>
+                    </div>
+                    
+                    <div class="divtablerow">
+                        <div class="divtablecell info hcolumn2header" style="font-weight: bold">Fax</div>
+                        <div class="divtablecell info hcolumn2value"><?php echo CHtml::encode(CHtml::value($quotation, 'customer.fax')); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <?php if ($quotation->is_service == 0): ?> 
+        <table class="memo">
+            <tr class="theader">
+                <th style="width: 5%; border-bottom: 2px solid;" rowspan="2">No.</th>
+                <th style="width: 15%; border-bottom: 2px solid;" rowspan="2">Job Number</th>
+                <th colspan="5">Permintaan</th>
+                <th colspan="5">Penawaran</th>
+                <th style="width: 5%; border-bottom: 2px solid;" rowspan="2">Berat</th>
+                <th style="width: 10%; border-bottom: 2px solid;" rowspan="2" colspan="2">Harga (Kg)</th>
+                <th style="width: 15%; border-bottom: 2px solid;" rowspan="2" colspan="2">Total</th>
+            </tr>
+            
+            <tr class="theader">
+                <th style="width: 5%">Grade</th>
+                <th style="width: 5%">Tbl / Dmtr</th>
+                <th style="width: 5%">Lebar</th>
+                <th style="width: 5%">Pjg</th>
+                <th style="width: 5%">Quantity</th>
+                <th style="width: 5%">Grade</th>
+                <th style="width: 5%">Tbl / Dmtr</th>
+                <th style="width: 5%">Lebar</th>
+                <th style="width: 5%">Pjg</th>
+                <th style="width: 5%">Quantity</th>
+            </tr>
+            <?php $counter = 0; ?>
+            <?php foreach ($quotation->quotationDetailProducts as $i => $detail): ?>
+                <?php if ($detail->is_inactive == 0): ?>
+                    <?php if ($i <= $num * $pageSize - 1 && $i >= ($num - 1) * $pageSize): ?>
+                        <tr class="titems">
+                            <td style="text-align:center;border-bottom: 1px solid;"><?php echo $i + 1; ?></td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(CHtml::value($detail, 'job_number')); ?>
+                            </td>
+                            <td style="border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(CHtml::value($detail, 'product_name_request')); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'height_request'))); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo $detail->product_category_id != 2 ? CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'width_request'))) : ''; ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'length_request'))); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity_request'))); ?>
+                            </td>
+                            <td style="border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(CHtml::value($detail, 'product_name_quote')); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'height_quote'))); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo $detail->product_category_id != 2 ? CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'width_quote'))) : ''; ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'length_quote'))); ?>
+                            </td>
+                            <td style="text-align: center;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity_quote'))); ?>
+                            </td>
+                            <td style="text-align: right;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'weight'))); ?>
+                            </td>
+                            <td style="width: 3%; border-right: none;border-bottom: 1px solid;">Rp. </td>
+                            <td style="text-align: right; border-left: none;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?>
+                            </td>
+                            <td style="width: 3%; border-right: none;border-bottom: 1px solid;">Rp. </td>
+                            <td style="text-align: right; border-left: none;border-bottom: 1px solid;">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
+                            </td>
+                        </tr>
+                        <?php $counter++; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+                        
+            <?php for ($i = 0; $i < $pageSize - $counter; $i++): ?>
+                <tr class="titems">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td style="border-right: none;">&nbsp;</td>
+                    <td style="border-left: none;">&nbsp;</td>
+                    <td style="border-right: none;">&nbsp;</td>
+                    <td style="border-left: none;">&nbsp;</td>
+                </tr>
+            <?php endfor; ?>
+        </table>
+        <?php if ($num < $pageNumber): ?>
+            <div style="page-break-after: always"></div>
+        <?php endif; ?>
+
+    <?php else: ?>
+
+        <table class="memo">
+            <tr class="theader">
+                <th style="width: 5%; border-bottom: 2px solid;" rowspan="2">No.</th>
+                <th style="width: 15%; border-bottom: 2px solid;" rowspan="2">Job Number</th>
+                <th style="width: 5%; border-bottom: 2px solid;" rowspan="2">GRADE</th>
+                <th colspan="4">Permintaan</th>
+                <th colspan="4">Penawaran</th>
+                <th style="width: 5%; border-bottom: 2px solid;" rowspan="2">Berat</th>
+                <th style="width: 15%;border-bottom: 2px solid;" rowspan="2" colspan="2">Harga</th>
+                <th style="width: 15%;border-bottom: 2px solid;" rowspan="2" colspan="2">Total</th>
+            </tr>
+            
+            <tr class="theader">
+                <th style="width: 5%">Tbl/Dmtr</th>
+                <th style="width: 5%">Lebar</th>
+                <th style="width: 5%">Pjg</th>
+                <th style="width: 5%">Qty</th>
+                <th style="width: 5%">Tbl/Dmtr</th>
+                <th style="width: 5%">Lebar</th>
+                <th style="width: 5%">Pjg</th>
+                <th style="width: 5%">Qty</th>
+            </tr>
+            <?php $counter = 0; ?>
+            <?php foreach ($quotation->quotationDetailServices as $i => $detail): ?>
+                <?php if ($detail->is_inactive == 0): ?>
+                    <?php if ($i <= $num * $pageSize - 1 && $i >= ($num - 1) * $pageSize): ?>
+                        <tr class="titems">
+                            <td style="text-align:center;"><?php echo $i + 1; ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'job_number')); ?></td>
+                            <td><?php echo CHtml::encode(CHtml::value($detail, 'product_name')); ?><br /></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'height_request'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'width_request'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'length_request'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity_request'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'height_quote'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'width_quote'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'length_quote'))); ?></td>
+                            <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity_quote'))); ?></td>
+                            <td style="text-align: right"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.####', CHtml::value($detail, 'weight'))); ?></td>
+                            <td style="width: 3%; border-right: none">Rp. </td>
+                            <td style="text-align: right; border-left: none"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'unit_price'))); ?></td>
+                            <td style="width: 3%; border-right: none">Rp. </td>
+                            <td style="text-align: right; border-left: none"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'total'))); ?></td>
+                        </tr>
+                        <?php $counter++; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+                        
+            <?php for ($i = 0; $i < $pageSize - $counter; $i++): ?>
+                <tr class="titems">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td style="border-right: none;">&nbsp;</td>
+                    <td style="border-left: none;">&nbsp;</td>
+                    <td style="border-right: none;">&nbsp;</td>
+                    <td style="border-left: none;">&nbsp;</td>
+                </tr>
+            <?php endfor; ?>
+        </table>
+            
+        <?php if ($num < $pageNumber): ?>
+            <div style="page-break-after: always"></div>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    
+<?php if ($quotation->is_service == 0): ?> 
+    <table class="memo" style="width:100%">
+        <tr class="titems">
+            <td style="border-left: 1px solid; text-align: right; width: 40%">Total Qty Permintaan</td>
+            <td style="text-align: center; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($quotation, 'totalQuantityRequestProduct'))); ?>
+            </td>
+            <td style="text-align: right; width: 20%">Total Qty Penawaran</td>
+            <td style="text-align: center; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($quotation, 'totalQuantityQuoteProduct'))); ?>
+            </td>
+            <td style="text-align: right; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getQuotationWeightTotal($quotation, 1))); ?>
+            </td>
+            <td style="text-align: right;font-weight: bold; width: 10%">Grand Total</td>
+            <td style="border-right: 0px solid">Rp. </td>
+            <td style="border-left: 0px solid; border-right: 1px solid; text-align: right">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', floor(CHtml::value($quotation, 'totalDetailProduct')))); ?>
+            </td>	
+        </tr>
+    </table>
+            
+<?php else: ?>
+            
+    <table class="memo" style="width:100%">
+        <tr class="titems">
+            <td style="border-left: 1px solid; text-align: right; width: 40%">Total Qty Permintaan</td>
+            <td style="text-align: center; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($quotation, 'totalQuantityRequestService'))); ?>
+            </td>
+            <td style="text-align: right; width: 15%">Total Qty Penawaran</td>
+            <td style="text-align: center; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($quotation, 'totalQuantityQuoteService'))); ?>
+            </td>
+            <td style="text-align: right; width: 5%">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->getQuotationWeightTotal($quotation, 2))); ?>
+            </td>
+            <td style="text-align: right;font-weight: bold; width: 15%">Grand Total</td>
+            <td style="border-right: 0px solid">Rp. </td>
+            <td style="border-left: 0px solid; border-right: 1px solid; text-align: right; font-weight: bold">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', floor(CHtml::value($quotation, 'totalDetailService')))); ?>
+            </td>
+        </tr>
+    </table>
+<?php endif; ?>
+            
+<div class="memoCatatan">Catatan: <?php echo CHtml::encode(CHtml::value($quotation, 'note')); ?></div>
+
+<div>Syarat - syarat kondisi penawaran : </div>
+<table style="width: 100%;">
+    <tr>
+        <td style="font-weight: bold; width: 10%">Harga</td>
+        <td style="font-weight: bold;"> : </td>
+        <td style="font-weight: bold;"><?php echo CHtml::encode(CHtml::value($quotation, 'isTaxStatus')); ?> termasuk PPN</td>
+    </tr>
+    
+    <tr>
+        <td>Delivery</td>
+        <td> : </td>
+        <td><?php echo CHtml::encode(CHtml::value($quotation, 'delivery_period')); ?> hari PO diterima</td>
+    </tr>
+    
+    <tr>
+        <td>Pembayaran</td>
+        <td> : </td>
+        <td><?php echo CHtml::encode(CHtml::value($quotation, 'customer.invoice_due_days')); ?> setelah tukar faktur</td>
+    </tr>
+    
+    <tr>
+        <td>Valid</td>
+        <td> : </td>
+        <td><?php echo CHtml::encode(CHtml::value($quotation, 'valid_period')); ?> hari</td>
+    </tr>
+</table>
+
+<div>Kondisi stock dapat berubah sewaktu – waktu tanpa pemberitahuan</div><br/>
+<div>Demikian penawaran harga dari kami , dan untuk konfirmasinya  kami tunggu , terima kasih atas kerja sama nya</div>
+
+<br />
+
+<div class="memosig">
+    <div style="font-weight:bold; font-style: italic;" class="divtable">
+        <div class="divtablecell sig1">
+            <div>Customer Service,</div>
+            <?php if (!empty($quotation->admin->employee->file_extension_signature)): ?>
+                <div style="height: 80px;"><img src="<?php echo Yii::app()->request->baseUrl; ?>/images/signature/<?php echo CHtml::encode($quotation->admin->employee->file_extension_signature); ?>" alt="" height="90px"/></div>
+            <?php endif; ?>
+            <div><?php echo CHtml::encode(CHtml::value($quotation, 'admin.name')); ?></div>
+        </div>
+        
+        <div class="divtablecell sig2">
+            <div>Mengetahui,</div>
+            <div style="height: 80px;">
+                <?php $employee = Employee::model()->resetScope()->findByPk($quotation->employee_id_sales); ?>
+                <img src="<?php echo Yii::app()->request->baseUrl; ?>/images/signature/<?php echo CHtml::encode($employee->file_extension_signature); ?>" alt="" height="90px"/>
+            </div>
+            <div><?php echo CHtml::encode(CHtml::value($employeeSalesman, 'name')); ?></div>
+        </div>
+        
+        <div class="divtablecell sig4">
+            <div >Customer,</div>
+            <div style="height: 80px;"></div>
+            <div><?php echo CHtml::encode(CHtml::value($quotation, 'customer.company')); ?></div>
+        </div>
+    </div>
+</div>

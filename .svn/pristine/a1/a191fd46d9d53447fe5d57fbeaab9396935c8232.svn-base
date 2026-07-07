@@ -1,0 +1,60 @@
+<?php Yii::app()->clientScript->registerCss('memo', '
+    @page {
+        size:auto;
+        margin: 5px 0px 0px 0px;
+    }
+'); ?>
+
+
+<?php
+
+$this->renderPartial('memoHeader', array(
+    'model' => $model,
+    'salesman' => $salesman,
+));
+?>
+<?php
+//$detailsCount = 0;
+//if (!CHtml::value($model, 'saleHeader.is_service'))
+//$detailsCount = count($model->workOrderCuttingDetails);
+//else
+//    $detailsCount = count($model->workOrderCuttingDetailServices);
+//$pages = ceil($detailsCount / 10);
+
+//for ($i = 1; $i <= $pages; $i++) {
+//
+//    $counterStart = ($i - 1) * 10;
+//    $counterEnd = $i * 10;
+//    $spacing = 0;
+//
+//    if ($i == $pages)
+//        $spacing = 1;
+?>
+
+<?php $count = count($model->workOrderCuttingDetails); ?>
+
+<?php $pageSize = 3; ?>
+<?php $pageNumber = intval($count / $pageSize) + intval($count % $pageSize > 0); ?>
+<?php $pageNumber = ($pageNumber > 0) ? $pageNumber : 1; ?>
+
+<?php //foreach (range(1, $pageNumber) as $num): ?>
+
+<?php
+    $this->renderPartial('memoDetail', array(
+        'model' => $model,
+//        'counterStart' => $counterStart,
+//        'counterEnd' => $counterEnd,
+//        'spacing' => $spacing,
+    ));
+    ?>
+
+	<?php /*if ($num < $pageNumber): ?>
+		<div style="page-break-after: always"></div>
+	<?php endif; */?>
+
+<?php //endforeach; ?>
+        <?php
+        $this->renderPartial('memoFooter', array(
+            'model' => $model
+        ));
+?>

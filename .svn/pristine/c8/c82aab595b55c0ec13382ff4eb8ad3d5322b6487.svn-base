@@ -1,0 +1,117 @@
+<?php
+
+class QualityControlCutting extends CComponent {
+
+    public $header;
+    public $details;
+
+    public function __construct($header, array $details) {
+        $this->header = $header;
+        $this->details = $details;
+    }
+
+    public function generateCodeNumber($currentMonth, $currentYear) {
+        $qualityControlCuttingHeader = QualityControlCuttingHeader::model()->find(array(
+            'condition' => 'cn_year = :cn_year AND cn_month = :cn_month',
+            'params' => array(':cn_year' => $currentYear, ':cn_month' => $currentMonth),
+            'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
+        ));
+
+        if ($qualityControlCuttingHeader !== null)
+            $this->header->setCodeNumber($qualityControlCuttingHeader->cn_ordinal, $qualityControlCuttingHeader->cn_month, $qualityControlCuttingHeader->cn_year);
+
+        $this->header->setCodeNumberByNext($currentMonth, $currentYear);
+    }
+
+    public function addDetails($productionCuttingId) {
+        $sql = "SELECT wo.quantity - COALESCE(SUM(qc.quantity), 0) AS quantity_remaining, 
+                wo.id AS production_cutting_detail_id, ppc.work_order_cutting_detail_id AS work_order_cutting_detail_id
+                FROM " . ProductionCuttingDetail::model()->tableName() . " wo
+                LEFT OUTER JOIN " . QualityControlCuttingDetail::model()->tableName() . " qc ON wo.id = qc.production_cutting_detail_id
+                LEFT OUTER JOIN " . ProductionPlanningCuttingDetail::model()->tableName() . " ppc ON ppc.id = wo.production_planning_cutting_detail_id
+                WHERE wo.production_cutting_header_id = :production_cutting_header_id
+                GROUP BY wo.id
+                HAVING quantity_remaining > 0
+                ORDER BY wo.id";
+
+        $resultSet = Yii::app()->db->createCommand($sql)->queryAll(true, array(':production_cutting_header_id' => $productionCuttingId));
+
+        $this->details = array();
+
+        foreach ($resultSet as $row) {
+            $detail = new QualityControlCuttingDetail();
+
+            $detail->production_cutting_detail_id = $row['production_cutting_detail_id'];
+            $detail->work_order_cutting_detail_id = $row['work_order_cutting_detail_id'];
+            $this->details[] = $detail;
+        }
+    }
+
+    public function validate() {
+        $valid = $this->header->validate();
+
+        $valid = $this->validateDetailsCount() && $valid;
+
+        if (count($this->details) > 0) {
+            foreach ($this->details as $detail) {
+                $fields = array('production_cutting_detail_id', 'employee_id', 'control_date', 'control_result');
+                $valid = $detail->validate($fields) && $valid;
+            }
+        }
+        else
+            $valid = false;
+
+        return $valid;
+    }
+
+    public function validateDetailsCount() {
+        $valid = true;
+        if (count($this->details) === 0) {
+            $valid = false;
+            $this->header->addError('error', 'Form tidak ada data untuk insert database. Minimal satu data detail untuk melakukan penyimpanan.');
+        }
+
+        return $valid;
+    }
+
+    public function save($dbConnection) {
+        $dbTransaction = $dbConnection->beginTransaction();
+        try {
+            $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
+            if ($valid)
+                $dbTransaction->commit();
+            else
+                $dbTransaction->rollback();
+        } catch (Exception $e) {
+            $dbTransaction->rollback();
+            $valid = false;
+            $this->header->addError('error', $e->getMessage());
+        }
+
+        return $valid;
+    }
+
+    public function flush() {
+        $valid = $this->header->save(false);
+        
+        foreach ($this->details as $detail) {
+            $workOrderCuttingDetail = $detail->workOrderCuttingDetail(array('scopes' => 'resetScope'));
+
+            if ($detail->quantity <= 0)
+                continue;
+            
+            if ($detail->isNewRecord) {
+                $detail->quality_control_cutting_header_id = $this->header->id;
+                $detail->job_group = $detail->employee->job_group;
+            }
+
+            $valid = $detail->save(false) && $valid;
+            
+//            $workOrderCuttingDetail->quality_control_cutting_status = ($detail->control_result = 'Good') ? 0 : 1;
+//            $valid = $workOrderCuttingDetail->update(array('quality_control_cutting_status')) && $valid;
+        }
+
+        return $valid;
+    }
+
+}

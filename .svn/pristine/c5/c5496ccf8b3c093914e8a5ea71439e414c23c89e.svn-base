@@ -1,0 +1,172 @@
+<table style="border: 1px solid">
+    <tr style="background-color: skyblue">
+        <th style="text-align: center">GRADE</th>
+        <th style="text-align: center;">Kategori</th>
+        <th style="text-align: center;">Tbl/Dmtr</th>
+        <th style="text-align: center;">Lbr</th>
+        <th style="text-align: center;">Pjg/Dmtr</th>
+        <th style="text-align: center;">Pcs/Kg</th>
+        <th style="text-align: center;">Berat</th>
+        <th style="text-align: center;">Quantity</th>
+        <th style="text-align: center;">Unit Price</th>
+        <th style="text-align: center;">Pembulatan</th>
+        <th style="text-align: center; width: 15%">Total</th>
+    </tr>
+    <?php foreach ($saleInvoice->details as $i => $detail): ?>	
+        <?php $workOrderCuttingDetail = WorkOrderCuttingDetail::model()->findByPk($detail->work_order_cutting_detail_id); ?>
+        <tr style="background-color: azure;">
+            <td style="text-align:center;">
+                <?php echo CHtml::activeHiddenField($detail, "[$i]work_order_cutting_detail_id"); ?>
+                <?php echo CHtml::activeTextField($detail, "[$i]grade_name"); ?>
+                <?php echo CHtml::error($detail, 'grade_name'); ?>
+            </td>
+            <td style="text-align:center;">
+                <?php echo CHtml::encode(CHtml::value($workOrderCuttingDetail, 'productCategory.name')); ?>
+            </td>
+            <td style="text-align: center;">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($workOrderCuttingDetail, 'height_request'))); ?>
+            </td>
+            <td style="text-align: center;">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($workOrderCuttingDetail, 'width_request'))); ?>
+            </td>
+            <td style="text-align: center;">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($workOrderCuttingDetail, 'length_request'))); ?>
+            </td>
+            <td style="text-align:center;">
+                <?php echo CHtml::activeHiddenField($detail, "[$i]is_using_weight"); ?>
+                <?php echo CHtml::encode(CHtml::value($detail, 'multiplicationStatus')); ?>
+                <?php echo CHtml::error($detail, 'is_using_weight'); ?>
+            </td>
+            <td style="text-align: center;">
+                <?php if ($saleInvoice->header->isNewRecord): ?>
+                    <?php echo CHtml::activeHiddenField($detail, "[$i]weight"); ?>
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'weight'))); ?>
+                <?php else: ?>
+                    <?php echo CHtml::activeTextField($detail, "[$i]weight"); ?>
+                <?php endif; ?>
+                <?php echo CHtml::error($detail, 'weight'); ?>
+            </td>
+            <td style="text-align: center;">
+                <?php echo CHtml::activeTextField($detail, "[$i]quantity"); ?>
+                <?php //echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?>
+                <?php echo CHtml::error($detail, 'quantity'); ?>
+            </td>
+            <td style="text-align: right;">
+                <?php if ($saleInvoice->header->isNewRecord): ?>
+                    <?php echo CHtml::activeHiddenField($detail, "[$i]unit_price"); ?>    
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?>
+                <?php else: ?>
+                    <?php echo CHtml::activeTextField($detail, "[$i]unit_price"); ?>
+                <?php endif; ?>
+                <?php echo CHtml::error($detail, 'unit_price'); ?>
+            </td>
+            <td style="text-align: right;">
+                <?php echo CHtml::activeTextField($detail, "[$i]rounding_amount", array('size' => 5, 'maxLength' => 18,
+                    'onchange' => CHtml::ajax(array(
+                        'type' => 'POST',
+                        'dataType' => 'JSON',
+                        'url' => CController::createUrl('ajaxJsonTotal', array('id' => $saleInvoice->header->id, 'index' => $i)),
+                        'success' => 'function(data) {
+							$("#total_' . $i . '").html(data.total);  
+						}',
+                    )),
+                )); ?>                
+                <?php echo CHtml::error($detail, 'rounding_amount'); ?>
+            </td>
+            <td style="text-align: right;">
+                <span id="total_<?php echo $i; ?>">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
+                </span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="10">Sub Total</td>
+        <td style="font-weight: bold; text-align: right;">
+            <span id="sub_total">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'subTotal'))); ?>
+            </span>
+        </td>
+    </tr>
+    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="10">Discount</td>
+        <td style="font-weight: bold; text-align: right;">
+            <?php echo CHtml::activeTextField($saleInvoice->header, "discount", array('size' => 15, 'maxLength' => 20,
+                'onchange' => CHtml::ajax(array(
+                    'type' => 'POST',
+                    'dataType' => 'JSON',
+                    'url' => CController::createUrl('ajaxJsonGrandTotal', array('id' => $saleInvoice->header->id)),
+                    'success' => 'function(data) {
+                        $("#tax_value").html(data.ppn);
+                        $("#tax_income_value").html(data.pph);
+                        $("#grand_total").html(data.grandTotal);
+                    }',
+                ))
+            )); ?>
+            <?php echo CHtml::error($saleInvoice->header, 'discount'); ?>
+        </td>
+    </tr>
+    
+<!--    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="9">Pembulatan</td>
+        <td style="font-weight: bold; text-align: right;">
+            <?php /*echo CHtml::activeTextField($saleInvoice->header, "rounding_nominal", array('size' => 15, 'maxLength' => 20,
+                'onchange' => CHtml::ajax(array(
+                    'type' => 'POST',
+                    'dataType' => 'JSON',
+                    'url' => CController::createUrl('ajaxJsonGrandTotal', array('id' => $saleInvoice->header->id)),
+                    'success' => 'function(data) {
+                        $("#tax_value").html(data.ppn);
+                        $("#tax_income_value").html(data.pph);
+                        $("#grand_total").html(data.grandTotal);
+                    }',
+                ))
+            ));*/ ?>
+        </td>
+    </tr>-->
+    
+    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="10">
+            PPN 
+            <?php echo CHtml::activeTextField($saleInvoice->header, "tax_percentage"); ?>%
+        </td>
+        <td style="font-weight: bold; text-align: right;">
+            <span id="tax_value">
+                <?php echo CHtml::activeHiddenField($saleInvoice->header, "is_tax"); ?>    
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'calculatedTax'))); ?>
+                <?php echo CHtml::error($saleInvoice->header, 'is_tax'); ?>
+            </span>
+        </td>
+    </tr>
+
+    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="10">PPh 2% &nbsp;
+            <?php echo CHtml::activeCheckBox($saleInvoice->header, 'is_tax_income',array(
+                'onchange' => CHtml::ajax(array(
+                    'type' => 'POST',
+                    'dataType' => 'JSON',
+                    'url' => CController::createUrl('ajaxJsonGrandTotal', array('id' => $saleInvoice->header->id)),
+                    'success' => 'function(data) {
+                        $("#tax_income_value").html(data.pph);
+                        $("#grand_total").html(data.grandTotal);
+                    }',
+                )),
+            )); ?>  
+            <?php echo CHtml::error($saleInvoice->header, 'is_tax_income'); ?>
+        </td>
+        <td style="font-weight: bold; text-align: right;">
+            <span id="tax_income_value">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'calculatedTaxIncome'))); ?>
+            </span>
+        </td>
+    </tr>
+
+    <tr style="background-color: aquamarine;">
+        <td style="font-weight: bold; text-align: right;" colspan="10">Grand Total</td>
+        <td style="font-weight: bold; text-align: right;">
+            <span id="grand_total">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($saleInvoice, 'grandTotal'))); ?>
+            </span>
+        </td>
+    </tr>
+</table>

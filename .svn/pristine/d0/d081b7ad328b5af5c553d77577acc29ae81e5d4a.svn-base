@@ -1,0 +1,518 @@
+<?php
+
+class EmployeeController extends CrudController {
+
+    public $layout = '//layouts/column2';
+
+    public function filters() {
+        return array(
+            'access',
+        );
+    }
+
+    public function filterAccess($filterChain) {
+        if ($filterChain->action->id === 'create') {
+            if (!Yii::app()->user->checkAccess('hrgaCreateMaster'))
+                $this->redirect(array('/site/login'));
+        } 
+        if ($filterChain->action->id === 'update' || $filterChain->action->id === 'delete') {
+            if (!Yii::app()->user->checkAccess('hrgaEditMaster'))
+                $this->redirect(array('/site/login'));            
+        } 
+        if ($filterChain->action->id === 'view' || $filterChain->action->id === 'admin') {
+            if (!(Yii::app()->user->checkAccess('hrgaCreateMaster') || 
+            Yii::app()->user->checkAccess('hrgaEditMaster') || 
+            Yii::app()->user->checkAccess('hrgaViewMaster')))
+                $this->redirect(array('/site/login'));            
+        }
+
+        $filterChain->run();
+    }
+
+    public function loadState($model) {
+        if (isset($_POST['Employee'])) {
+            $model->header->attributes = $_POST['Employee'];
+        }
+        if (isset($_POST['EmployeeFamilyRelationship'])) {
+            foreach ($_POST['EmployeeFamilyRelationship'] as $i => $item) {
+                if (isset($model->detailRelationships[$i]))
+                    $model->detailRelationships[$i]->attributes = $item;
+                else {
+                    $detail = new EmployeeFamilyRelationship();
+                    $detail->attributes = $item;
+                    $model->detailRelationships[] = $detail;
+                }
+            }
+            if (count($_POST['EmployeeFamilyRelationship']) < count($model->detailRelationships))
+                array_splice($model->detailRelationships, $i + 1);
+        }
+        else
+            $model->detailRelationships = array();
+
+        if (isset($_POST['EmployeeFormalEducation'])) {
+            foreach ($_POST['EmployeeFormalEducation'] as $i => $item) {
+                if (isset($model->detailEducations[$i]))
+                    $model->detailEducations[$i]->attributes = $item;
+                else {
+                    $detail = new EmployeeFormalEducation();
+                    $detail->attributes = $item;
+                    $model->detailEducations[] = $detail;
+                }
+            }
+            if (count($_POST['EmployeeFormalEducation']) < count($model->detailEducations))
+                array_splice($model->detailEducations, $i + 1);
+        }
+        else
+            $model->detailEducations = array();
+
+        if (isset($_POST['EmployeeJobExperience'])) {
+            foreach ($_POST['EmployeeJobExperience'] as $i => $item) {
+                if (isset($model->detailExperiences[$i]))
+                    $model->detailExperiences[$i]->attributes = $item;
+                else {
+                    $detail = new EmployeeJobExperience();
+                    $detail->attributes = $item;
+                    $model->detailExperiences[] = $detail;
+                }
+            }
+            if (count($_POST['EmployeeJobExperience']) < count($model->detailExperiences))
+                array_splice($model->detailExperiences, $i + 1);
+        }
+        else
+            $model->detailExperiences = array();
+    }
+
+    public function instantiate($id) {
+
+        if (empty($id))
+            $model = new EmployeeComponent(new Employee, array(), array(), array());
+        else {
+            $header = $this->loadModel($id);
+            $model = new EmployeeComponent($header, $header->employeeFamilyRelationships, $header->employeeFormalEducations, $header->employeeJobExperiences);
+        }
+
+        return $model;
+    }
+
+    public function saveImageFile($model) {
+        if ($model->header->file) {
+            $originalPath = dirname(Yii::app()->request->scriptFile) . '/images/employee/' . $model->header->file_extension;
+            $model->header->file->saveAs($originalPath);
+
+            require_once( dirname(Yii::app()->request->scriptFile) . '/protected/extensions/phpthumb/ThumbLib.inc.php' );
+
+            $image = PhpThumbFactory::create($originalPath);
+            $image->resize(1024, 768)->save($originalPath);
+        }
+        
+        if ($model->header->file_signature) {
+            $originalPath = dirname(Yii::app()->request->scriptFile) . '/images/signature/' . $model->header->file_extension_signature;
+            $model->header->file_signature->saveAs($originalPath);
+
+            require_once( dirname(Yii::app()->request->scriptFile) . '/protected/extensions/phpthumb/ThumbLib.inc.php' );
+
+            $image = PhpThumbFactory::create($originalPath);
+            $image->resize(1024, 768)->save($originalPath);
+        }
+    }
+
+    public function actionView($id) {
+        $this->render('view', array(
+            'model' => $this->loadModel($id),
+        ));
+    }
+
+    public function actionCreate() {
+        $model = $this->instantiate(null);
+        $model->header->permanent_start_date = '1111-11-11';
+        $model->header->identity_expired = '1111-11-11';
+        $model->header->driver_license_expired = '1111-11-11';
+        $model->header->resignation_date = '1111-11-11';
+
+        if (isset($_POST['Employee'])) {
+            $this->loadState($model);
+
+            $fileName = CUploadedFile::getInstanceByName('file');
+            $model->header->file = $fileName;
+            $model->header->file_extension = $fileName;
+
+            $fileSignature = CUploadedFile::getInstanceByName('file_signature');
+            $model->header->file_signature = $fileSignature;
+            $model->header->file_extension_signature = $fileSignature;
+
+            if ($model->save(Yii::app()->db)) {
+                $this->saveImageFile($model);
+                $this->redirect(array('view', 'id' => $model->header->id));
+            }
+        }
+
+        $this->render('create', array(
+            'model' => $model,
+        ));
+    }
+
+    public function actionUpdate($id) {
+        $model = $this->instantiate($id);
+        if (isset($_POST['Employee']) || isset($_POST['EmployeeJobExperience']) || isset($_POST['EmployeeFamilyRelationShip']) || isset($_POST['EmployeeFormalEducation'])) {
+            $this->loadState($model);
+
+            if ($model->header->is_inactive == 1) {
+                $model->header->resignation_date = date('Y-m-d');
+            }
+
+            if (isset($_POST['file'])) {
+                $fileName = CUploadedFile::getInstanceByName('file');
+                if ($fileName != null) {
+                    $model->header->file = $fileName;
+                    $model->header->file_extension = $fileName;
+                }
+            }
+
+            if (isset($_POST['file_signature'])) {
+                $fileSignature = CUploadedFile::getInstanceByName('file_signature');
+                if ($fileSignature != null) {
+                    $model->header->file_signature = $fileSignature;
+                    $model->header->file_extension_signature = $fileSignature;
+                }
+            }
+
+            if ($model->save(Yii::app()->db)) {
+                $this->saveImageFile($model);
+                $this->redirect(array('view', 'id' => $model->header->id));
+            }
+        }
+
+        $this->render('update', array(
+            'model' => $model,
+        ));
+    }
+
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
+            $this->loadModel($id)->delete();
+
+            if (!isset($_GET['ajax']))
+                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+        }
+        else
+            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+    }
+
+    public function actionIndex() {
+        $dataProvider = new CActiveDataProvider('Employee');
+        $this->render('index', array(
+            'dataProvider' => $dataProvider,
+        ));
+    }
+
+    public function actionAdmin() {
+        $model = new Employee('search');
+        $model->unsetAttributes();
+        if (isset($_GET['Employee']))
+            $model->attributes = $_GET['Employee'];
+
+
+        if (isset($_GET['Export'])) {
+            $this->saveToExcel(Employee::model()->findAll());
+        }
+
+        $this->render('admin', array(
+            'model' => $model,
+        ));
+    }
+
+    public function loadModel($id) {
+        $model = Employee::model()->resetScope()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function actionAjaxHtmlAddDetailRelationship($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->addDetailRelationship();
+
+            $this->renderPartial('_detail_relationship', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlAddDetailEducation($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->addDetailEducation();
+
+            $this->renderPartial('_detail_education', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlAddDetailExperience($id) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->addDetailExperience();
+
+            $this->renderPartial('_detail_experience', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlRemoveDetailRelationship($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->removeDetailRelationshipAt($index);
+
+            $this->renderPartial('_detail_relationship', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlRemoveDetailEducation($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->removeDetailEducationAt($index);
+
+            $this->renderPartial('_detail_education', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    public function actionAjaxHtmlRemoveDetailExperience($id, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+
+            $model->removeDetailExperienceAt($index);
+
+            $this->renderPartial('_detail_experience', array(
+                'model' => $model,
+            ));
+        }
+    }
+
+    protected function saveToExcel($employees) {
+
+        spl_autoload_unregister(array('YiiBase', 'autoload'));
+        include_once Yii::getPathOfAlias('ext.phpexcel.Classes') . DIRECTORY_SEPARATOR . 'PHPExcel.php';
+        spl_autoload_register(array('YiiBase', 'autoload'));
+
+        $objPHPExcel = new PHPExcel();
+
+        $documentProperties = $objPHPExcel->getProperties();
+        $documentProperties->setCreator('Sinar Putra');
+        $documentProperties->setTitle('Data Karyawan');
+
+        $worksheet = $objPHPExcel->setActiveSheetIndex(0);
+        $worksheet->setTitle('Data Karyawan');
+
+        $worksheet->mergeCells('A1:AJ1');
+        $worksheet->mergeCells('A2:AJ2');
+
+        $worksheet->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A1:AJ4')->getFont()->setBold(true);
+
+        $worksheet->setCellValue('A1', 'Sinar Putra Metalindo');
+        $worksheet->setCellValue('A2', 'Data Karyawan');
+
+        $worksheet->setCellValue('A4', 'Code');
+        $worksheet->setCellValue('B4', 'Name');
+        $worksheet->setCellValue('C4', 'Start Date');
+        $worksheet->setCellValue('D4', 'Permanent Start Date');
+        $worksheet->setCellValue('E4', 'Company');
+        $worksheet->setCellValue('F4', 'Cost Center');
+        $worksheet->setCellValue('G4', 'Tempat Lahir');
+        $worksheet->setCellValue('H4', 'Tanggal Lahir');
+        $worksheet->setCellValue('I4', 'Tinggi');
+        $worksheet->setCellValue('J4', 'Berat');
+        $worksheet->setCellValue('K4', 'Alamat Tinggal');
+        $worksheet->setCellValue('L4', 'Alamat Asal');
+        $worksheet->setCellValue('M4', 'Phone');
+        $worksheet->setCellValue('N4', 'Email');
+        $worksheet->setCellValue('O4', 'KTP');
+        $worksheet->setCellValue('P4', 'Tanggal Expired KTP');
+        $worksheet->setCellValue('Q4', 'SIM');
+        $worksheet->setCellValue('R4', 'Tanggal Expired SIM');
+        $worksheet->setCellValue('S4', 'BPJS Kesehatan');
+        $worksheet->setCellValue('T4', 'BPJS Ketenagakerjaan');
+        $worksheet->setCellValue('U4', 'NPWP');
+        $worksheet->setCellValue('V4', 'Bank');
+        $worksheet->setCellValue('W4', 'Bank Account');
+        $worksheet->setCellValue('X4', 'Employee Category');
+        $worksheet->setCellValue('Y4', 'Employment Type');
+        $worksheet->setCellValue('Z4', 'Department');
+        $worksheet->setCellValue('AA4', 'Ethnic Group');
+        $worksheet->setCellValue('AB4', 'Religion');
+        $worksheet->setCellValue('AC4', 'Blood Type');
+        $worksheet->setCellValue('AD4', 'Gender');
+        $worksheet->setCellValue('AE4', 'Marital Status');
+        $worksheet->setCellValue('AF4', 'No. Kartu Keluarga');
+        $worksheet->setCellValue('AG4', 'Nama Keluarga');
+        $worksheet->setCellValue('AH4', 'NIK Keluarga');
+        $worksheet->setCellValue('AI4', 'Status');
+        $worksheet->setCellValue('AJ4', 'PTKP');
+
+        $worksheet->getStyle('A4:AJ4')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle('A4:AJ4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        $counter = 5;
+        foreach ($employees as $i => $model) {
+
+            $worksheet->setCellValue("A{$counter}", CHtml::encode(CHtml::value($model, 'code')));
+            $worksheet->setCellValue("B{$counter}", CHtml::encode(CHtml::value($model, 'name')));
+            $worksheet->setCellValue("C{$counter}", CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($model, 'start_date')))));
+            $worksheet->setCellValue("D{$counter}", $model->permanent_start_date != NULL ? CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($model, 'permanent_start_date')))) : '');
+            $worksheet->setCellValue("E{$counter}", CHtml::encode(CHtml::value($model, 'company')));
+            $worksheet->setCellValue("F{$counter}", CHtml::encode(CHtml::value($model, 'cost_center')));
+            $worksheet->setCellValue("G{$counter}", $model->birth_place);
+            $worksheet->setCellValue("H{$counter}", CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($model, 'birth_date')))));
+            $worksheet->setCellValue("I{$counter}", CHtml::encode(CHtml::value($model, 'height')));
+            $worksheet->setCellValue("J{$counter}", CHtml::encode(CHtml::value($model, 'weight')));
+            $worksheet->setCellValue("K{$counter}", CHtml::encode(CHtml::value($model, 'residential_address')));
+            $worksheet->setCellValue("L{$counter}", CHtml::encode(CHtml::value($model, 'original_address')));
+            $worksheet->setCellValue("M{$counter}", CHtml::encode(CHtml::value($model, 'phone')));
+            $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($model, 'email')));
+            $worksheet->setCellValue("O{$counter}", CHtml::encode(CHtml::value($model, 'identity_number')));
+            $worksheet->setCellValue("P{$counter}", $model->identity_expired != NULL ? CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($model, 'identity_expired')))) : '');
+            $worksheet->setCellValue("Q{$counter}", CHtml::encode(CHtml::value($model, 'driver_license_number')));
+            $worksheet->setCellValue("R{$counter}", $model->driver_license_expired != NULL ? CHtml::encode(Yii::app()->dateFormatter->format('d MMMM yyyy', strtotime(CHtml::value($model, 'driver_license_expired')))) : '');
+            $worksheet->setCellValue("S{$counter}", CHtml::encode(CHtml::value($model, 'health_insurance_number')));
+            $worksheet->setCellValue("T{$counter}", CHtml::encode(CHtml::value($model, 'employment_insurance_number')));
+            $worksheet->setCellValue("U{$counter}", CHtml::encode(CHtml::value($model, 'personal_tax_number')));
+            $worksheet->setCellValue("V{$counter}", CHtml::encode(CHtml::value($model, 'bank_name')));
+            $worksheet->setCellValue("W{$counter}", CHtml::encode(CHtml::value($model, 'bank_account_number')));
+            $worksheet->setCellValue("X{$counter}", CHtml::encode(CHtml::value($model, 'employeeCategory.name')));
+            $worksheet->setCellValue("Y{$counter}", CHtml::encode(CHtml::value($model, 'employmentType.name')));
+            $worksheet->setCellValue("Z{$counter}", CHtml::encode(CHtml::value($model, 'department.name')));
+            $worksheet->setCellValue("AA{$counter}", CHtml::encode(CHtml::value($model, 'ethnicGroup.name')));
+            $worksheet->setCellValue("AB{$counter}", CHtml::encode(CHtml::value($model, 'religion.name')));
+            $worksheet->setCellValue("AC{$counter}", CHtml::encode(CHtml::value($model, 'bloodType.name')));
+            $worksheet->setCellValue("AD{$counter}", $model->is_female ? Employee::FEMALE_LITERAL : Employee::MALE_LITERAL);
+            $worksheet->setCellValue("AE{$counter}", $model->getMaritalStatus($model->marital_status));
+            $worksheet->setCellValue("AF{$counter}", CHtml::encode(CHtml::value($model, 'family_registration_number')));
+            $worksheet->setCellValue("AG{$counter}", CHtml::encode(CHtml::value($model, 'family_name')));
+            $worksheet->setCellValue("AH{$counter}", CHtml::encode(CHtml::value($model, 'nik_number')));
+            $worksheet->setCellValue("AI{$counter}", $model->getFamilyStatus($model->family_status));
+            $worksheet->setCellValue("AJ{$counter}", $model->getTaxStatus($model->tax_status));
+            $counter++;
+        }
+
+        for ($col = 'A'; $col !== 'AM'; $col++) {
+            $objPHPExcel->getActiveSheet()
+            ->getColumnDimension($col)
+            ->setAutoSize(true);
+        }
+
+        header('Content-Type: application/xls');
+        header('Content-Disposition: attachment;filename="Data Karyawan.xls"');
+        header('Cache-Control: max-age=0');
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+
+        Yii::app()->end();
+    }
+
+    public function actionUpload() {
+        spl_autoload_unregister(array('YiiBase', 'autoload'));
+        include_once Yii::getPathOfAlias('ext.phpexcel.Classes.PHPExcel') . DIRECTORY_SEPARATOR . 'IOFactory.php';
+        spl_autoload_register(array('YiiBase', 'autoload'));
+
+        $model = new ImportForm;
+
+        if (isset($_POST['ImportForm'])) {
+            $model->attributes = $_POST['ImportForm'];
+
+            $fileUpload = CUploadedFile::getInstance($model, 'file_excel');
+            $path = Yii::getPathOfAlias('webroot') . '/FileExcel/' . $fileUpload;
+            $fileUpload->saveAs($path);
+
+            if (!file_exists($path))
+                die('File could not be found at: ' . $path);
+
+            $objPHPExcel = PHPExcel_IOFactory::load($path);
+            $sheet = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+
+            $date = array();
+            $check_in = array();
+            $check_out = array();
+            $code = array();
+            $reasoning = array();
+            $memo = array();
+            $j = 0;
+            $count = 1;
+
+            foreach ($sheet as $row) {
+                if ($count > 1) {
+                    foreach ($row as $key => $val) {
+                        if ($key == 'A')
+                            $code[$j] = $row[$key];
+                        else if ($key == 'B')
+                            $date[$j] = $row[$key];
+                        else if ($key == 'C')
+                            $check_in[$j] = $row[$key];
+                        else if ($key == 'D')
+                            $check_out[$j] = $row[$key];
+                        else if ($key == 'E')
+                            $reasoning[$j] = $row[$key];
+                        else if ($key == 'F')
+                            $memo[$j] = $row[$key];
+                    }
+                    $j++;
+                }
+                $count++;
+            }
+
+            for ($i = 0; $i < $j; $i++) {
+
+                $employee = Employee::model()->findByAttributes(array('code' => $code[$i]));
+
+                if ($employee) {
+                    $timesheet = new EmployeeTimesheet();
+                    $timesheet->date = $date[$i];
+                    $timesheet->check_in_time = $check_in[$i];
+                    $timesheet->check_out_time = $check_out[$i];
+                    $timesheet->reasoning = $reasoning[$i];
+                    $timesheet->memo = $memo[$i];
+                    $timesheet->employee_id = $employee->id;
+
+                    $dbTransaction = Yii::app()->db->beginTransaction();
+                    try {
+                        $valid = $timesheet->save();
+
+                        if ($valid) {
+							Yii::app()->user->setFlash('message', 'Upload Successful.');
+							$dbTransaction->commit();
+						}
+                        else {
+                            Yii::app()->user->setFlash('error', 'Upload failed.');
+                            $dbTransaction->rollback();
+                        }
+                    } catch (Exception $e) {
+//                        Yii::app()->user->setFlash('error', 'Upload failed.');
+                        $dbTransaction->rollback();
+                    }
+                }
+            }
+//            unlink($path);
+        }
+
+        $this->render('upload', array('model' => $model));
+    }
+
+}

@@ -1,0 +1,390 @@
+<?php
+//$quotation as QuotationHeader model
+
+$this->breadcrumbs = array(
+    'Quotation' => array('/transaction/quotation/create'),
+    'View',
+);
+?>
+
+<style>
+    table
+    {
+        margin-bottom: 0px;
+    }
+</style>
+
+<h1><?php echo $this->id . '/' . $this->action->id; ?></h1>
+
+<?php if (Yii::app()->user->hasFlash('confirm')): ?>
+    <div class="flash-success">
+        <?php echo Yii::app()->user->getFlash('confirm'); ?>
+    </div>
+<?php endif; ?>
+
+<?php $this->widget('zii.widgets.CDetailView', array(
+    'data' => $quotation,
+    'attributes' => array(
+        array(
+            'label' => 'Penawaran #',
+            'value' => $quotation->getCodeNumber($quotation->cnConstant),
+        ),
+        array(
+            'label' => 'Tanggal',
+            'value' => Yii::app()->dateFormatter->format("d MMMM yyyy", $quotation->date),
+        ),
+        array(
+            'label' => 'Customer',
+            'value' => $quotation->customer->company,
+        ),
+        array(
+            'label' => 'Alamat Pusat',
+            'value' => $quotation->customer->address_main,
+        ),
+        array(
+            'label' => 'Alamat Kirim',
+            'value' => $quotation->customer->address_secondary,
+        ),
+        array(
+            'label' => 'Catatan',
+            'value' => $quotation->note,
+        ),
+        array(
+            'label' => 'Is Logo Printed',
+            'value' => ($quotation->is_logo_printed == 1) ? 'Yes' : 'No',
+        ),
+        array(
+            'label' => 'Time Created',
+            'value' => Yii::app()->dateFormatter->format('d MMMM yyyy, HH:mm:ss', $quotation->time_created)
+        ),
+        array(
+            'label' => 'PPN 11 %',
+            'value' => $quotation->isTaxStatus,
+        ),
+        array(
+            'label' => 'Delivery',
+            'value' => $quotation->delivery_period . ' hari PO diterima',
+        ),
+        array(
+            'label' => 'Payment',
+            'value' => $quotation->customer->invoice_due_days . ' setelah tukar faktur',
+        ),
+        array(
+            'label' => 'Valid',
+            'value' => $quotation->valid_period . ' hari',
+        ),
+        array(
+            'label' => 'Salesman',
+            'type' => 'raw',
+            'value' => CHtml::value($employeeSalesman, 'name'),
+        ),
+        array(
+            'label' => 'Pembuat',
+            'value' => CHtml::value($quotation, 'admin.name'),
+        ),
+    ),
+)); ?>
+<br />
+
+<?php if ($quotation->is_service == 0): ?> 
+
+    <h2>Product</h2>
+    <?php $this->widget('zii.widgets.grid.CGridView', array(
+        'id' => 'quotation-detail-product-grid',
+        'dataProvider' => $detailProductDataProvider,
+        'columns' => array(
+            array(
+                'header' => 'Job Number',
+                'value' => '$data->job_number'
+            ),
+            array(
+                'header' => 'GRADE',
+                'value' => '$data->product_name_request'
+            ),
+            array(
+                'header' => 'Kategori',
+                'value' => '$data->productCategory->name'
+            ),
+            array(
+                'header' => 'Tebal / Dmtr Permintaan',
+                'value' => 'number_format($data->height_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Lebar Permintaan',
+                'value' => '$data->product_category_id != 2 ? number_format($data->width_request, 2): ""',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Panjang Permintaan',
+                'value' => 'number_format($data->length_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Qty. Permintaan',
+                'value' => 'number_format($data->quantity_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'GRADE',
+                'value' => '$data->product_name_quote'
+            ),
+            array(
+                'header' => 'Tebal / Dmtr Penawaran',
+                'value' => 'number_format($data->height_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Lebar Penawaran',
+                'value' => '$data->product_category_id != 2 ? number_format($data->width_quote, 2): ""',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Panjang Penawaran',
+                'value' => 'number_format($data->length_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Qty. Penawaran',
+                'value' => 'number_format($data->quantity_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Berat',
+                'value' => 'number_format($data->weight, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'M',
+                'value' => '(CHtml::value($data, "is_miling") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'SM',
+                'value' => '(CHtml::value($data, "is_sidemiling") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'G',
+                'value' => '(CHtml::value($data, "is_grinding") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'HT',
+                'value' => '(CHtml::value($data, "is_hardness") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'NTD',
+                'value' => '(CHtml::value($data, "is_annelying") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'COA',
+                'value' => '(CHtml::value($data, "is_coating") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'Harga Satuan',
+                'value' => 'number_format($data->unit_price, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                )
+            ),
+            array(
+                'header' => 'Total',
+                'value' => 'number_format($data->getTotal(), 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                )
+            ),
+            array(
+                'header' => 'Sales Order',
+                'value' => '$data->getSaleHeaderNumber()',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                )
+            ),
+        ),
+    )); ?>
+    <br />
+
+<?php else: ?>
+
+    <h2>Service</h2>
+    <?php $this->widget('zii.widgets.grid.CGridView', array(
+        'id' => 'quotation-detail-service-grid',
+        'dataProvider' => $detailServiceDataProvider,
+        'columns' => array(
+            array(
+                'header' => 'Job Number',
+                'value' => '$data->job_number'
+            ),
+            array(
+                'header' => 'GRADE',
+                'value' => '$data->product_name'
+            ),
+            array(
+                'header' => 'Tebal Permintaan',
+                'value' => 'number_format($data->height_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Lebar Permintaan',
+                'value' => 'number_format($data->width_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Panjang Permintaan',
+                'value' => 'number_format($data->length_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Qty Permintaan',
+                'value' => 'number_format($data->quantity_request, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: center',
+                ),
+            ),
+            array(
+                'header' => 'Tebal Penawaran',
+                'value' => 'number_format($data->height_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Lebar Penawaran',
+                'value' => 'number_format($data->width_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Panjang Penawaran',
+                'value' => 'number_format($data->length_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Qty Penawaran',
+                'value' => 'number_format($data->quantity_quote, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: center',
+                ),
+            ),
+            array(
+                'header' => 'Berat',
+                'value' => 'number_format($data->weight, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'M',
+                'value' => '(CHtml::value($data, "is_miling") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'SM',
+                'value' => '(CHtml::value($data, "is_sidemiling") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'G',
+                'value' => '(CHtml::value($data, "is_grinding") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'HT',
+                'value' => '(CHtml::value($data, "is_hardness") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'NTD',
+                'value' => '(CHtml::value($data, "is_annelying") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'Cut',
+                'value' => '(CHtml::value($data, "is_sidemiling") == 1) ? "Yes" : ""',
+            ),
+            array(
+                'header' => 'Total',
+                'value' => 'number_format($data->getTotal(), 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                )
+            ),
+            array(
+                'header' => 'Sales Order',
+                'value' => '$data->getSaleHeaderNumber()',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                )
+            ),
+        )
+    )); ?>
+<?php endif; ?>
+<br />
+
+<table>
+    <tr style="background-color: skyblue">
+        <td style="font-weight: bold; width: 80%; text-align:right">Grand Total:</td>
+        <td style="text-align: right; font-weight: bold">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $quotation->grandTotal)); ?>
+        </td>
+    </tr>	
+</table>
+
+<br/>
+<?php if ((int)$quotation->is_inactive === 0): ?>
+    <div id="link">
+        <?php echo CHtml::link('Create', array('create')); ?>
+        <?php echo CHtml::link('Manage', array('admin')); ?>
+        <?php echo CHtml::link('Print', array('memo', 'id' => $quotation->id), array('target' => '_blank')); ?>
+    </div>
+
+    <br />
+
+    <?php if ((int)$quotation->is_confirmed === 0): ?>
+        <div>
+            <?php echo CHtml::beginForm(); ?>
+            <?php echo CHtml::submitButton('Confirm Quotation', array('name' => 'Submit')); ?>
+            <?php echo CHtml::endForm(); ?>
+        </div>
+    <?php endif; ?>
+<?php else: ?>
+    <div style="font-weight: bold; color: red">TRANSACTION IS CANCELLED</div>
+    <div>
+        Alasan pembatalan: 
+        <?php if ((int)$quotation->cancellation_remark === 0): ?>
+            <?php echo CHtml::beginForm(); ?>
+            <?php echo CHtml::activeDropDownList($quotation, 'cancellation_remark', array(
+                QuotationHeader::CANCEL_GRADE => QuotationHeader::CANCEL_GRADE_LITERAL, 
+                QuotationHeader::CANCEL_STOCK => QuotationHeader::CANCEL_STOCK_LITERAL, 
+                QuotationHeader::CANCEL_PRICE => QuotationHeader::CANCEL_PRICE_LITERAL, 
+                QuotationHeader::CANCEL_DELIVERY => QuotationHeader::CANCEL_DELIVERY_LITERAL, 
+                QuotationHeader::CANCEL_SUPPORT => QuotationHeader::CANCEL_SUPPORT_LITERAL
+            ), array('empty' => '-- N/A --')); ?>
+            <?php echo CHtml::submitButton('Record', array('name' => 'Record')); ?>
+            <?php echo CHtml::endForm(); ?>
+        <?php else: ?>
+            <?php echo CHtml::encode(CHtml::value($quotation, 'cancellationRemarkLiteral')); ?>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

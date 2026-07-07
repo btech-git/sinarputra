@@ -1,0 +1,27 @@
+<?php
+
+class ProductionMilingDetail extends ProductionMilingDetailBase
+{
+    public $productionPlanningQuantity; 
+    
+	public static function model($className = __CLASS__)
+	{
+		return parent::model($className);
+	}
+    
+    public function getTotalQuantityMilingControl() {
+        $total = 0;
+
+        foreach ($this->qualityControlMilingDetails as $detail) {
+            $total += $detail->quantity;
+        }
+
+        return $total;
+    }
+
+    public function getQuantityMilingControlRemaining() {
+
+        return $this->quantity - $this->quantity_quality_control;
+    }
+
+}
