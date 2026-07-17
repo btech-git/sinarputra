@@ -142,7 +142,7 @@ Yii::app()->clientScript->registerCss('memo', '
                 <?php if (isset($delivery->deliveryDetails[$i])): ?>
                     <?php $detail = $delivery->deliveryDetails[$i]; ?>
                     <?php $productId = CHtml::value($detail, 'cuttingDetailMaterial.receiveDetail.purchaseDetail.product.id'); ?>
-                    <tr class="titems">
+                    <tr class="titems" style="font-size: 14px">
                         <td style="text-align: center"><?php echo $i + 1; ?></td>
                         <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?></td>
                         <td>
