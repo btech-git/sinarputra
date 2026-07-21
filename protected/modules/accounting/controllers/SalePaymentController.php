@@ -89,8 +89,6 @@ class SalePaymentController extends Controller {
         $saleInvoice = Search::bind(new SaleInvoiceHeader('search'), isset($_GET['SaleInvoiceHeader']) ? $_GET['SaleInvoiceHeader'] : array());
         $saleInvoiceDataProvider = $saleInvoice->searchForSaleReceipt();
 
-        $customerId = isset($_GET['SalePaymentHeader']['customer_id']) ? $_GET['SalePaymentHeader']['customer_id'] : '';
-
         $saleInvoiceDataProvider->criteria->with = array(
             'workOrderCuttingHeader' => array(
                 'with' => array(
@@ -101,9 +99,9 @@ class SalePaymentController extends Controller {
             ),
         );
 
-        if (!empty($customerId)) {
+        if (!empty($salePayment->header->customer_id)) {
             $saleInvoiceDataProvider->criteria->addCondition("saleHeader.customer_id = :customer_id");
-            $saleInvoiceDataProvider->criteria->params[':customer_id'] = $customerId;
+            $saleInvoiceDataProvider->criteria->params[':customer_id'] = $salePayment->header->customer_id;
         }
         
         if (isset($_POST['Submit']) && IdempotentManager::check()) {

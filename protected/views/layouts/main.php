@@ -253,13 +253,13 @@
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleInvoiceCreate')): ?>
                                         <li><?php echo CHtml::link('Invoice Customer', array('/accounting/saleInvoice/workOrderList')); ?></li>
-                                        <li><?php echo CHtml::link('Invoice Manual', array('/accounting/manualSaleInvoice/create')); ?></li>
-                                        <li><?php echo CHtml::link('Penjualan Manual INV', array('/accounting/materialInvoice/create')); ?></li>
+                                        <li><?php echo CHtml::link('Invoice Manual', array('/accounting/manualSaleInvoice/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Penjualan Manual INV', array('/accounting/materialInvoice/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleReceiptCreate')): ?>
-                                        <li><?php echo CHtml::link('Tanda Terima Penjualan', array('/accounting/saleReceipt/create')); ?></li>
-                                        <li><?php echo CHtml::link('Tanda Terima Penjualan Manual', array('/accounting/manualSaleReceipt/create')); ?></li>
-                                        <li><?php echo CHtml::link('Tanda Terima Penjualan Manual 2', array('/accounting/materialReceipt/create')); ?></li>
+                                        <li><?php echo CHtml::link('Tanda Terima Penjualan', array('/accounting/saleReceipt/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Tanda Terima Penjualan Manual', array('/accounting/manualSaleReceipt/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Tanda Terima Penjualan Manual 2', array('/accounting/materialReceipt/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleInvoiceCreate')): ?>
                                         <li><?php echo CHtml::link('e-Faktur Invoice', array('/accounting/saleInvoice/admin')); ?></li>
@@ -269,13 +269,13 @@
                                         
                                     <li style="font-weight: bold; text-decoration: underline">PURCHASE</li>
                                     <?php if (Yii::app()->user->checkAccess('purchaseCreate')): ?>
-                                        <li><?php echo CHtml::link('Purchase Order Material', array('/transaction/purchase/create')); ?></li> 
+                                        <li><?php echo CHtml::link('Purchase Order Material', array('/transaction/purchase/admin')); ?></li> 
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchaseItemCreate')): ?>
-                                        <li><?php echo CHtml::link('PO Barang Penunjang', array('/transaction/purchaseItem/create')); ?></li> 
+                                        <li><?php echo CHtml::link('PO Barang Penunjang', array('/transaction/purchaseItem/admin')); ?></li> 
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('receiveItemCreate')): ?>
-                                        <li><?php echo CHtml::link('Penerimaan Barang Penunjang', array('/transaction/receiveItem/create')); ?></li> 
+                                        <li><?php echo CHtml::link('Penerimaan Barang Penunjang', array('/transaction/receiveItem/admin')); ?></li> 
                                     <?php endif; ?>                            
                                     <?php if (Yii::app()->user->checkAccess('accountingCreateMaster')): ?>
                                         <li><?php echo CHtml::link('Supplier', array('/admin/supplier/admin')); ?></li>
@@ -283,18 +283,18 @@
 
                                     <li style="font-weight: bold; text-decoration: underline">FINANCE</li>
                                     <?php if (Yii::app()->user->checkAccess('salePaymentCreate')): ?>
-                                        <li><?php echo CHtml::link('Pelunasan Customer', array('/accounting/salePayment/create')); ?></li>
-                                        <li><?php echo CHtml::link('Pelunasan Manual', array('/accounting/manualSalePayment/create')); ?></li>
-                                        <li><?php echo CHtml::link('Pelunasan Manual 2', array('/accounting/materialPayment/create')); ?></li>
+                                        <li><?php echo CHtml::link('Pelunasan Customer', array('/accounting/salePayment/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Pelunasan Manual', array('/accounting/manualSalePayment/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Pelunasan Manual 2', array('/accounting/materialPayment/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchaseInvoiceCreate')): ?>
                                         <li><?php echo CHtml::link('Invoice Supplier', array('/accounting/purchaseInvoice/receiveList')); ?></li> 
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchaseReceiptCreate')): ?>
-                                        <li><?php echo CHtml::link('Tanda Terima Pembelian', array('/accounting/purchaseReceipt/create')); ?></li> 
+                                        <li><?php echo CHtml::link('Tanda Terima Pembelian', array('/accounting/purchaseReceipt/admin')); ?></li> 
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchasePaymentCreate')): ?>
-                                        <li><?php echo CHtml::link('Pelunasan Supplier', array('/accounting/purchasePayment/create')); ?></li> 
+                                        <li><?php echo CHtml::link('Pelunasan Supplier', array('/accounting/purchasePayment/admin')); ?></li> 
                                     <?php endif; ?>
 
                                     <li style="font-weight: bold; text-decoration: underline">GENERAL</li>
@@ -303,13 +303,13 @@
                                         <li><?php echo CHtml::link('Gudang', array('/admin/warehouse/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('expenseCreate')): ?>
-                                        <li><?php echo CHtml::link('Pengeluaran Kas / Bank', array('/accounting/expense/create')); ?></li>
+                                        <li><?php echo CHtml::link('Pengeluaran Kas / Bank', array('/accounting/expense/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('depositCreate')): ?>
-                                        <li><?php echo CHtml::link('Penerimaan Kas / Bank', array('/accounting/deposit/create')); ?></li>
+                                        <li><?php echo CHtml::link('Penerimaan Kas / Bank', array('/accounting/deposit/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('journalVoucherCreate')): ?>
-                                        <li><?php echo CHtml::link('Jurnal Umum', array('/accounting/journalVoucher/create')); ?></li>
+                                        <li><?php echo CHtml::link('Jurnal Umum', array('/accounting/journalVoucher/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster')): ?>
                                         <li><?php echo CHtml::link('Item', array('/admin/item/admin')); ?></li>
