@@ -2,9 +2,6 @@
 
 class ReceiveDetail extends ReceiveDetailBase {
 
-    //custom attributes for searching
-//    public $productId;
-
     const PRIMARY_CONSTANT = 'LBR';
     const ROUND_CONSTANT = 'RND';
 
@@ -62,8 +59,6 @@ class ReceiveDetail extends ReceiveDetailBase {
         $criteria->compare('t.weight', $this->weight, true);
         $criteria->compare('t.serial_number', $this->serial_number);
         $criteria->compare('t.product_category_id', $this->product_category_id);
-//        $criteria->compare('t.receive_header_id', $this->receive_header_id);
-//        $criteria->compare('t.purchase_detail_id', $this->purchase_detail_id);
         $criteria->compare('t.location_id', $this->location_id);
         $criteria->compare('t.is_inactive', $this->is_inactive);
 
@@ -79,7 +74,7 @@ class ReceiveDetail extends ReceiveDetailBase {
                 SELECT receive_detail_id 
                 FROM " . WorkOrderCuttingDetailMaterial::model()->tableName() . "  
                 WHERE t.id = receive_detail_id AND is_inactive = 0
-        ) AND t.id > 333840 AND t.location_id NOT IN (119) AND t.length > 0.00 AND t.is_inactive = 0");
+        ) AND t.id > 538440 AND t.location_id NOT IN (119) AND t.length > 0.00 AND t.is_inactive = 0");
 
         $criteria->compare('t.id', $this->id);
         $criteria->compare('t.product_name', $this->product_name, true);

@@ -22,14 +22,15 @@ class WorkOrderCuttingDetailMaterial extends WorkOrderCuttingDetailMaterialBase 
         $serialConstant = '';
         $detailTransaction = empty($this->receive_detail_id) ? $this->workOrderCuttingDetailMaterial : $this->receiveDetail;
 
-        if ($this->product_category_id == 1)
+        if ($this->product_category_id == 1) {
             $serialConstant = self::PRIMARY_CONSTANT;
-        else if ($this->product_category_id == 2)
+        } else if ($this->product_category_id == 2) {
             $serialConstant = self::ROUND_CONSTANT;
-        else if ($this->product_category_id == 3)
+        } else if ($this->product_category_id == 3) {
             $serialConstant = self::OFFCUT_CONSTANT;
-        else if ($this->product_category_id == 4)
+        } else if ($this->product_category_id == 4) {
             $serialConstant = self::OTHER_CONSTANT;
+        }
 
         return empty($detailTransaction) ? '' : sprintf($serialConstant . '%04d-%02d', $detailTransaction->serial_number, $this->serial_number);
     }
@@ -37,10 +38,11 @@ class WorkOrderCuttingDetailMaterial extends WorkOrderCuttingDetailMaterialBase 
     public function getMaterialTypeValue() {
         $type = '';
 
-        if ($this->material_type == 0)
+        if ($this->material_type == 0) {
             $type = self::REMAINING_LITERAL;
-        else if ($this->material_type == 1)
-            $type = self::SLICE_LITERAL;
+        } else if ($this->material_type == 1) {
+                $type = self::SLICE_LITERAL;
+        }
 
         return $type;
     }
@@ -103,7 +105,7 @@ class WorkOrderCuttingDetailMaterial extends WorkOrderCuttingDetailMaterialBase 
             SELECT work_order_cutting_detail_material_id 
             FROM " . WorkOrderCuttingDetailMaterial::model()->tableName() . "  
             WHERE t.id = work_order_cutting_detail_material_id AND is_inactive = 0
-        ) AND t.length > 0.00 AND t.location_id NOT IN (119) AND t.id > 643545 AND t.is_inactive = 0");
+        ) AND t.length > 0.00 AND t.location_id NOT IN (119) AND t.id > 858176 AND t.is_inactive = 0");
 
         $criteria->compare('t.id', $this->id);
         $criteria->compare('t.product_category_id', $this->product_category_id);
@@ -113,7 +115,6 @@ class WorkOrderCuttingDetailMaterial extends WorkOrderCuttingDetailMaterialBase 
         $criteria->compare('t.width', $this->width);
         $criteria->compare('t.height', $this->height);
         $criteria->compare('t.weight', $this->weight, true);
-//		$criteria->compare('t.work_order_cutting_detail_id', $this->work_order_cutting_detail_id);
         $criteria->compare('t.work_order_cutting_detail_material_id', $this->work_order_cutting_detail_material_id);
         $criteria->compare('t.receive_detail_id', $this->receive_detail_id);
         $criteria->compare('t.location_id', $this->location_id);

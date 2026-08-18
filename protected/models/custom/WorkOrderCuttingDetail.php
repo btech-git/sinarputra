@@ -46,22 +46,23 @@ class WorkOrderCuttingDetail extends WorkOrderCuttingDetailBase {
     }
     
     public function getWorkOrderStatus() {
-        if ($this->is_external_order)
+        if ($this->is_external_order) {
             return $this->getExternalOrderStatus();
-        elseif ($this->saleDetail->quotation_detail_product_id === NULL)
+        } elseif ($this->saleDetail->quotation_detail_product_id === NULL) {
             return 'Jasa Potong';
-        elseif ($this->is_delivery)
+        } elseif ($this->is_delivery) {
             return $this->getDeliveryStatus();
-        else
+        } else {
             return $this->getCuttingStatus();
+        }
     }
 
     public function searchForProductionPlanningMiling() {
         $dataProvider = $this->search();
         $dataProvider->criteria->addCondition("t.id NOT IN (
-			SELECT work_order_cutting_detail_id 
+            SELECT work_order_cutting_detail_id 
             FROM " . ProductionPlanningMilingDetail::model()->tableName() . "
-		) AND (t.is_miling = 1 OR t.is_sidemiling = 1 OR t.is_grinding = 1)");
+        ) AND (t.is_miling = 1 OR t.is_sidemiling = 1 OR t.is_grinding = 1)");
         $dataProvider->criteria->compare('t.is_inactive', 0);
 
         return $dataProvider;
@@ -70,7 +71,7 @@ class WorkOrderCuttingDetail extends WorkOrderCuttingDetailBase {
     public function searchForPurchase() {
         $dataProvider = $this->search();
         $dataProvider->criteria->addCondition("t.id NOT IN (
-			SELECT work_order_cutting_detail_id 
+            SELECT work_order_cutting_detail_id 
             FROM " . PurchaseDetail::model()->tableName() . " purchase
             WHERE purchase.is_inactive = 0 AND t.id = work_order_cutting_detail_id
         )");
@@ -83,8 +84,9 @@ class WorkOrderCuttingDetail extends WorkOrderCuttingDetailBase {
     public function getTotalQuantityCuttingQualityControl() {
         $total = 0;
 
-        foreach ($this->qualityControlCuttingDetails as $detail)
+        foreach ($this->qualityControlCuttingDetails as $detail) {
             $total += $detail->quantity;
+        }
 
         return $total;
     }
@@ -97,8 +99,9 @@ class WorkOrderCuttingDetail extends WorkOrderCuttingDetailBase {
     public function getTotalQuantityMilingQualityControl() {
         $total = 0;
 
-        foreach ($this->qualityControlMilingDetails as $detail)
+        foreach ($this->qualityControlMilingDetails as $detail) {
             $total += $detail->quantity;
+        }
 
         return $total;
     }
@@ -111,8 +114,9 @@ class WorkOrderCuttingDetail extends WorkOrderCuttingDetailBase {
     public function getTotalQuantityProductionPlanningCutting() {
         $total = 0;
 
-        foreach ($this->productionPlanningCuttingDetails as $detail)
+        foreach ($this->productionPlanningCuttingDetails as $detail) {
             $total += $detail->quantity;
+        }
 
         return $total;
     }
