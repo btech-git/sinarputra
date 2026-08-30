@@ -293,7 +293,7 @@
         <?php echo CHtml::textField('Width', '', array('placeholder' => 'Lebar', 'size' => 5, 'maxLength' => 10)); ?>
         <?php echo CHtml::textField('Length', '', array('placeholder' => 'Panjang', 'size' => 5, 'maxLength' => 10)); ?>
         <?php echo CHtml::textField('WeightPacking', '', array('placeholder' => 'Packing List (kg)', 'size' => 12, 'maxLength' => 10)); ?>
-        <?php echo CHtml::dropDownList('LocationId', '', CHtml::listData(Location::model()->findAll(), 'id', 'name'), array(
+        <?php echo CHtml::dropDownList('LocationId', '', CHtml::listData(Location::model()->findAll(array('order' => 't.name ASC')), 'id', 'name'), array(
             'empty' => '-Select Location-'
         )); ?>
         <?php echo CHtml::textField('Memo', '', array('placeholder' => 'Memo', 'size' => 35)); ?>

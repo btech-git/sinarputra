@@ -52,6 +52,7 @@ $this->widget('zii.widgets.CDetailView', array(
     ),
 ));
 ?>
+
 <br />
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -100,11 +101,11 @@ $this->widget('zii.widgets.CDetailView', array(
         ),
         array(
             'header' => 'Mesin',
-            'value' => '$data->machine->fullSpecification',
+            'value' => 'CHtml::encode(CHtml::value($data, "machine.fullSpecification"))',
         ),
         array(
             'header' => 'Operator',
-            'value' => '$data->employee->nameAndGroup',
+            'value' => 'CHtml::encode(CHtml::value($data, "employee.nameAndGroup"))',
         ),
         array(
             'header' => 'Jam Mulai',

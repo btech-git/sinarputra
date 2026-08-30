@@ -8,7 +8,7 @@
         <th colspan="3">&nbsp;</th>
         <th colspan="3" style="text-align: center; border-left: 1px solid; border-right: 1px solid">Awal</th>
         <th colspan="3" style="text-align: center; border-left: 1px solid; border-right: 1px solid">Finish</th>
-        <th colspan=<?php echo ((int)$model->header->saleHeader->is_service == 1) ? "12" : "11";?>>&nbsp;</th>
+        <th colspan=<?php echo ((int)$model->header->saleHeader->is_service == 1) ? "13" : "12";?>>&nbsp;</th>
     </tr>
 
     <tr style="background-color: skyblue">
@@ -166,7 +166,8 @@
             
             <td style="text-align: center;">
                 <?php echo CHtml::activeDropDownList($detail, "[$i]employee_id", CHtml::listData(Employee::model()->findAll(array(
-                    'condition' => 't.division_id = 9 AND t.is_inactive = 0'
+                    'condition' => 't.division_id = 9 AND t.is_inactive = 0',
+                    'order' => 't.name ASC',
                 )), 'id', 'nameAndGroup'), array(
                     'empty' => '-Pilih MH-'
                 )); ?>

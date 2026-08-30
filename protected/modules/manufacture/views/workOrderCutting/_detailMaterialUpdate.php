@@ -107,7 +107,7 @@
 
 
             <td style="text-align: center;"><!--location-->
-                <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(), 'id', 'name'), array(
+                <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(array('order' => 't.name ASC')), 'id', 'name'), array(
                     'empty' => '-Location-'
                 )); ?>
                 <?php echo CHtml::error($detail, 'location_id'); ?>

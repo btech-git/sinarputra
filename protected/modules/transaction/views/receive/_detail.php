@@ -86,7 +86,7 @@
                 </td>
 
                 <td style="text-align: center">
-                    <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(), 'id', 'name'), array(
+                    <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(array('order' => 't.name ASC')), 'id', 'name'), array(
                         'empty' => '-Select Location-'
                     )); ?>
                     <?php echo CHtml::error($detail, 'location_id'); ?>
@@ -219,7 +219,7 @@
                         <?php echo CHtml::activeHiddenField($detail, "[$i]location_id"); ?>
                         <?php echo CHtml::encode(CHtml::value($detail, 'location.name')); ?>
                     <?php else: ?> 
-                        <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(), 'id', 'name'), array(
+                        <?php echo CHtml::activeDropDownList($detail, "[$i]location_id", CHtml::listData(Location::model()->findAll(array('order' => 't.name ASC')), 'id', 'name'), array(
                             'empty' => '-Select Location-'
                         )); ?>
                     <?php endif; ?>

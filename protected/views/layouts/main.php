@@ -250,6 +250,7 @@
                                     <?php if (Yii::app()->user->checkAccess('deliveryCreate')): ?>
                                         <li><?php echo CHtml::link('Surat Jalan', array('/transaction/delivery/qualityControlList')); ?></li>
                                         <li><?php echo CHtml::link('SJ Manual', array('/transaction/manualDelivery/workOrderList')); ?></li>
+                                        <li><?php echo CHtml::link('SJ Manual 2', array('/transaction/deliveryBackup/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleInvoiceCreate')): ?>
                                         <li><?php echo CHtml::link('Invoice Customer', array('/accounting/saleInvoice/workOrderList')); ?></li>
