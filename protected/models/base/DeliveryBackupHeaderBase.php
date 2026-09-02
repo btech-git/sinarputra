@@ -17,6 +17,8 @@
  * @property integer $admin_id_updated
  * @property string $updated_datetime
  * @property integer $is_inactive
+ * @property string $purchase_order_number
+ * @property string $work_order_number
  *
  * @property DeliveryBackupDetail[] $deliveryBackupDetails
  * @property Customer $customer
@@ -36,9 +38,10 @@ class DeliveryBackupHeaderBase extends MonthlyTransactionActiveRecord {
             array('cn_ordinal, cn_month, cn_year, transaction_date, customer_id, admin_id, created_datetime', 'required'),
             array('cn_ordinal, cn_month, cn_year, employee_id_driver, customer_id, warehouse_id, admin_id, admin_id_updated, is_inactive', 'numerical', 'integerOnly' => true),
             array('customer_city', 'length', 'max' => 60),
+            array('purchase_order_number, work_order_number', 'length', 'max' => 20),
             array('customer_address, note, updated_datetime', 'safe'),
             // The following rule is used by search().
-            array('id, cn_ordinal, cn_month, cn_year, transaction_date, customer_address, customer_city, employee_id_driver, note, customer_id, warehouse_id, admin_id, created_datetime, admin_id_updated, updated_datetime, is_inactive', 'safe', 'on' => 'search'),
+            array('id, cn_ordinal, cn_month, cn_year, transaction_date, customer_address, customer_city, employee_id_driver, note, customer_id, warehouse_id, admin_id, created_datetime, admin_id_updated, updated_datetime, is_inactive, purchase_order_number, work_order_number', 'safe', 'on' => 'search'),
         );
     }
 
@@ -71,6 +74,8 @@ class DeliveryBackupHeaderBase extends MonthlyTransactionActiveRecord {
             'admin_id_updated' => 'Admin Id Updated',
             'updated_datetime' => 'Updated Datetime',
             'is_inactive' => 'Is Inactive',
+            'purchase_order_number' => 'Purchase Order Number',
+            'work_order_number' => 'Work Order Number',
         );
     }
 
@@ -93,13 +98,11 @@ class DeliveryBackupHeaderBase extends MonthlyTransactionActiveRecord {
         $criteria->compare('t.admin_id_updated', $this->admin_id_updated);
         $criteria->compare('t.updated_datetime', $this->updated_datetime, true);
         $criteria->compare('t.is_inactive', $this->is_inactive);
+        $criteria->compare('t.purchase_order_number', $this->purchase_order_number, true);
+        $criteria->compare('t.work_order_number', $this->work_order_number, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => 100,
-            ),
         ));
     }
-
 }

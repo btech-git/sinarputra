@@ -85,13 +85,20 @@ Yii::app()->clientScript->registerCss('memo', '
                 </td>
             </tr>
             <tr>
-                <td style="border-left: 2px solid;" colspan="3">
+                <td style="border-left: 2px solid; vertical-align: top" colspan="3" rowspan="2">
                     <?php echo nl2br(CHtml::encode(CHtml::value($deliveryBackup, 'customer_address'))); ?>
                 </td>
                 <td style="border-left: 2px solid;">No. Purchase Order</td>
                 <td>:</td>
                 <td style="border-right: 2px solid;">
-                    <?php //echo CHtml::encode(CHtml::value($deliveryBackup, 'workOrderCuttingHeader.saleHeader.customer_order_number')); ?>
+                    <?php echo CHtml::encode(CHtml::value($deliveryBackup, 'purchase_order_number')); ?>
+                </td>
+            </tr>
+            <tr>
+                <td style="border-left: 2px solid;">No. SPK</td>
+                <td>:</td>
+                <td style="border-right: 2px solid;">
+                    <?php echo CHtml::encode(CHtml::value($deliveryBackup, 'work_order_number')); ?>
                 </td>
             </tr>
             <tr>

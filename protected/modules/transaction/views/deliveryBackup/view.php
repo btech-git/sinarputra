@@ -34,6 +34,14 @@ $this->breadcrumbs = array(
                 'value' => CHtml::encode(CHtml::value($deliveryBackup, 'customer_city')),
             ),
             array(
+                'label' => 'PO #',
+                'value' => CHtml::encode(CHtml::value($deliveryBackup, 'purchase_order_number')),
+            ),
+            array(
+                'label' => 'SPK #',
+                'value' => CHtml::encode(CHtml::value($deliveryBackup, 'work_order_number')),
+            ),
+            array(
                 'label' => 'Sopir',
                 'value' => CHtml::encode(CHtml::value($deliveryBackup, 'employeeIdDriver.name')),
             ),

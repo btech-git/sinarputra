@@ -12,18 +12,23 @@ class CustomerController extends CrudController {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!Yii::app()->user->checkAccess('accountingCreateMaster'))
+            if (!Yii::app()->user->checkAccess('accountingCreateMaster')) {
                 $this->redirect(array('/site/login'));
+            }
         } 
         if ($filterChain->action->id === 'update' || $filterChain->action->id === 'delete') {
-            if (!Yii::app()->user->checkAccess('accountingEditMaster'))
-                $this->redirect(array('/site/login'));            
+            if (!Yii::app()->user->checkAccess('accountingEditMaster')) {
+                $this->redirect(array('/site/login'));
+            }
         } 
         if ($filterChain->action->id === 'view' || $filterChain->action->id === 'admin') {
-            if (!(Yii::app()->user->checkAccess('accountingCreateMaster') || 
-            Yii::app()->user->checkAccess('accountingEditMaster') || 
-            Yii::app()->user->checkAccess('accountingViewMaster')))
-                $this->redirect(array('/site/login'));            
+            if (!(
+                Yii::app()->user->checkAccess('accountingCreateMaster') || 
+                Yii::app()->user->checkAccess('accountingEditMaster') || 
+                Yii::app()->user->checkAccess('accountingViewMaster')
+            )) {
+                $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -61,8 +66,9 @@ class CustomerController extends CrudController {
 
         if (isset($_POST['Customer'])) {
             $model->attributes = $_POST['Customer'];
-            if ($model->validateCreditLimit() && $model->save())
+            if ($model->validateCreditLimit() && $model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('update', array(
@@ -74,15 +80,17 @@ class CustomerController extends CrudController {
         if (Yii::app()->request->isPostRequest) {
             $this->loadModel($id)->delete();
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionIndex() {
         $dataProvider = new CActiveDataProvider('Customer');
+        
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -91,11 +99,14 @@ class CustomerController extends CrudController {
     public function actionAdmin() {
         $model = new Customer('search');
         $model->unsetAttributes();
-        if (isset($_GET['Customer']))
-            $model->attributes = $_GET['Customer'];
         
-        if (isset($_POST['SaveToExcel'])) 
+        if (isset($_GET['Customer'])) {
+            $model->attributes = $_GET['Customer'];
+        }
+        
+        if (isset($_POST['SaveToExcel'])) {
             $this->saveToExcel();
+        }
 
         $this->render('admin', array(
             'model' => $model,
@@ -104,8 +115,11 @@ class CustomerController extends CrudController {
 
     public function loadModel($id) {
         $model = Customer::model()->findByPk($id);
-        if ($model === null)
+        
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
     
@@ -130,39 +144,38 @@ class CustomerController extends CrudController {
         $worksheet = $objPHPExcel->setActiveSheetIndex(0);
         $worksheet->setTitle('Master Customer');
 
-        $worksheet->mergeCells('A1:O1');
-        $worksheet->mergeCells('A2:O2');
-        $worksheet->mergeCells('A3:O3');
-        //$worksheet->mergeCells('A4:O4');
-        $worksheet->getStyle('A1:O4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle('A1:O3')->getFont()->setBold(true);
+        $worksheet->mergeCells('A1:P1');
+        $worksheet->mergeCells('A2:P2');
+        $worksheet->mergeCells('A3:P3');
+
+        $worksheet->getStyle('A1:P5')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A1:P5')->getFont()->setBold(true);
+        
         $worksheet->setCellValue('A1', 'Sinar Putra Metalindo');
         $worksheet->setCellValue('A2', 'Master Customer');
 
-        $worksheet->mergeCells('A4:O4');
+        $worksheet->getStyle("A5:O5")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle("A5:O5")->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+        $worksheet->getStyle('A5:O5')->getFont()->setBold(true);
 
-        $worksheet->getStyle("A6:O6")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
-        $worksheet->getStyle("A6:O6")->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
-
-        $worksheet->getStyle('A6:O6')->getFont()->setBold(true);
-
-        $worksheet->setCellValue('A6', 'Code');
-        $worksheet->setCellValue('B6', 'Name');
-        $worksheet->setCellValue('C6', 'Company');
-        $worksheet->setCellValue('D6', 'Address');
-        $worksheet->setCellValue('E6', 'Phone');
-        $worksheet->setCellValue('F6', 'Note');
-        $worksheet->setCellValue('G6', 'TOP');
-        $worksheet->setCellValue('H6', 'Kredit Limit');
-        $worksheet->setCellValue('I6', 'NPWP');
-        $worksheet->setCellValue('J6', 'Pajak Atas Nama');
-        $worksheet->setCellValue('K6', 'Alamat Pajak');
-        $worksheet->setCellValue('L6', 'Kategori');
-        $worksheet->setCellValue('M6', 'Salesman');
-        $worksheet->setCellValue('N6', 'PPN/Non');
-        $worksheet->setCellValue('O6', 'Status');
+        $worksheet->setCellValue('A5', 'Code');
+        $worksheet->setCellValue('B5', 'Name');
+        $worksheet->setCellValue('C5', 'Company');
+        $worksheet->setCellValue('D5', 'Address');
+        $worksheet->setCellValue('E5', 'Phone');
+        $worksheet->setCellValue('F5', 'Note');
+        $worksheet->setCellValue('G5', 'TOP');
+        $worksheet->setCellValue('H5', 'Kredit Limit');
+        $worksheet->setCellValue('I5', 'Sisa Limit');
+        $worksheet->setCellValue('J5', 'NPWP');
+        $worksheet->setCellValue('K5', 'Pajak Atas Nama');
+        $worksheet->setCellValue('L5', 'Alamat Pajak');
+        $worksheet->setCellValue('M5', 'Kategori');
+        $worksheet->setCellValue('N5', 'Salesman');
+        $worksheet->setCellValue('O5', 'PPN/Non');
+        $worksheet->setCellValue('P5', 'Status');
         
-        $counter = 7;
+        $counter = 6;
 
         foreach ($customers as $customer) {
             $worksheet->setCellValue("A{$counter}", CHtml::encode($customer->code));
@@ -173,20 +186,19 @@ class CustomerController extends CrudController {
             $worksheet->setCellValue("F{$counter}", CHtml::encode(CHtml::value($customer, 'note')));
             $worksheet->setCellValue("G{$counter}", CHtml::encode(CHtml::value($customer, 'invoice_due_days')));
             $worksheet->setCellValue("H{$counter}", CHtml::encode(CHtml::value($customer, 'credit_limit')));
-            $worksheet->setCellValue("I{$counter}", CHtml::encode(CHtml::value($customer, 'tax_registration_number')));
-            $worksheet->setCellValue("J{$counter}", CHtml::encode(CHtml::value($customer, 'tax_name')));
-            $worksheet->setCellValue("K{$counter}", CHtml::encode(CHtml::value($customer, 'completeTaxAddress')));
-            $worksheet->setCellValue("L{$counter}", CHtml::encode(CHtml::value($customer, 'customerType')));
-            $worksheet->setCellValue("M{$counter}", CHtml::encode(CHtml::value($customer, 'employee.name')));
-            $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($customer, 'taxStatus')));
-            $worksheet->setCellValue("O{$counter}", CHtml::encode(CHtml::value($customer, 'status')));
+            $worksheet->setCellValue("I{$counter}", CHtml::encode(CHtml::value($customer, 'remainingCreditLimit')));
+            $worksheet->setCellValue("J{$counter}", CHtml::encode(CHtml::value($customer, 'tax_registration_number')));
+            $worksheet->setCellValue("K{$counter}", CHtml::encode(CHtml::value($customer, 'tax_name')));
+            $worksheet->setCellValue("L{$counter}", CHtml::encode(CHtml::value($customer, 'completeTaxAddress')));
+            $worksheet->setCellValue("M{$counter}", CHtml::encode(CHtml::value($customer, 'customerType')));
+            $worksheet->setCellValue("N{$counter}", CHtml::encode(CHtml::value($customer, 'employee.name')));
+            $worksheet->setCellValue("O{$counter}", CHtml::encode(CHtml::value($customer, 'taxStatus')));
+            $worksheet->setCellValue("P{$counter}", CHtml::encode(CHtml::value($customer, 'status')));
 
             $counter ++;
         }
 
-        $counter ++;
-
-        for ($col = 'A'; $col !== 'N'; $col++) {
+        for ($col = 'A'; $col !== 'Z'; $col++) {
             $objPHPExcel->getActiveSheet()
                 ->getColumnDimension($col)
                 ->setAutoSize(true);

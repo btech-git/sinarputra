@@ -33,6 +33,12 @@
             </div>
 
             <div class="row">
+                <?php echo CHtml::label('PO #', ''); ?>
+                <?php echo CHtml::activeTextField($deliveryBackup->header, 'purchase_order_number'); ?>
+                <?php echo CHtml::error($deliveryBackup->header, 'purchase_order_number'); ?>
+            </div>
+
+            <div class="row">
                 <?php echo CHtml::label('Catatan', ''); ?>
                 <?php echo CHtml::activeTextArea($deliveryBackup->header, 'note', array(
                     'rows' => 5, 
@@ -125,6 +131,12 @@
                     'Cengkareng' => 'Cengkareng', 
                 ), array('empty' => '-- Pilih Kota --')); ?>
                 <?php echo CHtml::error($deliveryBackup->header, 'customer_city'); ?>
+            </div>
+
+            <div class="row">
+                <?php echo CHtml::label('SPK #', ''); ?>
+                <?php echo CHtml::activeTextField($deliveryBackup->header, 'work_order_number'); ?>
+                <?php echo CHtml::error($deliveryBackup->header, 'work_order_number'); ?>
             </div>
 
             <div class="row">
