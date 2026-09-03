@@ -5,5 +5,5 @@ return array (
   'modelPath' => 'application.models',
   'baseClass' => 'ActiveRecord',
   'buildRelations' => '1',
-  'buildCustom' => '0',
+  'buildCustom' => '1',
 );

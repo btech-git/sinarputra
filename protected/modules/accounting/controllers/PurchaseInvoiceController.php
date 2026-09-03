@@ -10,20 +10,23 @@ class PurchaseInvoiceController extends Controller {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('purchaseInvoiceCreate')))
+            if (!(Yii::app()->user->checkAccess('purchaseInvoiceCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('purchaseInvoiceEdit')))
+            if (!(Yii::app()->user->checkAccess('purchaseInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         
         if ($filterChain->action->id === 'admin'
                 || $filterChain->action->id === 'memo'
                 || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('purchaseInvoiceCreate') || Yii::app()->user->checkAccess('purchaseInoviceEdit')))
+            if (!(Yii::app()->user->checkAccess('purchaseInvoiceCreate') || Yii::app()->user->checkAccess('purchaseInoviceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -34,8 +37,9 @@ class PurchaseInvoiceController extends Controller {
             $model = new PurchaseInvoice();
         } else {
             $model = PurchaseInvoice::model()->findByPk($id);
-            if ($model === null)
+            if ($model === null) {
                 throw new CHttpException(404, 'The requested page does not exist.');
+            }
         }
 
         return $model;
@@ -132,6 +136,28 @@ class PurchaseInvoiceController extends Controller {
             $model->grand_total = $model->grandTotal;
             
             if ($model->save(Yii::app()->db)) {
+                PayableLedger::model()->deleteAllByAttributes(array(
+                    'transaction_number' => $model->getCodeNumber(PurchaseInvoiceHeader::CN_CONSTANT),
+                ));
+
+                if (!empty($model->receive_item_header_id)) {
+                    $transactionNumber = $model->receiveItemHeader->purchaseItemHeader->is_tax ? $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT_TAX) : $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT_NON_TAX);
+                } else {
+                    $transactionNumber = $model->receiveHeader->purchaseHeader->is_tax ? $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT_TAX) : $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT_NON_TAX);
+                }
+                
+                $payableLedger = new PayableLedger();
+                $payableLedger->transaction_number = $transactionNumber;
+                $payableLedger->transaction_date = $model->date; 
+                $payableLedger->note = $model->note;
+                $payableLedger->memo = $model->supplier_document_number . ' - ' . $model->supplier_invoice_tax_number;
+                $payableLedger->debit = '0.00';
+                $payableLedger->credit = $model->grand_total;
+                $payableLedger->supplier_id = $model->supplier_id;
+                $payableLedger->admin_id = Yii::app()->user->id;
+                $payableLedger->posting_datetime = date('Y-m-d H:i:s');
+                $payableLedger->save(false);
+
                 /*JournalAccounting::model()->deleteAllByAttributes(array(
                     'transaction_number' => $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT),
                     'transaction_type' => AccountingJournalHelper::PURCHASE_INVOICE,

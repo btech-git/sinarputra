@@ -17,15 +17,14 @@ class PurchasePaymentComponent extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($header !== null)
+        if ($header !== null) {
             $this->header->setCodeNumber($header->cn_ordinal, $header->cn_month, $header->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
 
     public function addDetail($id) {
-//		$this->details[] = new PurchasePaymentDetail();
-
         $account = Account::model()->findByPk($id);
 
         if ($account !== null) {
@@ -37,9 +36,9 @@ class PurchasePaymentComponent extends CComponent {
                 }
             }
 
-            if ($exist)
+            if ($exist) {
                 $this->details[$i]->amount++;
-            else {
+            } else {
                 $detail = new PurchasePaymentDetail();
                 $detail->account_id = $account->id;
                 $this->details[] = $detail;
@@ -86,20 +85,20 @@ class PurchasePaymentComponent extends CComponent {
 
     public function validate() {
         $valid = $this->header->validate();
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Header Error');
-
+        }
+        
         $valid = $this->validateDetailsCount() && $valid;
-//		$valid = $this->validateDetailsUnique() && $valid;
 
         if (count($this->details) > 0) {
             foreach ($this->details as $detail) {
                 $fields = array('amount', 'account_id', 'payment_type_id');
                 $valid = $detail->validate($fields) && $valid;
             }
-        }
-        else
+        } else {
             $valid = false;
+        }
 
         return $valid;
     }
@@ -110,11 +109,16 @@ class PurchasePaymentComponent extends CComponent {
             'transaction_type' => AccountingJournalHelper::PURCHASE_PAYMENT,
         ));
 
+        ReceivableLedger::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT),
+        ));
+        
         $valid = $this->header->save(false);
 
         foreach ($this->details as $detail) {
-            if ($detail->isNewRecord)
+            if ($detail->isNewRecord) {
                 $detail->purchase_payment_header_id = $this->header->id;
+            }
 
             $valid = $detail->save(false) && $valid;
             
@@ -151,6 +155,18 @@ class PurchasePaymentComponent extends CComponent {
         );
         $valid = $accountingJournalDebitTotalAmount->save(false) && $valid;
 
+        $payableLedger = new PayableLedger();
+        $payableLedger->transaction_number = $this->header->getCodeNumber(PurchasePaymentHeader::CN_CONSTANT);
+        $payableLedger->transaction_date = $this->header->date; 
+        $payableLedger->note = $this->header->note;
+        $payableLedger->memo = $this->header->supplier_document_number . ' - ' . $this->header->supplier_invoice_tax_number;
+        $payableLedger->debit = '0.00';
+        $payableLedger->credit = $this->header->grand_total;
+        $payableLedger->supplier_id = $this->header->supplier_id;
+        $payableLedger->admin_id = $this->header->admin_id;
+        $payableLedger->posting_datetime = date('Y-m-d H:i:s');
+        $valid = $payableLedger->save(false) && $valid;
+
         return $valid;
     }
 
@@ -159,10 +175,11 @@ class PurchasePaymentComponent extends CComponent {
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
 
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -175,8 +192,9 @@ class PurchasePaymentComponent extends CComponent {
     public function getTotalPayment() {
         $total = 0.00;
 
-        foreach ($this->details as $detail)
+        foreach ($this->details as $detail) {
             $total += $detail->amount;
+        }
 
         return $total;
     }
