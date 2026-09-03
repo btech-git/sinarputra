@@ -147,9 +147,9 @@ class SalePaymentController extends Controller {
                 
                 Yii::app()->user->setFlash('message', 'Delete Successful');
             }
-        }
-        else
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionAdmin() {
