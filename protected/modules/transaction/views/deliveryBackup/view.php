@@ -91,12 +91,12 @@ $this->breadcrumbs = array(
                         <td style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'length')); ?></td>
                         <td style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'quantity')); ?></td>
                         <td style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'weight')); ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_miling") == 1 ? "Yes" : ""; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_sidemiling") == 1 ? "Yes" : ""; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_grinding") == 1 ? "Yes" : ""; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_hardness") == 1 ? "Yes" : ""; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_annelying") == 1 ? "Yes" : ""; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::value($detail, "is_coating") == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_miling == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_sidemiling == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_grinding == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_hardness == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_annelying == 1 ? "Yes" : ""; ?></td>
+                        <td style="text-align: center"><?php echo $detail->is_coating == 1 ? "Yes" : ""; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

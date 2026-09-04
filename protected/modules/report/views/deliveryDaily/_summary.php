@@ -1,17 +1,22 @@
 <?php
 Yii::app()->clientScript->registerCss('_report', '
-	.width1-1 { width: 5% }
-	.width1-2 { width: 25% }
-	.width1-3 { width: 15% }
-	.width1-4 { width: 15% }
-	.width1-5 { width: 15% }
-	.width1-6 { width: 25% }
+	.width1-1 { width: 3% }
+	.width1-2 { width: 10% }
+	.width1-3 { width: 7% }
+	.width1-4 { width: 25% }
+	.width1-5 { width: 10% }
+	.width1-6 { width: 5% }
+	.width1-7 { width: 10% }
+	.width1-8 { width: 20% }
+	.width1-9 { width: 10% }
     
-	.width2-1 { width: 10% }
-	.width2-2 { width: 10% }
-	.width2-3 { width: 15% }
-	.width2-4 { width: 50% }
-	.width2-5 { width: 15% }
+	.width2-1 { width: 30% }
+	.width2-2 { width: 20% }
+	.width2-3 { width: 10% }
+	.width2-4 { width: 10% }
+	.width2-5 { width: 10% }
+	.width2-6 { width: 10% }
+	.width2-7 { width: 10% }
 ');
 ?>
 
@@ -25,46 +30,58 @@ Yii::app()->clientScript->registerCss('_report', '
 
 <table class="report">
     <tr id="header1">
-        <th class="width1-1" style="text-align: left">No</th>
-        <th class="width1-2" style="text-align: left">Customer</th>
-        <th class="width1-3" style="text-align: left">NO Delivery</th>
-        <th class="width1-4" style="text-align: left">NO SPK</th>
-        <th class="width1-5" style="text-align: left">NO PO</th>
-        <th class="width1-6" style="text-align: left">Salesman</th>
+        <th class="width1-1">No</th>
+        <th class="width1-2">Pengiriman #</th>
+        <th class="width1-3">Tanggal</th>
+        <th class="width1-4">Customer</th>
+        <th class="width1-5">SPK #</th>
+        <th class="width1-6">Gudang</th>
+        <th class="width1-7">Sopir</th>
+        <th class="width1-8">Catatan</th>
+        <th class="width1-9">User</th>
     </tr>
     <tr id="header2">
-        <td colspan="6">
+        <td colspan="10">
             <table>
                 <tr>
-                    <th class="width2-1">Quantity</th>
-                    <th class="width2-2">Berat</th>
-                    <th class="width2-3">Sopir</th>
-                    <th class="width2-4">KET</th>
-                    <th class="width2-5">User</th>
+                    <th class="width2-1">GRADE</th>
+                    <th class="width2-2">Kategori</th>
+                    <th class="width2-3">Tbl/Dmtr</th>
+                    <th class="width2-4">Lbr/Dmtr</th>
+                    <th class="width2-5">Panjang</th>
+                    <th class="width2-6">Berat</th>
+                    <th class="width2-7">Quantity</th>
                 </tr>
             </table>
         </td>
     </tr>
-    <?php $number = 1 ?>
+    <?php $number = 0; ?>
     <?php foreach ($deliverySummary->dataProvider->data as $header): ?>
         <tr class="items1">
-            <td class="width1-1" style="text-align: left"><?php echo $number;$number++ ?></td>
-            <td class="width1-2"><?php echo CHtml::encode(CHtml::value($header, 'workOrderCuttingHeader.saleHeader.customer.company')); ?></td>
-            <td class="width1-3"><?php echo CHtml::encode($header->getCodeNumber(DeliveryHeader::CN_CONSTANT)); ?></td>
-            <td class="width1-4"><?php echo $header->workOrderCuttingHeader ? CHtml::encode($header->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)) : ''; ?></td>
-            <td class="width1-5"><?php echo $header->workOrderCuttingHeader ? CHtml::encode($header->workOrderCuttingHeader->saleHeader->customer_order_number) : ''; ?></td>
-            <td class="width1-6"><?php echo $header->workOrderCuttingHeader ? CHtml::encode($header->workOrderCuttingHeader->saleHeader->employeeIdSalesman->name) : ''; ?></td>
+            <td class="width1-1"><?php echo ++$number; ?></td>
+            <td class="width1-2"><?php echo CHtml::encode($header->getCodeNumber(DeliveryHeader::CN_CONSTANT)); ?></td>
+            <td class="width1-3"><?php echo CHtml::encode(Yii::app()->dateFormatter->format('d MMM yyyy', strtotime($header->date))); ?></td>
+            <td class="width1-4"><?php echo CHtml::encode(CHtml::value($header, 'workOrderCuttingHeader.saleHeader.customer.company')); ?></td>
+            <td class="width1-5"><?php echo $header->workOrderCuttingHeader ? CHtml::encode($header->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)) : ''; ?></td>
+            <td class="width1-6"><?php echo CHtml::encode(CHtml::value($header, 'warehouse.name')); ?></td>
+            <td class="width1-7"><?php echo CHtml::encode(CHtml::value($header, 'driver')); ?></td>
+            <td class="width1-8"><?php echo CHtml::encode(CHtml::value($header, 'note')); ?></td>
+            <td class="width1-9"><?php echo CHtml::encode(CHtml::value($header, 'admin.username')); ?></td>
         </tr>
         <tr class="items2">
-            <td colspan="6">
+            <td colspan="10">
                 <table>
                     <?php foreach ($header->deliveryDetails as $detail): ?>
-                        <tr>    
-                            <td class="width2-6" style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'quantity')); ?></td>
-                            <td class="width2-7" style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'weight'))); ?></td>
-                            <td class="width2-8" style="text-align: center"></td>
-                            <td class="width2-9" style="text-align: center"></td>
-                            <td class="width1-10"><?php echo CHtml::encode(CHtml::value($header, 'admin.name')); ?></td>
+                        <tr>
+                            <td class="width2-1"><?php echo CHtml::encode(CHtml::value($detail, 'grade_name')); ?></td>
+                            <td class="width2-2"><?php echo CHtml::encode(CHtml::value($detail, 'workOrderCuttingDetail.productCategory.name')); ?></td>
+                            <td class="width2-3" style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'height')); ?></td>
+                            <td class="width2-4" style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'width')); ?></td>
+                            <td class="width2-5" style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'length')); ?></td>
+                            <td class="width2-6" style="text-align: center"><?php echo CHtml::encode(CHtml::value($detail, 'weight')); ?></td>
+                            <td class="width2-7" style="text-align: center">
+                                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

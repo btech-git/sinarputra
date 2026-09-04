@@ -165,9 +165,12 @@ $this->breadcrumbs = array(
                 <legend>Sales</legend>
                     <ul style="display: table-cell; width: 100%">
                         <?php if (Yii::app()->user->checkAccess('deliveryReport')): ?>
-                            <!--<li style="width: 50%"><?php //echo CHtml::link('Laporan Pengiriman Barang', array('/report/delivery/summary')); ?></li>
-                            <br class="clear" />-->
-                            <li><?php echo CHtml::link('Delivery Daily Report', array('/report/deliveryDaily/summary')); ?></li>
+<!--                            <li style="width: 50%"><?php //echo CHtml::link('Laporan Pengiriman Barang', array('/report/delivery/summary')); ?></li>-->
+                            <li><?php echo CHtml::link('Laporan Pengiriman', array('/report/deliveryDaily/summary')); ?></li>
+                            <br class="clear" />
+                            <li><?php echo CHtml::link('Laporan Pengiriman Manual', array('/report/deliveryManual/summary')); ?></li>
+                            <br class="clear" />
+                            <li><?php echo CHtml::link('Laporan Pengiriman Manual 2', array('/report/deliveryBackup/summary')); ?></li>
                             <br class="clear" />
                         <?php endif; ?>
                         <?php if (Yii::app()->user->checkAccess('saleInvoiceReport')): ?>

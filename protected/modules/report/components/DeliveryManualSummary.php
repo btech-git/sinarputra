@@ -1,6 +1,6 @@
 <?php
 
-class DeliverySummary extends CComponent {
+class DeliveryManualSummary extends CComponent {
 
     public $dataProvider;
 
@@ -15,11 +15,12 @@ class DeliverySummary extends CComponent {
                     'saleHeader:resetScope' => array(
                         'with' => array(
                             'customer:resetScope',
-                            'employeeIdSalesman:resetScope'
                         ),
                     ),
                 ),
             ),
+            'warehouse:resetScope',
+            'admin:resetScope',
         );
     }
 

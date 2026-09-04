@@ -7,8 +7,8 @@ Yii::app()->clientScript->registerScript('report', '
 
 	$("#StartDate").val("' . $startDate . '");
 	$("#EndDate").val("' . $endDate . '");
-	$("#PageSize").val("' . $deliverySummary->dataProvider->pagination->pageSize . '");
-	$("#CurrentPage").val("' . ($deliverySummary->dataProvider->pagination->getCurrentPage(false) + 1) . '");
+	$("#PageSize").val("' . $deliveryManualSummary->dataProvider->pagination->pageSize . '");
+	$("#CurrentPage").val("' . ($deliveryManualSummary->dataProvider->pagination->getCurrentPage(false) + 1) . '");
 	$("#CurrentSort").val("' . $currentSort . '");
 ');
 Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/transaction/report.css');
@@ -81,22 +81,22 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
 
     <hr />
 
-    <div class="right"><?php echo ReportHelper::summaryText($deliverySummary->dataProvider); ?></div>
+    <div class="right"><?php echo ReportHelper::summaryText($deliveryManualSummary->dataProvider); ?></div>
     <div class="clear"></div>
-    <div class="right"><?php echo ReportHelper::sortText($deliverySummary->dataProvider->sort, array('Tanggal')); ?></div>
+    <div class="right"><?php echo ReportHelper::sortText($deliveryManualSummary->dataProvider->sort, array('Tanggal')); ?></div>
     <div class="clear"></div>
 </div>
 
 <div>
-    <?php $this->renderPartial('_summary', array('deliverySummary' => $deliverySummary, 'startDate' => $startDate, 'endDate' => $endDate)); ?>
+    <?php $this->renderPartial('_summary', array('deliveryManualSummary' => $deliveryManualSummary, 'startDate' => $startDate, 'endDate' => $endDate)); ?>
 </div>
 
 <div class="hide">
     <div class="right">
         <?php $this->widget('system.web.widgets.pagers.CLinkPager', array(
-            'itemCount' => $deliverySummary->dataProvider->pagination->itemCount,
-            'pageSize' => $deliverySummary->dataProvider->pagination->pageSize,
-            'currentPage' => $deliverySummary->dataProvider->pagination->getCurrentPage(false),
+            'itemCount' => $deliveryManualSummary->dataProvider->pagination->itemCount,
+            'pageSize' => $deliveryManualSummary->dataProvider->pagination->pageSize,
+            'currentPage' => $deliveryManualSummary->dataProvider->pagination->getCurrentPage(false),
         )); ?>
     </div>
     <div class="clear"></div>

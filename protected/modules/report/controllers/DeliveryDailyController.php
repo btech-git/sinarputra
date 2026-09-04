@@ -10,8 +10,9 @@ class DeliveryDailyController extends Controller {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'summary') {
-            if (!(Yii::app()->user->checkAccess('deliveryReport')))
+            if (!(Yii::app()->user->checkAccess('deliveryReport'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -22,8 +23,8 @@ class DeliveryDailyController extends Controller {
         ini_set('memory_limit', '1024M');
 		
         $deliveryHeader = Search::bind(new DeliveryHeader('search'), isset($_GET['DeliveryHeader']) ? $_GET['DeliveryHeader'] : array());
+        
         $customerName = (isset($_GET['CustomerName'])) ? $_GET['CustomerName'] : '';
-
         $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : date('Y-m-d');
         $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : date('Y-m-d');
         $pageSize = (isset($_GET['PageSize'])) ? $_GET['PageSize'] : '';

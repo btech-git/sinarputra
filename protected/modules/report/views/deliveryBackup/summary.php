@@ -1,4 +1,4 @@
-<?php
+-<?php
 Yii::app()->clientScript->registerScript('report', '
 	$("#header").addClass("hide");
 	$("#mainmenu").addClass("hide");
@@ -7,8 +7,8 @@ Yii::app()->clientScript->registerScript('report', '
 
 	$("#StartDate").val("' . $startDate . '");
 	$("#EndDate").val("' . $endDate . '");
-	$("#PageSize").val("' . $deliverySummary->dataProvider->pagination->pageSize . '");
-	$("#CurrentPage").val("' . ($deliverySummary->dataProvider->pagination->getCurrentPage(false) + 1) . '");
+	$("#PageSize").val("' . $deliveryBackupSummary->dataProvider->pagination->pageSize . '");
+	$("#CurrentPage").val("' . ($deliveryBackupSummary->dataProvider->pagination->getCurrentPage(false) + 1) . '");
 	$("#CurrentSort").val("' . $currentSort . '");
 ');
 Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/transaction/report.css');
@@ -19,10 +19,11 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
 
         <?php echo CHtml::beginForm(array(''), 'get'); ?>
 
-        <div class="row" style="background-color: #DFDFDF">
+        <div class="row" >
             Customer
-            <?php echo CHtml::textField('CustomerName', $customerName); ?>
+            <?php echo CHtml::textField('CustomerName', $customerName); ?>			
         </div>
+
 
         <div class="row">
             Jumlah per Halaman
@@ -74,29 +75,29 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
         <?php echo CHtml::endForm(); ?>
 
         <?php echo CHtml::beginForm(); ?>
-            <?php echo CHtml::submitButton('Save To Excel', array('name' => 'SaveToExcel')); ?>
+        <?php echo CHtml::submitButton('Save To Excel', array('name' => 'SaveToExcel')); ?>
         <?php echo CHtml::endForm(); ?>
 
     </div>
 
     <hr />
 
-    <div class="right"><?php echo ReportHelper::summaryText($deliverySummary->dataProvider); ?></div>
+    <div class="right"><?php echo ReportHelper::summaryText($deliveryBackupSummary->dataProvider); ?></div>
     <div class="clear"></div>
-    <div class="right"><?php echo ReportHelper::sortText($deliverySummary->dataProvider->sort, array('Tanggal')); ?></div>
+    <div class="right"><?php echo ReportHelper::sortText($deliveryBackupSummary->dataProvider->sort, array('Tanggal', 'Supplier', 'No. Penerimaan', 'No. PO')); ?></div>
     <div class="clear"></div>
 </div>
 
 <div>
-    <?php $this->renderPartial('_summary', array('deliverySummary' => $deliverySummary, 'startDate' => $startDate, 'endDate' => $endDate)); ?>
+    <?php $this->renderPartial('_summary', array('deliveryBackupSummary' => $deliveryBackupSummary, 'startDate' => $startDate, 'endDate' => $endDate)); ?>
 </div>
 
 <div class="hide">
     <div class="right">
         <?php $this->widget('system.web.widgets.pagers.CLinkPager', array(
-            'itemCount' => $deliverySummary->dataProvider->pagination->itemCount,
-            'pageSize' => $deliverySummary->dataProvider->pagination->pageSize,
-            'currentPage' => $deliverySummary->dataProvider->pagination->getCurrentPage(false),
+            'itemCount' => $deliveryBackupSummary->dataProvider->pagination->itemCount,
+            'pageSize' => $deliveryBackupSummary->dataProvider->pagination->pageSize,
+            'currentPage' => $deliveryBackupSummary->dataProvider->pagination->getCurrentPage(false),
         )); ?>
     </div>
     <div class="clear"></div>

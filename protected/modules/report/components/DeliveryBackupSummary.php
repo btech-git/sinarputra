@@ -1,6 +1,6 @@
 <?php
 
-class DeliverySummary extends CComponent {
+class DeliveryBackupSummary extends CComponent {
 
     public $dataProvider;
 
@@ -10,16 +10,10 @@ class DeliverySummary extends CComponent {
 
     public function setupLoading() {
         $this->dataProvider->criteria->with = array(
-            'workOrderCuttingHeader:resetScope' => array(
-                'with' => array(
-                    'saleHeader:resetScope' => array(
-                        'with' => array(
-                            'customer:resetScope',
-                            'employeeIdSalesman:resetScope'
-                        ),
-                    ),
-                ),
-            ),
+            'customer:resetScope',
+            'employeeIdDriver:resetScope',
+            'warehouse:resetScope',
+            'admin:resetScope',
         );
     }
 
@@ -33,12 +27,12 @@ class DeliverySummary extends CComponent {
     }
 
     public function setupSorting() {
-//        $this->dataProvider->sort->attributes = array('t.date ASC');
-        $this->dataProvider->criteria->order = 't.date ASC, t.id ASC';
+        $this->dataProvider->sort->attributes = array('t.transaction_date', 't.transaction_number');
+        $this->dataProvider->criteria->order = $this->dataProvider->sort->orderBy;
     }
 
     public function setupFilter($startDate, $endDate, $customerName) {
-        $this->dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        $this->dataProvider->criteria->addBetweenCondition('t.transaction_date', $startDate, $endDate);
         $this->dataProvider->criteria->compare('customer.company', $customerName, true);
     }
 
