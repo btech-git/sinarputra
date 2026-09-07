@@ -64,18 +64,19 @@ class PurchaseHeader extends PurchaseHeaderBase {
     public function getPaymentStatus() {
         $status = '';
 
-        if ($this->payment_period == 0)
+        if ($this->payment_period == 0) {
             $status = self::COD_LITERAL;
-        else if ($this->payment_period == self::DAYS_15)
+        } else if ($this->payment_period == self::DAYS_15) {
             $status = self::DAYS_15_LITERAL;
-        else if ($this->payment_period == self::DAYS_30)
+        } else if ($this->payment_period == self::DAYS_30) {
             $status = self::DAYS_30_LITERAL;
-        else if ($this->payment_period == self::DAYS_60)
+        } else if ($this->payment_period == self::DAYS_60) {
             $status = self::DAYS_60_LITERAL;
-        else if ($this->payment_period == self::DAYS_90)
+        } else if ($this->payment_period == self::DAYS_90) {
             $status = self::DAYS_90_LITERAL;
-        else if ($this->payment_period == self::DAYS_45)
+        } else if ($this->payment_period == self::DAYS_45) {
             $status = self::DAYS_45_LITERAL;
+        }
 
         return $status;
     }
@@ -119,10 +120,6 @@ class PurchaseHeader extends PurchaseHeaderBase {
         return $total;
     }
 
-//    public function getDiscountAmount() {
-//        return $this->discount / 100 * $this->getSubTotal();
-//    }
-
     public function getTotalBeforeTax() {
         return $this->subTotal - $this->discount;
     }
@@ -136,7 +133,7 @@ class PurchaseHeader extends PurchaseHeaderBase {
     }
 
     public function getGrandTotal() {
-        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome();
+        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome() - $this->expense_amount;
     }
 
     public function searchByReceive() {
@@ -235,8 +232,9 @@ class PurchaseHeader extends PurchaseHeaderBase {
         foreach ($this->receiveHeaders as $receiveHeader) {
             if ($receiveHeader->is_inactive == 0) {
                 foreach ($receiveHeader->receiveDetails as $receiveDetail) {
-                    if ($receiveDetail->is_inactive == 0)
+                    if ($receiveDetail->is_inactive == 0) {
                         $totalQuantityReceive += 1;
+                    }
                 }
             }
         }

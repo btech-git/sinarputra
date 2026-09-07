@@ -6,6 +6,7 @@
         <th style="text-align: center; width: 10%;">Kategori</th>
         <th style="text-align: center; width: 5%;">Jumlah</th>	
         <th style="text-align: center; width: 15%">Harga</th>
+        <th style="text-align: center; width: 10%">Disc</th>
         <th style="text-align: center; width: 15%">Total</th>
         <th style="text-align: center; width: 5%"></th>
     </tr>
@@ -16,15 +17,9 @@
                 <?php echo CHtml::activeHiddenField($detail, "[$i]item_id"); ?>
                 <?php echo CHtml::encode(CHtml::value($detail, "item.code")); ?>
             </td>
-            <td>
-                <?php echo CHtml::encode(CHtml::value($detail, "item.name")); ?>
-            </td>
-            <td>
-                <?php echo CHtml::encode(CHtml::value($detail, "item.description")); ?>
-            </td>
-            <td>
-                <?php echo CHtml::encode(CHtml::value($detail, "item.itemCategory.name")); ?>
-            </td>
+            <td><?php echo CHtml::encode(CHtml::value($detail, "item.name")); ?></td>
+            <td><?php echo CHtml::encode(CHtml::value($detail, "item.description")); ?></td>
+            <td><?php echo CHtml::encode(CHtml::value($detail, "item.itemCategory.name")); ?></td>
 
             <!--quantity-->
             <td style="text-align: center">
@@ -51,7 +46,7 @@
 
             <td style="text-align: center">
                 <?php echo CHtml::activeTextField($detail, "[$i]unit_price", array(
-                    'size' => 5, 
+                    'size' => 10, 
                     'maxLength' => 10,
                     'onchange' => CHtml::ajax(array(
                         'type' => 'POST',
@@ -70,6 +65,29 @@
                 )); ?>
                 <?php echo CHtml::error($detail, 'unit_price'); ?>
             </td>
+            
+            <td style="text-align: center">
+                <?php echo CHtml::activeTextField($detail, "[$i]discount_amount", array(
+                    'size' => 10, 
+                    'maxLength' => 10,
+                    'onchange' => CHtml::ajax(array(
+                        'type' => 'POST',
+                        'dataType' => 'JSON',
+                        'url' => CController::createUrl('ajaxJsonTotal', array('id' => $purchaseItem->header->id, 'index' => $i)),
+                        'success' => 'function(data) {
+                            $("#total_' . $i . '").html(data.total);
+                            $("#sub_total").html(data.subTotal);
+                            $("#tax_value").html(data.calculatedTax);
+                            $("#tax_income").html(data.calculatedTaxIncome);
+                            $("#grand_total").html(data.grandTotal);
+                        }',
+                    )),
+                    'class' => 'TabOnEnter',
+                    'tabindex' => $tabIndex + 3,
+                )); ?>
+                <?php echo CHtml::error($detail, 'unit_price'); ?>
+            </td>
+            
             <td style="text-align: right">
                 <span id="total_<?php echo $i; ?>">
                     <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
@@ -95,7 +113,7 @@
     <?php endforeach; ?>
 
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="6">Sub Total</td>
+        <td style="text-align: right; font-weight: bold" colspan="7">Sub Total</td>
         <td style="text-align: right; font-weight: bold">
             <span id="sub_total">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchaseItem->header->subTotal)); ?>
@@ -103,8 +121,9 @@
         </td>
         <td></td>
     </tr>
+    
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="6">Discount</td>
+        <td style="text-align: right; font-weight: bold" colspan="7">Discount</td>
         <td style="text-align: right">
             (<?php echo CHtml::activeTextField($purchaseItem->header, 'discount', array(
                 'size' => 10, 
@@ -123,8 +142,9 @@
         </td>
         <td></td>
     </tr>
+    
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="6">
+        <td style="text-align: right; font-weight: bold" colspan="7">
             PPn <?php echo CHtml::activeTextField($purchaseItem->header, "tax_percentage",array(
                 'size' => 3, 
                 'maxLength' => 2,
@@ -157,8 +177,9 @@
         </td>
         <td></td>
     </tr>
+    
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="6">
+        <td style="text-align: right; font-weight: bold" colspan="7">
             PPh 2% &nbsp;
             <?php echo CHtml::activeCheckBox($purchaseItem->header, 'is_tax_income',array(
                 'onchange' => CHtml::ajax(array(
@@ -179,8 +200,33 @@
         </td>
         <td></td>
     </tr>
+
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="6">Grand Total</td>
+        <td style="font-weight: bold; text-align:right" colspan="7">
+            Ongkos &nbsp;
+            <?php echo CHtml::activeDropDownList($purchaseItem->header, "account_id_expense", CHtml::listData(Account::model()->findAll(array(
+                'condition' => "code LIKE '500-%' OR code LIKE '700-%' OR code LIKE '900-%'", 
+                'order' => 't.name ASC'
+            )), 'id', 'name'), array('empty' => '-- Pilih Akun --')); ?>   
+        </td>
+        <td style="text-align: right; font-weight: bold">
+            <?php echo CHtml::activeTextField($purchaseItem->header, "expense_amount",array(
+                'maxLength' => 18,
+                'onchange' => CHtml::ajax(array(
+                    'type' => 'POST',
+                    'dataType' => 'JSON',
+                    'url' => CController::createUrl('ajaxJsonGrandTotal', array('id' => $purchaseItem->header->id)),
+                    'success' => 'function(data) {
+                        $("#grand_total").html(data.grandTotal);
+                    }',
+                )),
+            )); ?> 
+        </td>
+        <td></td>            
+    </tr>
+
+    <tr style="background-color: aquamarine">
+        <td style="text-align: right; font-weight: bold" colspan="7">Grand Total</td>
         <td style="text-align: right; font-weight: bold">
             <span id="grand_total">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchaseItem->header->grandTotal)); ?>

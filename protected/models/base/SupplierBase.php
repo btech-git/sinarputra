@@ -22,13 +22,18 @@
  * @property integer $account_id_payable
  * @property integer $is_tax
  * @property integer $is_inactive
+ * @property string $category
+ * @property string $mobile_phone
+ * @property string $website
+ * @property string $address_billing
+ * @property string $bank_account_number
+ * @property integer $tax_service_type
  *
+ * @property PayableLedger[] $payableLedgers
  * @property PurchaseHeader[] $purchaseHeaders
- * @property PurchaseInvoice[] $purchaseInvoices
  * @property PurchaseItemHeader[] $purchaseItemHeaders
  * @property PurchaseReceiptHeader[] $purchaseReceiptHeaders
  * @property ReceiveHeader[] $receiveHeaders
- * @property Account $accountIdPayable
  */
 class SupplierBase extends ActiveRecord {
 
@@ -40,24 +45,24 @@ class SupplierBase extends ActiveRecord {
         return array(
             array('name, company, account_id_payable', 'required'),
             array('email', 'email'),
-            array('invoice_due_days, term_of_payment, account_id_payable, is_tax, is_inactive', 'numerical', 'integerOnly' => true),
-            array('code, tax_registration_number', 'length', 'max' => 20),
-            array('name, company, city, province, phone, fax, email, bank_account', 'length', 'max' => 60),
+            array('invoice_due_days, term_of_payment, account_id_payable, is_tax, is_inactive, tax_service_type', 'numerical', 'integerOnly' => true),
+            array('code, tax_registration_number, category, bank_account_number', 'length', 'max' => 20),
+            array('name, company, city, province, phone, fax, email, bank_account, mobile_phone', 'length', 'max' => 60),
             array('available_credit, credit_limit', 'length', 'max' => 18),
-            array('address_main, address_secondary, note', 'safe'),
+            array('website', 'length', 'max' => 100),
+            array('address_main, address_secondary, note, address_billing', 'safe'),
             // The following rule is used by search().
-            array('id, code, name, company, address_main, address_secondary, city, province, phone, fax, email, bank_account, invoice_due_days, note, available_credit, credit_limit, term_of_payment, tax_registration_number, account_id_payable, is_tax, is_inactive', 'safe', 'on' => 'search'),
+            array('id, code, name, company, address_main, address_secondary, city, province, phone, fax, email, bank_account, invoice_due_days, note, available_credit, credit_limit, term_of_payment, tax_registration_number, account_id_payable, is_tax, is_inactive, category, mobile_phone, website, address_billing, bank_account_number, tax_service_type', 'safe', 'on' => 'search'),
         );
     }
 
     public function relations() {
         return array(
+            'payableLedgers' => array(self::HAS_MANY, 'PayableLedger', 'supplier_id'),
             'purchaseHeaders' => array(self::HAS_MANY, 'PurchaseHeader', 'supplier_id'),
-            'purchaseInvoices' => array(self::HAS_MANY, 'PurchaseInvoice', 'supplier_id'),
             'purchaseItemHeaders' => array(self::HAS_MANY, 'PurchaseItemHeader', 'supplier_id'),
             'purchaseReceiptHeaders' => array(self::HAS_MANY, 'PurchaseReceiptHeader', 'supplier_id'),
             'receiveHeaders' => array(self::HAS_MANY, 'ReceiveHeader', 'supplier_id'),
-            'accountIdPayable' => array(self::BELONGS_TO, 'Account', 'account_id_payable'),
         );
     }
 
@@ -84,6 +89,12 @@ class SupplierBase extends ActiveRecord {
             'account_id_payable' => 'Account Id Payable',
             'is_tax' => 'Is Tax',
             'is_inactive' => 'Is Inactive',
+            'category' => 'Category',
+            'mobile_phone' => 'Mobile Phone',
+            'website' => 'Website',
+            'address_billing' => 'Address Billing',
+            'bank_account_number' => 'Bank Account Number',
+            'tax_service_type' => 'Tax Service Type',
         );
     }
 
@@ -111,13 +122,15 @@ class SupplierBase extends ActiveRecord {
         $criteria->compare('t.account_id_payable', $this->account_id_payable);
         $criteria->compare('t.is_tax', $this->is_tax);
         $criteria->compare('t.is_inactive', $this->is_inactive);
+        $criteria->compare('t.category', $this->category, true);
+        $criteria->compare('t.mobile_phone', $this->mobile_phone, true);
+        $criteria->compare('t.website', $this->website, true);
+        $criteria->compare('t.address_billing', $this->address_billing, true);
+        $criteria->compare('t.bank_account_number', $this->bank_account_number, true);
+        $criteria->compare('t.tax_service_type', $this->tax_service_type);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => 100,
-            ),
         ));
     }
-
 }

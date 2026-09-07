@@ -16,8 +16,7 @@ $this->breadcrumbs = array(
 
 <h1><?php echo $this->id . '/' . $this->action->id; ?></h1>
 
-<?php
-$this->widget('zii.widgets.CDetailView', array(
+<?php $this->widget('zii.widgets.CDetailView', array(
     'data' => $purchase,
     'attributes' => array(
         array(
@@ -65,11 +64,9 @@ $this->widget('zii.widgets.CDetailView', array(
             'value' => $purchase->note,
         ),
     ),
-));
-?>
+)); ?>
 
 <?php if ($purchase->is_service == 0): ?> 
-
     <h2>Product</h2>
 
     <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -124,6 +121,13 @@ $this->widget('zii.widgets.CDetailView', array(
                 ),
             ),
             array(
+                'header' => 'Discount',
+                'value' => 'number_format($data->discount_amount, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
                 'header' => 'Total',
                 'value' => 'number_format($data->total, 2)',
                 'htmlOptions' => array(
@@ -144,8 +148,7 @@ $this->widget('zii.widgets.CDetailView', array(
 <?php else: ?>
     <br/>
     <h2>Service</h2>
-    <?php
-    $this->widget('zii.widgets.grid.CGridView', array(
+    <?php $this->widget('zii.widgets.grid.CGridView', array(
         'id' => 'purchase-detail-service-grid',
         'dataProvider' => $servicesDataProvider,
         'htmlOptions' => array(
@@ -218,6 +221,13 @@ $this->widget('zii.widgets.CDetailView', array(
                 ),
             ),
             array(
+                'header' => 'Discount',
+                'value' => 'number_format($data->discount_amount, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
                 'header' => 'Total',
 //                'value' => 'number_format($data->totalService, 2)',
                 'value' => '$data->purchaseHeader->is_tax ? number_format($data->totalService, 2) : number_format($data->totalServiceTax, 2)',
@@ -226,11 +236,8 @@ $this->widget('zii.widgets.CDetailView', array(
                 ),
             ),
         ),
-    ));
-    ?>
- 
+    )); ?>
 <?php endif; ?>
-<br />
 
 <table>
     <tr style="background-color: skyblue">
@@ -269,6 +276,15 @@ $this->widget('zii.widgets.CDetailView', array(
         </td>
         <td style="text-align: right">
             <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->calculatedTaxIncome)); ?>
+        </td>
+    </tr>
+
+    <tr style="background-color: skyblue">
+        <td style="text-align:right; width: 80%">
+            Ongkos <?php echo CHtml::encode(CHtml::value($purchase, 'accountIdExpense.name')); ?>
+        </td>
+        <td style="text-align: right">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->expense_amount)); ?>
         </td>
     </tr>
 

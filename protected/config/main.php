@@ -49,6 +49,7 @@ return array(
         'user' => array(
             // enable cookie-based authentication
             'allowAutoLogin' => true,
+            'authTimeout' => 3600, 
         ),
         'authManager' => array(
             'class' => 'CDbAuthManager',

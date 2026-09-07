@@ -12,21 +12,27 @@
  * @property string $note
  * @property integer $supplier_id
  * @property integer $admin_id
- * @property integer $admin_purchasing_id
- * @property integer $admin_accounting_id
- * @property integer $admin_finance_id
  * @property integer $is_tax
  * @property integer $is_tax_income
  * @property integer $is_inactive
  * @property integer $tax_percentage
+ * @property integer $admin_purchasing_id
+ * @property integer $admin_accounting_id
+ * @property integer $admin_finance_id
  * @property string $created_datetime
  * @property integer $admin_id_updated
  * @property string $updated_datetime
+ * @property string $expense_amount
+ * @property integer $account_id_expense
  *
  * @property PurchaseItemDetail[] $purchaseItemDetails
- * @property Supplier $supplier
  * @property Admin $admin
- * @property AdminIdUpdated $adminIdUpdated
+ * @property Admin $adminPurchasing
+ * @property Admin $adminAccounting
+ * @property Admin $adminFinance
+ * @property Admin $adminIdUpdated
+ * @property Account $accountIdExpense
+ * @property Supplier $supplier
  * @property ReceiveItemHeader[] $receiveItemHeaders
  */
 class PurchaseItemHeaderBase extends MonthlyTransactionActiveRecord {
@@ -37,24 +43,25 @@ class PurchaseItemHeaderBase extends MonthlyTransactionActiveRecord {
 
     public function rules() {
         return array(
-            array('cn_ordinal, cn_month, cn_year, date, estimate_receive_date, supplier_id, admin_id, admin_purchasing_id, admin_accounting_id, admin_finance_id', 'required'),
-            array('cn_ordinal, cn_month, cn_year, payment_period, supplier_id, admin_id, is_tax, is_tax_income, is_inactive, tax_percentage, admin_purchasing_id, admin_accounting_id, admin_finance_id, admin_id_updated', 'numerical', 'integerOnly' => true),
-            array('discount', 'length', 'max' => 18),
-            array('note, created_datetime, updated_datetime', 'safe'),
+            array('cn_ordinal, cn_month, cn_year, date, supplier_id, admin_id, admin_purchasing_id, admin_accounting_id, admin_finance_id', 'required'),
+            array('cn_ordinal, cn_month, cn_year, payment_period, supplier_id, admin_id, is_tax, is_tax_income, is_inactive, tax_percentage, admin_purchasing_id, admin_accounting_id, admin_finance_id, admin_id_updated, account_id_expense', 'numerical', 'integerOnly' => true),
+            array('discount, expense_amount', 'length', 'max' => 18),
+            array('estimate_receive_date, note, created_datetime, updated_datetime', 'safe'),
             // The following rule is used by search().
-            array('id, cn_ordinal, cn_month, cn_year, date, estimate_receive_date, payment_period, discount, note, supplier_id, admin_id, is_tax, is_tax_income, is_inactive, tax_percentage, admin_purchasing_id, admin_accounting_id, admin_finance_id, admin_id_updated, created_datetime, updated_datetime', 'safe', 'on' => 'search'),
+            array('id, cn_ordinal, cn_month, cn_year, date, estimate_receive_date, payment_period, discount, note, supplier_id, admin_id, is_tax, is_tax_income, is_inactive, tax_percentage, admin_purchasing_id, admin_accounting_id, admin_finance_id, created_datetime, admin_id_updated, updated_datetime, expense_amount, account_id_expense', 'safe', 'on' => 'search'),
         );
     }
 
     public function relations() {
         return array(
             'purchaseItemDetails' => array(self::HAS_MANY, 'PurchaseItemDetail', 'purchase_item_header_id'),
-            'supplier' => array(self::BELONGS_TO, 'Supplier', 'supplier_id'),
             'admin' => array(self::BELONGS_TO, 'Admin', 'admin_id'),
             'adminPurchasing' => array(self::BELONGS_TO, 'Admin', 'admin_purchasing_id'),
             'adminAccounting' => array(self::BELONGS_TO, 'Admin', 'admin_accounting_id'),
             'adminFinance' => array(self::BELONGS_TO, 'Admin', 'admin_finance_id'),
             'adminIdUpdated' => array(self::BELONGS_TO, 'Admin', 'admin_id_updated'),
+            'accountIdExpense' => array(self::BELONGS_TO, 'Account', 'account_id_expense'),
+            'supplier' => array(self::BELONGS_TO, 'Supplier', 'supplier_id'),
             'receiveItemHeaders' => array(self::HAS_MANY, 'ReceiveItemHeader', 'purchase_item_header_id'),
         );
     }
@@ -76,6 +83,14 @@ class PurchaseItemHeaderBase extends MonthlyTransactionActiveRecord {
             'is_tax_income' => 'Is Tax Income',
             'is_inactive' => 'Is Inactive',
             'tax_percentage' => 'Tax Percentage',
+            'admin_purchasing_id' => 'Admin Purchasing',
+            'admin_accounting_id' => 'Admin Accounting',
+            'admin_finance_id' => 'Admin Finance',
+            'created_datetime' => 'Created Datetime',
+            'admin_id_updated' => 'Admin Id Updated',
+            'updated_datetime' => 'Updated Datetime',
+            'expense_amount' => 'Expense Amount',
+            'account_id_expense' => 'Account Id Expense',
         );
     }
 
@@ -97,12 +112,17 @@ class PurchaseItemHeaderBase extends MonthlyTransactionActiveRecord {
         $criteria->compare('t.is_tax_income', $this->is_tax_income);
         $criteria->compare('t.is_inactive', $this->is_inactive);
         $criteria->compare('t.tax_percentage', $this->tax_percentage);
+        $criteria->compare('t.admin_purchasing_id', $this->admin_purchasing_id);
+        $criteria->compare('t.admin_accounting_id', $this->admin_accounting_id);
+        $criteria->compare('t.admin_finance_id', $this->admin_finance_id);
+        $criteria->compare('t.created_datetime', $this->created_datetime, true);
+        $criteria->compare('t.admin_id_updated', $this->admin_id_updated);
+        $criteria->compare('t.updated_datetime', $this->updated_datetime, true);
+        $criteria->compare('t.expense_amount', $this->expense_amount, true);
+        $criteria->compare('t.account_id_expense', $this->account_id_expense);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => 100,
-            ),
         ));
     }
 

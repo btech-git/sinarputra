@@ -19,8 +19,9 @@ class Purchase extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($purchaseHeader !== null)
+        if ($purchaseHeader !== null) {
             $this->header->setCodeNumber($purchaseHeader->cn_ordinal, $purchaseHeader->cn_month, $purchaseHeader->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -85,10 +86,11 @@ class Purchase extends CComponent {
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
 
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -100,18 +102,16 @@ class Purchase extends CComponent {
 
     public function validate() {
         $valid = $this->header->validate();
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Header Error');
-        else {
+        } else {
             $valid = $this->validateDetailsCount() && $valid;
-            if (!$valid)
+            if (!$valid) {
                 $this->header->addError('error', 'Validate Details Count Error');
-            else {
-//				$valid = $this->validateDetailsUnique() && $valid;
-                if (!$valid)
+            } else {
+                if (!$valid) {
                     $this->header->addError('error', 'Validate Unique Error');
-
-//				$valid = $this->validateCreditLimit() && $valid;
+                }
             }
         }
 
@@ -122,20 +122,19 @@ class Purchase extends CComponent {
                     $fields = array('length', 'width', 'height', 'unit_price');
                     $valid = $detail->validate($fields) && $valid;
                 }
-            }
-            else
+            } else {
                 $valid = false;
-        }
-        else {
+            }
+        } else {
             //validate services
             if (count($this->purchaseDetailServices) > 0) {
                 foreach ($this->purchaseDetailServices as $purchaseDetailService) {
                     $fields = array('name', 'amount');
                     $valid = $valid && $purchaseDetailService->validate($fields);
                 }
-            }
-            else
+            } else {
                 $valid = false;
+            }
         }
         return $valid;
     }
@@ -166,17 +165,18 @@ class Purchase extends CComponent {
             //save details
             foreach ($this->details as $detail) {
 
-                if ($detail->isNewRecord)
+                if ($detail->isNewRecord) {
                     $detail->purchase_header_id = $this->header->id;
+                }
 
                 $valid = $detail->save(false) && $valid;
             }
-        }
-        else {
+        } else {
             //save services
             foreach ($this->purchaseDetailServices as $service) {
-                if ($service->isNewRecord)
+                if ($service->isNewRecord) {
                     $service->purchase_header_id = $this->header->id;
+                }
 
                 $valid = $valid && $service->save(false);
             }
@@ -201,16 +201,16 @@ class Purchase extends CComponent {
     }
 
     public function getTaxPercentage() {
-        if ((int)$this->header->is_service === 1)
+        if ((int)$this->header->is_service === 1) {
             $taxPercentage = ((int)$this->header->supplier->is_tax === 1) ? 2 : 0;
-        else
+        } else {
             $taxPercentage = ((int)$this->header->supplier->is_tax === 1) ? 10 : 0;
+        }
         
         return $taxPercentage;
     }
 
     public function getCalculatedTax() {
-//        return ((int)$this->header->is_tax == 1) ? $this->getTotalBeforeTax() * $this->header->tax_percentage / 100 : 0.00;
         return $this->getTotalBeforeTax() * $this->header->tax_percentage / 100;
     }
 
@@ -219,6 +219,6 @@ class Purchase extends CComponent {
     }
 
     public function getGrandTotal() {
-        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome();
+        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome() - $this->header->expense_amount;
     }
 }

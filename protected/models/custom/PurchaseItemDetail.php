@@ -7,15 +7,16 @@ class PurchaseItemDetail extends PurchaseItemDetailBase {
     }
 
     public function getTotal() {
-        return $this->quantity * $this->unit_price;
+        return $this->quantity * $this->unit_price - $this->discount_amount;
     }
 
     public function getTotalReceived() {
         $total = 0;
 
         foreach ($this->receiveItemDetails as $detail) {
-            if ((int) $detail->is_inactive === 0)
+            if ((int) $detail->is_inactive === 0) {
                 $total += $detail->quantity;
+            }
         }
 
         return $total;
@@ -38,7 +39,7 @@ class PurchaseItemDetail extends PurchaseItemDetailBase {
     }
 
     public function getReportTotalAfterTaxItem() {
-        return $this->reportTotalAfterDiscountItem + $this->reportTaxItem;
+        return $this->reportTotalAfterDiscountItem + $this->reportTaxItem - $this->discount_amount;
     }
 
 }

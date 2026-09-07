@@ -14,7 +14,7 @@
 
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/main.css" />
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/form.css" />
-        <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/custom.css" />    
+        <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/custom.css" />
 
         <title><?php echo CHtml::encode($this->pageTitle); ?></title>
     </head>
@@ -50,7 +50,6 @@
                                     Yii::app()->user->checkAccess('purchaseEditMaster') ||
                                     Yii::app()->user->checkAccess('purchaseViewMaster')): ?>
                                         <li><?php echo CHtml::link('Item', array('/admin/item/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Supplier Non Material', array('*')); ?></li>
                                         <li><?php echo CHtml::link('Item Category', array('/admin/itemCategory/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('accountingCreateMaster') ||
@@ -58,12 +57,12 @@
                                     Yii::app()->user->checkAccess('accountingViewMaster')): ?>
                                         <li><?php echo CHtml::link('Chart of Account', array('/admin/account/admin')); ?></li>
                                         <li><?php echo CHtml::link('Customer', array('/admin/customer/admin')); ?></li>    
+                                        <li><?php echo CHtml::link('Supplier', array('/admin/supplier/admin')); ?></li>
                                         <li><?php echo CHtml::link('Gudang', array('/admin/warehouse/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('inventoryCreateMaster') ||
                                     Yii::app()->user->checkAccess('inventoryEditMaster') ||
                                     Yii::app()->user->checkAccess('inventoryViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Supplier Material', array('/admin/supplier/admin')); ?></li>
                                         <li><?php echo CHtml::link('Material', array ('/admin/item/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('hrgaCreateMaster') ||

@@ -23,18 +23,19 @@ class PurchaseItemHeader extends PurchaseItemHeaderBase {
     public function getPaymentStatus() {
         $status = '';
 
-        if ($this->payment_period == 0)
+        if ($this->payment_period == 0) {
             $status = self::COD_LITERAL;
-        else if ($this->payment_period == 1)
+        } else if ($this->payment_period == 1) {
             $status = self::DAYS_15_LITERAL;
-        else if ($this->payment_period == 2)
+        } else if ($this->payment_period == 2) {
             $status = self::DAYS_30_LITERAL;
-        else if ($this->payment_period == 3)
+        } else if ($this->payment_period == 3) {
             $status = self::DAYS_60_LITERAL;
-        else if ($this->payment_period == 4)
+        } else if ($this->payment_period == 4) {
             $status = self::DAYS_90_LITERAL;
-        else if ($this->payment_period == self::DAYS_45)
+        } else if ($this->payment_period == self::DAYS_45) {
             $status = self::DAYS_45_LITERAL;
+        }
 
         return $status;
     }
@@ -76,7 +77,7 @@ class PurchaseItemHeader extends PurchaseItemHeaderBase {
     }
 
     public function getGrandTotal() {
-        return $this->getTotalBeforeTax() + $this->getCalculatedTax() - $this->getCalculatedTaxIncome();
+        return $this->getTotalBeforeTax() + $this->getCalculatedTax() - $this->getCalculatedTaxIncome() - $this->expense_amount;
     }
 
     public function searchByReceiveItem() {

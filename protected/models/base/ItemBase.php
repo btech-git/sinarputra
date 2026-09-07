@@ -8,66 +8,72 @@
  * @property integer $item_category_id
  * @property integer $unit_id
  * @property integer $is_inactive
+ * @property integer $account_id_inventory
+ * @property integer $account_id_expense
  *
+ * @property Account $accountIdInventory
+ * @property Account $accountIdExpense
  * @property ItemCategory $itemCategory
  * @property Unit $unit
  * @property PurchaseItemDetail[] $purchaseItemDetails
  */
-class ItemBase extends ActiveRecord
-{
-	public function tableName()
-	{
-		return 'tblsp_item';
-	}
+class ItemBase extends ActiveRecord {
 
-	public function rules()
-	{
-		return array(
-			array('code, name, item_category_id, unit_id', 'required'),
-			array('item_category_id, unit_id, is_inactive', 'numerical', 'integerOnly'=>true),
-			array('code, name', 'length', 'max'=>60),
-			array('description', 'length', 'max'=>100),
-			// The following rule is used by search().
-			array('id, code, name, description, item_category_id, unit_id, is_inactive', 'safe', 'on'=>'search'),
-		);
-	}
+    public function tableName() {
+        return 'tblsp_item';
+    }
 
-	public function relations()
-	{
-		return array(
-			'itemCategory' => array(self::BELONGS_TO, 'ItemCategory', 'item_category_id'),
-			'unit' => array(self::BELONGS_TO, 'Unit', 'unit_id'),
-			'purchaseItemDetails' => array(self::HAS_MANY, 'PurchaseItemDetail', 'item_id'),
-		);
-	}
+    public function rules() {
+        return array(
+            array('code, name, item_category_id, unit_id', 'required'),
+            array('item_category_id, unit_id, is_inactive, account_id_inventory, account_id_expense', 'numerical', 'integerOnly' => true),
+            array('code, name', 'length', 'max' => 60),
+            array('description', 'safe'),
+            // The following rule is used by search().
+            array('id, code, name, description, item_category_id, unit_id, is_inactive, account_id_inventory, account_id_expense', 'safe', 'on' => 'search'),
+        );
+    }
 
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'code' => 'Code',
-			'name' => 'Name',
-			'description' => 'Description',
-			'item_category_id' => 'Item Category',
-			'unit_id' => 'Unit',
-			'is_inactive' => 'Is Inactive',
-		);
-	}
+    public function relations() {
+        return array(
+            'accountIdInventory' => array(self::BELONGS_TO, 'Account', 'account_id_inventory'),
+            'accountIdExpense' => array(self::BELONGS_TO, 'Account', 'account_id_expense'),
+            'itemCategory' => array(self::BELONGS_TO, 'ItemCategory', 'item_category_id'),
+            'unit' => array(self::BELONGS_TO, 'Unit', 'unit_id'),
+            'purchaseItemDetails' => array(self::HAS_MANY, 'PurchaseItemDetail', 'item_id'),
+        );
+    }
 
-	public function search()
-	{
-		$criteria = new CDbCriteria;
+    public function attributeLabels() {
+        return array(
+            'id' => 'ID',
+            'code' => 'Code',
+            'name' => 'Name',
+            'description' => 'Description',
+            'item_category_id' => 'Item Category',
+            'unit_id' => 'Unit',
+            'is_inactive' => 'Is Inactive',
+            'account_id_inventory' => 'Account Id Inventory',
+            'account_id_expense' => 'Account Id Expense',
+        );
+    }
 
-		$criteria->compare('t.id', $this->id);
-		$criteria->compare('t.code', $this->code, true);
-		$criteria->compare('t.name', $this->name, true);
-		$criteria->compare('t.description', $this->description, true);
-		$criteria->compare('t.item_category_id', $this->item_category_id);
-		$criteria->compare('t.unit_id', $this->unit_id);
-		$criteria->compare('t.is_inactive', $this->is_inactive);
+    public function search() {
+        $criteria = new CDbCriteria;
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('t.code', $this->code, true);
+        $criteria->compare('t.name', $this->name, true);
+        $criteria->compare('t.description', $this->description, true);
+        $criteria->compare('t.item_category_id', $this->item_category_id);
+        $criteria->compare('t.unit_id', $this->unit_id);
+        $criteria->compare('t.is_inactive', $this->is_inactive);
+        $criteria->compare('t.account_id_inventory', $this->account_id_inventory);
+        $criteria->compare('t.account_id_expense', $this->account_id_expense);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
+
 }

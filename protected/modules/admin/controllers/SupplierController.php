@@ -12,18 +12,23 @@ class SupplierController extends CrudController {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!Yii::app()->user->checkAccess('inventoryCreateMaster'))
+            if (!Yii::app()->user->checkAccess('inventoryCreateMaster')) {
                 $this->redirect(array('/site/login'));
+            }
         } 
         if ($filterChain->action->id === 'update' || $filterChain->action->id === 'delete') {
-            if (!Yii::app()->user->checkAccess('inventoryEditMaster'))
-                $this->redirect(array('/site/login'));            
+            if (!Yii::app()->user->checkAccess('inventoryEditMaster')) {
+                $this->redirect(array('/site/login'));
+            }
         } 
         if ($filterChain->action->id === 'view' || $filterChain->action->id === 'admin') {
-            if (!(Yii::app()->user->checkAccess('inventoryCreateMaster') || 
-            Yii::app()->user->checkAccess('inventoryEditMaster') || 
-            Yii::app()->user->checkAccess('inventoryViewMaster')))
-                $this->redirect(array('/site/login'));            
+            if (!(
+                Yii::app()->user->checkAccess('inventoryCreateMaster') || 
+                Yii::app()->user->checkAccess('inventoryEditMaster') || 
+                Yii::app()->user->checkAccess('inventoryViewMaster')
+            )) {
+                $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -40,8 +45,15 @@ class SupplierController extends CrudController {
 
         if (isset($_POST['Supplier'])) {
             $model->attributes = $_POST['Supplier'];
-            if ($model->save())
+            
+            $existingCode = Supplier::model()->find(array('order' => 'code DESC'));
+            $ordinal = substr($existingCode->code, -4);
+            $newOrdinal = $ordinal + 1;
+            $model->code = 'SPM' . sprintf('%04d', $newOrdinal);
+            
+            if ($model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('create', array(
@@ -54,8 +66,10 @@ class SupplierController extends CrudController {
 
         if (isset($_POST['Supplier'])) {
             $model->attributes = $_POST['Supplier'];
-            if ($model->save())
+            
+            if ($model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('update', array(
@@ -67,11 +81,12 @@ class SupplierController extends CrudController {
         if (Yii::app()->request->isPostRequest) {
             $this->loadModel($id)->delete();
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionIndex() {
@@ -84,11 +99,13 @@ class SupplierController extends CrudController {
     public function actionAdmin() {
         $model = new Supplier('search');
         $model->unsetAttributes();
-        if (isset($_GET['Supplier']))
+        if (isset($_GET['Supplier'])) {
             $model->attributes = $_GET['Supplier'];
+        }
 
-        if (isset($_POST['SaveToExcel'])) 
+        if (isset($_POST['SaveToExcel'])) {
             $this->saveToExcel();
+        }
 
         $this->render('admin', array(
             'model' => $model,
@@ -97,14 +114,17 @@ class SupplierController extends CrudController {
 
     public function loadModel($id) {
         $model = Supplier::model()->findByPk($id);
-        if ($model === null)
+        
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
     
     protected function saveToExcel() {
-		set_time_limit(0);
-		ini_set('memory_limit', '1024M');
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 		
         $criteria = new CDbCriteria();
         $criteria->compare('t.is_inactive', 0);

@@ -17,8 +17,9 @@ class PurchaseItem extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($purchaseItemHeader !== null)
+        if ($purchaseItemHeader !== null) {
             $this->header->setCodeNumber($purchaseItemHeader->cn_ordinal, $purchaseItemHeader->cn_month, $purchaseItemHeader->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -42,10 +43,11 @@ class PurchaseItem extends CComponent {
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
 
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -58,9 +60,9 @@ class PurchaseItem extends CComponent {
     public function validate() {
         $valid = $this->header->validate();
 
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Header Error');
-        else {
+        } else {
             $valid = $this->validateDetailsCount() && $valid;
             if (!$valid)
                 $this->header->addError('error', 'Validate Details Count Error');
@@ -71,9 +73,9 @@ class PurchaseItem extends CComponent {
                         $fields = array('quantity', 'unit_price');
                         $valid = $detail->validate($fields) && $valid;
                     }
-                }
-                else
+                } else {
                     $valid = false;
+                }
             }
         }
 
@@ -138,11 +140,11 @@ class PurchaseItem extends CComponent {
     }
 
     public function getCalculatedTaxIncome() {
-        return ((int)$this->header->is_tax_income === 1) ? $this->getTotalBeforeTax() * .02 : 0.00;
+        return ((int)$this->header->is_tax_income === 1) ? $this->getTotalBeforeTax() * .003 : 0.00;
     }
 
     public function getGrandTotal() {
-        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome();
+        return $this->getTotalBeforeTax() + $this->getCalculatedTax() + $this->getCalculatedTaxIncome() - $this->header->expense_amount;
     }
 
 }

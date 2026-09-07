@@ -9,6 +9,7 @@
         <th style="text-align: center; width: 3%;">ANNL</th>
         <th style="text-align: center; width: 3%;">SM</th>
         <th style="text-align: center; width: 15%">Harga</th>
+        <th style="text-align: center; width: 10%">Disc</th>
         <th style="text-align: center; width: 15%">Total</th>
         <th style="width: 5%"></th>
     </tr>
@@ -58,85 +59,77 @@
             </td>	
 
             <td><!--length-->
-                <?php
-                echo CHtml::activeTextField($detail, "[$i]length_final", array('size' => 5, 'maxLength' => 20,
+                <?php echo CHtml::activeTextField($detail, "[$i]length_final", array('size' => 5, 'maxLength' => 20,
                     'onchange' => CHtml::ajax(array(
                         'type' => 'POST',
                         'dataType' => 'JSON',
                         'url' => CController::createUrl('ajaxJsonTotalService', array('id' => $purchase->header->id, 'index' => $i)),
                         'success' => 'function(data) {
-							$("#total_service_' . $i . '").html(data.total);
-							$("#amount_span_' . $i . '").html(data.amount);
-							$("#service_sub_total_span").html(data.serviceSubTotal);
-							$("#service_tax_span").html(data.formattedServiceTax);
-							$("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
-							$("#total_service_span").html(data.totalService);
-							$("#all_detail_sub_total").html(data.allDetailSubTotal);
-							$("#discount_amount").html(data.discountAmount);
-							$("#total_before_tax").html(data.totalBeforeTax);
-							$("#taxPercentage").html(data.taxPercentage);
-							$("#taxValue").html(data.taxValue);
-							$("#grand_total").html(data.grandTotal);
-							}',
+                            $("#total_service_' . $i . '").html(data.total);
+                            $("#amount_span_' . $i . '").html(data.amount);
+                            $("#service_sub_total_span").html(data.serviceSubTotal);
+                            $("#service_tax_span").html(data.formattedServiceTax);
+                            $("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
+                            $("#total_service_span").html(data.totalService);
+                            $("#all_detail_sub_total").html(data.allDetailSubTotal);
+                            $("#discount_amount").html(data.discountAmount);
+                            $("#total_before_tax").html(data.totalBeforeTax);
+                            $("#tax_value").html(data.taxValue);
+                            $("#tax_income_value").html(data.taxIncomeValue);
+                            $("#grand_total").html(data.grandTotal);
+                        }',
                     )),
-                ));
-                ?>
+                )); ?>
                 <?php echo CHtml::error($detail, 'length_final'); ?>
             </td>	
 
             <td style="text-align: right">
-
-                <?php
-                echo CHtml::activeTextField($detail, "[$i]quantity", array('size' => 5, 'maxLength' => 18,
+                <?php echo CHtml::activeTextField($detail, "[$i]quantity", array('size' => 5, 'maxLength' => 18,
                     'onchange' => CHtml::ajax(array(
                         'type' => 'POST',
                         'dataType' => 'JSON',
                         'url' => CController::createUrl('ajaxJsonTotalService', array('id' => $purchase->header->id, 'index' => $i)),
                         'success' => 'function(data) {
-							$("#total_service_' . $i . '").html(data.total);
-							$("#amount_span_' . $i . '").html(data.amount);
-							$("#service_sub_total_span").html(data.serviceSubTotal);
-							$("#service_tax_span").html(data.formattedServiceTax);
-							$("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
-							$("#total_service_span").html(data.totalService);
-							$("#all_detail_sub_total").html(data.allDetailSubTotal);
-							$("#discount_amount").html(data.discountAmount);
-							$("#total_before_tax").html(data.totalBeforeTax);
-							$("#taxPercentage").html(data.taxPercentage);
-							$("#taxValue").html(data.taxValue);
-							$("#grand_total").html(data.grandTotal);
-							}',
+                            $("#total_service_' . $i . '").html(data.total);
+                            $("#amount_span_' . $i . '").html(data.amount);
+                            $("#service_sub_total_span").html(data.serviceSubTotal);
+                            $("#service_tax_span").html(data.formattedServiceTax);
+                            $("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
+                            $("#total_service_span").html(data.totalService);
+                            $("#all_detail_sub_total").html(data.allDetailSubTotal);
+                            $("#discount_amount").html(data.discountAmount);
+                            $("#total_before_tax").html(data.totalBeforeTax);
+                            $("#tax_value").html(data.taxValue);
+                            $("#tax_income_value").html(data.taxIncomeValue);
+                            $("#grand_total").html(data.grandTotal);
+                        }',
                     )),
-                ));
-                ?>
+                )); ?>
                 <?php echo CHtml::error($detail, 'quantity'); ?>
             </td>
 
             <td style="text-align: right">
-
-                <?php
-                echo CHtml::activeTextField($detail, "[$i]weight", array('size' => 5, 'maxLength' => 18,
+                <?php echo CHtml::activeTextField($detail, "[$i]weight", array('size' => 5, 'maxLength' => 18,
                     'onchange' => CHtml::ajax(array(
                         'type' => 'POST',
                         'dataType' => 'JSON',
                         'url' => CController::createUrl('ajaxJsonTotalService', array('id' => $purchase->header->id, 'index' => $i)),
                         'success' => 'function(data) {
-							$("#total_service_' . $i . '").html(data.total);
-							$("#amount_span_' . $i . '").html(data.amount);
-							$("#service_sub_total_span").html(data.serviceSubTotal);
-							$("#service_tax_span").html(data.formattedServiceTax);
-							$("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
-							$("#total_service_span").html(data.totalService);
-							$("#all_detail_sub_total").html(data.allDetailSubTotal);
-							$("#discount_amount").html(data.discountAmount);
-							$("#total_before_tax").html(data.totalBeforeTax);
-							$("#taxPercentage").html(data.taxPercentage);
-							$("#taxValue").html(data.taxValue);
-							$("#grand_total").html(data.grandTotal);
-							}',
+                            $("#total_service_' . $i . '").html(data.total);
+                            $("#amount_span_' . $i . '").html(data.amount);
+                            $("#service_sub_total_span").html(data.serviceSubTotal);
+                            $("#service_tax_span").html(data.formattedServiceTax);
+                            $("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
+                            $("#total_service_span").html(data.totalService);
+                            $("#all_detail_sub_total").html(data.allDetailSubTotal);
+                            $("#discount_amount").html(data.discountAmount);
+                            $("#total_before_tax").html(data.totalBeforeTax);
+                            $("#tax_value").html(data.taxValue);
+                            $("#tax_income_value").html(data.taxIncomeValue);
+                            $("#grand_total").html(data.grandTotal);
+                        }',
                     )),
-                ));
-                ?>
+                )); ?>
                 <?php echo CHtml::error($detail, 'weight'); ?>
             </td>
 
@@ -165,34 +158,53 @@
             </td>
 
             <td style="text-align:right">
-                <?php
-                echo CHtml::activeTextField($detail, "[$i]amount", array('size' => 15,
+                <?php echo CHtml::activeTextField($detail, "[$i]amount", array('size' => 15,
                     'onchange' =>
                     CHtml::ajax(array(
                         'type' => 'POST',
                         'dataType' => 'JSON',
                         'url' => CController::createUrl('ajaxJsonTotalService', array('id' => $purchase->header->id, 'index' => $i)),
                         'success' => 'function(data) {
-						$("#total_service_' . $i . '").html(data.total);
-						$("#amount_span_' . $i . '").html(data.amount);
-						$("#service_sub_total_span").html(data.serviceSubTotal);
-						$("#service_tax_span").html(data.formattedServiceTax);
-						$("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
-						$("#total_service_span").html(data.totalService);
-						$("#all_detail_sub_total").html(data.allDetailSubTotal);
-						$("#discount_amount").html(data.discountAmount);
-						$("#total_before_tax").html(data.totalBeforeTax);
-						$("#taxPercentage").html(data.taxPercentage);
-						$("#taxValue").html(data.taxValue);
-						$("#grand_total").html(data.grandTotal);
-					}',
+                            $("#total_service_' . $i . '").html(data.total);
+                            $("#amount_span_' . $i . '").html(data.amount);
+                            $("#service_sub_total_span").html(data.serviceSubTotal);
+                            $("#service_tax_span").html(data.formattedServiceTax);
+                            $("#' . CHtml::activeId($purchase->header, 'service_tax') . '").val(data.serviceTax);
+                            $("#total_service_span").html(data.totalService);
+                            $("#all_detail_sub_total").html(data.allDetailSubTotal);
+                            $("#discount_amount").html(data.discountAmount);
+                            $("#total_before_tax").html(data.totalBeforeTax);
+                            $("#tax_value").html(data.taxValue);
+                            $("#tax_income_value").html(data.taxIncomeValue);
+                            $("#grand_total").html(data.grandTotal);
+                        }',
                     )),
-                ));
-                ?>
+                )); ?>
                 <span id="amount_span_<?php echo $i; ?>">
                     <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'amount'))); ?>
                 </span>
             </td>
+
+                <td style="text-align: right">
+                    <?php echo CHtml::activeTextField($detail, "[$i]discount_amount", array(
+                        'maxLength' => 18,
+                        'onchange' => CHtml::ajax(array(
+                            'type' => 'POST',
+                            'dataType' => 'JSON',
+                            'url' => CController::createUrl('ajaxJsonTotalByWeight', array('id' => $purchase->header->id, 'index' => $i)),
+                            'success' => 'function(data) {
+                                $("#total_service_' . $i . '").html(data.total);
+                                $("#all_detail_sub_total").html(data.allDetailSubTotal);
+                                $("#tax_value").html(data.taxValue);
+                                $("#tax_income_value").html(data.taxIncomeValue);
+                                $("#grand_total").html(data.grandTotal);
+                            }',
+                        )),
+                        'class' => 'TabOnEnter',
+                        'tabindex' => $tabIndex + 8,
+                    )); ?>
+                    <?php echo CHtml::error($detail, 'discount_amount'); ?>
+                </td>
 
             <td style="text-align: right">
                 <span id="total_service_<?php echo $i; ?>">
@@ -201,20 +213,17 @@
             </td>
             <td>
                 <?php if ($detail->isNewRecord): ?>
-                    <?php
-                    echo CHtml::button('Delete', array(
+                    <?php echo CHtml::button('Delete', array(
                         'onclick' => CHtml::ajax(array(
                             'type' => 'POST',
                             'url' => CController::createUrl('ajaxHtmlRemoveService', array('id' => $purchase->header->id, 'index' => $i)),
                             'update' => '#service_div',
                         )),
-                    ));
-                    ?>
+                    )); ?>
                 <?php else: ?>
                     <?php echo CHtml::activeDropDownList($detail, "[$i]is_inactive", array(ActiveRecord::ACTIVE => 'Active', ActiveRecord::INACTIVE => 'Inactive')); ?>
                 <?php endif; ?>
             </td>
         </tr>
-
     <?php endforeach; ?>
 </table>

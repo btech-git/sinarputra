@@ -14,29 +14,66 @@ $this->menu = array(
 <h1>View Supplier #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-                'code',
-		'name',
-		'company',
-		'address_main',
-		'city',
-		'province',
-		'phone',
-		'fax',
-		'email',
-		'bank_account',
-		'invoice_due_days',
-		'note',
-		'available_credit',
-		'credit_limit',
-		'term_of_payment',
-		'is_tax',
-		'tax_registration_number',
-		'status',
-		array(
-			'label'=>'Akun Hutang',
-			'value'=>$model->accountIdPayable->name,
-		),
-	),
+    'data'=>$model,
+    'attributes'=>array(
+        'category',
+        'code',
+        'name',
+        'company',
+        array(
+            'label'=>'Alamat Utama',
+            'value' => $model->address_main,
+        ),
+        array(
+            'label'=>'Alamat Kirim',
+            'value' => $model->address_secondary,
+        ),
+        array(
+            'label'=>'Alamat Invoice',
+            'value' => $model->address_billing,
+        ),
+        'city',
+        'province',
+        'mobile_phone',
+        'phone',
+        'fax',
+        'website',
+        'email',
+        array(
+            'label'=>'Nama Bank',
+            'value' => $model->bank_account,
+        ),
+        array(
+            'label'=>'Akun Bank #',
+            'value' => $model->bank_account_number,
+        ),
+        array(
+            'label'=>'Jatuh Tempo (hari)',
+            'value' => $model->invoice_due_days,
+        ),
+        'available_credit',
+        array(
+            'label'=>'TOP (hari)',
+            'value' => $model->term_of_payment,
+        ),
+        'credit_limit',
+        array(
+            'label'=>'PPh',
+            'value' => $model->getTaxServiceType($model->tax_service_type),
+        ),
+        array(
+            'label'=>'NPWP',
+            'value' => CHtml::encode(CHtml::value($model, 'tax_registration_number')),
+        ),
+        array(
+            'label'=>'PPn',
+            'value' => $model->is_tax === 0 ? 'Non': 'PPn',
+        ),
+        array(
+            'label'=>'Akun Hutang',
+            'value' => CHtml::encode(CHtml::value($model, 'accountIdPayable.name')),
+        ),
+        'note',
+        'status',
+    ),
 )); ?>

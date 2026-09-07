@@ -15,7 +15,7 @@ class PurchaseDetailService extends PurchaseDetailServiceBase {
     }
 
     public function getTotalServiceTax() {
-        return $this->weight * $this->getAmountTax() ;
+        return $this->weight * $this->getAmountTax() - $this->discount_amount;
     }
 
     public function getReportDiscountItem() {

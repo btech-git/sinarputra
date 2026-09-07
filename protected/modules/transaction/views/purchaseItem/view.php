@@ -8,16 +8,14 @@ $this->breadcrumbs = array(
 ?>
 
 <style>
-    table
-    {
+    table {
         margin-bottom: 0px;
     }
 </style>
 
 <h1><?php echo $this->id . '/' . $this->action->id; ?></h1>
 
-<?php
-$this->widget('zii.widgets.CDetailView', array(
+<?php $this->widget('zii.widgets.CDetailView', array(
     'data' => $purchaseItem,
     'attributes' => array(
         array(
@@ -41,14 +39,11 @@ $this->widget('zii.widgets.CDetailView', array(
             'value' => $purchaseItem->note,
         ),
     ),
-));
-?>
-
+)); ?>
 
 <h2>Item</h2>
 
-<?php
-$this->widget('zii.widgets.grid.CGridView', array(
+<?php $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'purchase-detail-grid',
     'dataProvider' => $detailsDataProvider,
     'htmlOptions' => array(
@@ -74,6 +69,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
             ),
         ),
         array(
+            'header' => 'Discount',
+            'value' => 'number_format($data->discount_amount, 2)',
+            'htmlOptions' => array(
+                'style' => 'text-align: right',
+            ),
+        ),
+        array(
             'header' => 'Total',
             'value' => 'number_format($data->total, 2)',
             'htmlOptions' => array(
@@ -81,8 +83,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             ),
         ),
     ),
-));
-?>
+)); ?>
 
 <br />
 
@@ -106,11 +107,20 @@ $this->widget('zii.widgets.grid.CGridView', array(
         </td>
     </tr>
     <tr style="background-color: skyblue">
-        <td style="text-align: right; width: 80%">PPh 2%:</td>
+        <td style="text-align: right; width: 80%">PPh 0.3%:</td>
         <td style="text-align: right">
             (<?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchaseItem->calculatedTaxIncome)); ?>)
         </td>
     </tr>
+    <tr style="background-color: skyblue">
+        <td style="text-align:right; width: 80%">
+            Ongkos <?php echo CHtml::encode(CHtml::value($purchaseItem, 'accountIdExpense.name')); ?>
+        </td>
+        <td style="text-align: right">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchaseItem->expense_amount)); ?>
+        </td>
+    </tr>
+
     <tr style="background-color: skyblue">
         <td style="text-align: right; width: 80%; font-weight: bold">Grand Total:</td>
         <td style="text-align: right; font-weight: bold">

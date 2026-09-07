@@ -88,41 +88,45 @@ Yii::app()->clientScript->registerCss('memo', '
     <table class="memo">
         <tr id="theader">
             <th style="width: 3%">No.</th>
-            <th style="width: 13%">Nama Barang</th>
-            <th>Tebal/Dmtr</th>
+            <th>Nama Barang</th>
+            <th style="width: 8%">Tebal/Dmtr</th>
             <?php if ($purchase->purchaseDetails[0]->product_category_id != 2): ?>
-                <th>Lebar</th>
+                <th style="width: 8%">Lebar</th>
             <?php endif; ?>
-            <th>Panjang</th>
-            <th style="width: 10%">Quantity</th>
-            <th style="width: 10%">Unit</th>
-            <th style="width: 10%">Berat</th>
+            <th style="width: 8%">Panjang</th>
+            <th style="width: 8%">Quantity</th>
+            <th style="width: 5%">Satuan</th>
+            <th style="width: 8%">Berat</th>
             <th style="width: 15%">Harga</th>
+            <th style="width: 10%">Disc</th>
             <th style="width: 15%">Total</th>
         </tr>
 
         <?php foreach ($purchase->purchaseDetails as $i => $detail): ?>
             <tr class="titems">
                 <td style="text-align: center"><?php echo $i+1; ?></td>
-                <td>
-                    <?php echo CHtml::encode(CHtml::value($detail, 'product_name')); ?>
-                </td>
-                <td style="text-align: right">
-                    <?php echo CHtml::encode(CHtml::value($detail, 'height')); ?>
-                </td>
+                <td><?php echo CHtml::encode(CHtml::value($detail, 'product_name')); ?></td>
+                <td style="text-align: right"><?php echo CHtml::encode(CHtml::value($detail, 'height')); ?></td>
                 <?php if ($detail->product_category_id != 2): ?>
-                    <td style="text-align: right">
-                        <?php echo CHtml::encode(CHtml::value($detail, 'width')); ?>
-                    </td>
+                    <td style="text-align: right"><?php echo CHtml::encode(CHtml::value($detail, 'width')); ?></td>
                 <?php endif; ?>
-                <td style="text-align: right">
-                    <?php echo CHtml::encode(CHtml::value($detail, 'length')); ?>
+                <td style="text-align: right"><?php echo CHtml::encode(CHtml::value($detail, 'length')); ?></td>
+                <td style="text-align: center">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?>
                 </td>
-                <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $detail->quantity)); ?></td>
                 <td style="text-align: center"><?php echo 'Pcs'; ?></td>
-                <td style="text-align: right"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $detail->weight)); ?></td>
-                <td style="text-align: right"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?> </td>
-                <td style="text-align: right"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $detail->total)); ?></td>
+                <td style="text-align: right">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'weight'))); ?>
+                </td>
+                <td style="text-align: right">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'unit_price'))); ?> 
+                </td>
+                <td style="text-align: right">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'discount_amount'))); ?> 
+                </td>
+                <td style="text-align: right">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'total'))); ?>
+                </td>
             </tr>	
         <?php endforeach; ?>
         <?php for ($j = 15, $i = $i % $j + 1; $j > $i; $j--): ?>
@@ -139,6 +143,7 @@ Yii::app()->clientScript->registerCss('memo', '
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
         <?php endfor; ?>
         <tr>
@@ -146,7 +151,7 @@ Yii::app()->clientScript->registerCss('memo', '
             <td style="border-top: 1px solid; border-right: 1px solid; text-align: center">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'subTotalQuantity'))); ?>
             </td>
-            <td style="border-top: 1px solid; text-align: right" colspan="2">Sub Total</td>
+            <td style="border-top: 1px solid; text-align: right" colspan="3">Sub Total</td>
             <td style="border-top: 1px solid; text-align: right">Rp. </td>
             <td style="border-top: 1px solid; text-align: right">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'subTotal'))); ?>
@@ -171,6 +176,7 @@ Yii::app()->clientScript->registerCss('memo', '
             <th style="text-align:center;">ANNL</th>
             <th style="text-align:center;">SM</th>
             <th style="width: 10%">Harga</th>
+            <th style="width: 10%">Disc</th>
             <th style="width: 15%">Total</th>
         </tr>
         <?php foreach ($purchase->purchaseDetailServices as $i => $detail): ?>
@@ -211,6 +217,9 @@ Yii::app()->clientScript->registerCss('memo', '
                 </td>
                 <?php //if ($purchase->is_tax) : ?>
                     <td style="text-align: right; "><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'amount'))); ?></td>
+                    <td style="text-align: right">
+                        <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'discount_amount'))); ?> 
+                    </td>
                     <td style="text-align: right;"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $detail->totalService)); ?></td>
                 <?php /*else: ?>
                     <td style="text-align: right; "><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($detail, 'amountTax'))); ?></td>
@@ -236,6 +245,7 @@ Yii::app()->clientScript->registerCss('memo', '
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
         <?php endfor; ?>
         <tr>    
@@ -243,7 +253,7 @@ Yii::app()->clientScript->registerCss('memo', '
             <td style="border-top: 2px solid; border-right: 1px solid; text-align: right">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'serviceSubTotalQuantity'))); ?>
             </td>
-            <td style="border-left: 1px solid; border-top: 2px solid; text-align:right" colspan="6">Sub Total</td>
+            <td style="border-left: 1px solid; border-top: 2px solid; text-align:right" colspan="7">Sub Total</td>
             <td style="border-top: 2px solid">Rp. </td>
             <td style="border-top: 2px solid; border-right: 1px solid; text-align: right">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'serviceSubTotal'))); ?>
@@ -284,6 +294,15 @@ Yii::app()->clientScript->registerCss('memo', '
         <td>Rp. </td>
         <td style="text-align: right; border-right: 1px solid">
             <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'calculatedTaxIncome'))); ?>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: right; border-left: 1px solid" >
+            Ongkos <?php echo CHtml::encode(CHtml::value($purchase, 'accountIdExpense.name')); ?>
+        </td>
+        <td>Rp. </td>
+        <td style="text-align: right; border-right: 1px solid;">
+            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($purchase, 'expense_amount'))); ?>
         </td>
     </tr>
     <tr>

@@ -23,7 +23,7 @@ class PurchaseDetail extends PurchaseDetailBase {
     }
 
     public function getTotal() {
-        return $this->weight * $this->unit_price;
+        return $this->weight * $this->unit_price - $this->discount_amount;
     }
 
     public function getTotalReceived() {
@@ -53,6 +53,6 @@ class PurchaseDetail extends PurchaseDetailBase {
     }
 	
     public function getReportTotalAfterTaxItem() {
-        return $this->reportTotalAfterDiscountItem + $this->reportTaxItem;
+        return $this->reportTotalAfterDiscountItem + $this->reportTaxItem - $this->discount_amount;
     }
 }

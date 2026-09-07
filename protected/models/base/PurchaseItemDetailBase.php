@@ -7,6 +7,7 @@
  * @property integer $purchase_item_header_id
  * @property integer $item_id
  * @property integer $is_inactive
+ * @property string $discount_amount
  *
  * @property PurchaseItemHeader $purchaseItemHeader
  * @property Item $item
@@ -24,9 +25,9 @@ class PurchaseItemDetailBase extends ActiveRecord
 		return array(
 			array('purchase_item_header_id, item_id', 'required'),
 			array('quantity, purchase_item_header_id, item_id, is_inactive', 'numerical', 'integerOnly'=>true),
-			array('unit_price', 'length', 'max'=>18),
+			array('unit_price, discount_amount', 'length', 'max'=>18),
 			// The following rule is used by search().
-			array('id, quantity, unit_price, purchase_item_header_id, item_id, is_inactive', 'safe', 'on'=>'search'),
+			array('id, quantity, unit_price, purchase_item_header_id, item_id, is_inactive, discount_amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -48,6 +49,7 @@ class PurchaseItemDetailBase extends ActiveRecord
 			'purchase_item_header_id' => 'Purchase Item Header',
 			'item_id' => 'Item',
 			'is_inactive' => 'Is Inactive',
+			'discount_amount' => 'Discount Amount',
 		);
 	}
 
@@ -61,6 +63,7 @@ class PurchaseItemDetailBase extends ActiveRecord
 		$criteria->compare('t.purchase_item_header_id', $this->purchase_item_header_id);
 		$criteria->compare('t.item_id', $this->item_id);
 		$criteria->compare('t.is_inactive', $this->is_inactive);
+		$criteria->compare('t.discount_amount', $this->discount_amount, true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

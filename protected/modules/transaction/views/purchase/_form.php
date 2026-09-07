@@ -336,6 +336,30 @@
         </tr>
         
         <tr style="background-color: aquamarine">
+            <td style="font-weight: bold; text-align:right">
+                Ongkos &nbsp;
+                <?php echo CHtml::activeDropDownList($purchase->header, "account_id_expense", CHtml::listData(Account::model()->findAll(array(
+                    'condition' => "code LIKE '500-%' OR code LIKE '700-%' OR code LIKE '900-%'", 
+                    'order' => 't.name ASC'
+                )), 'id', 'name'), array('empty' => '-- Pilih Akun --')); ?>   
+            </td>
+            <td style="text-align: right; font-weight: bold">
+                <?php echo CHtml::activeTextField($purchase->header, "expense_amount",array(
+                    'maxLength' => 18,
+                    'onchange' => CHtml::ajax(array(
+                        'type' => 'POST',
+                        'dataType' => 'JSON',
+                        'url' => CController::createUrl('ajaxJsonTaxTotal', array('id' => $purchase->header->id)),
+                        'success' => 'function(data) {
+                            $("#grand_total").html(data.grandTotal);
+                        }',
+                    )),
+                )); ?> 
+            </td>
+            <td></td>            
+        </tr>
+        
+        <tr style="background-color: aquamarine">
             <td style="font-weight: bold; text-align:right">Grand Total</td>
             <td style="text-align: right; font-weight: bold">
                 <span id="grand_total">
