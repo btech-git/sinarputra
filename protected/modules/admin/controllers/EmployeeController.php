@@ -12,18 +12,23 @@ class EmployeeController extends CrudController {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!Yii::app()->user->checkAccess('hrgaCreateMaster'))
+            if (!Yii::app()->user->checkAccess('hrgaCreateMaster')) {
                 $this->redirect(array('/site/login'));
+            }
         } 
         if ($filterChain->action->id === 'update' || $filterChain->action->id === 'delete') {
-            if (!Yii::app()->user->checkAccess('hrgaEditMaster'))
+            if (!Yii::app()->user->checkAccess('hrgaEditMaster')) {
                 $this->redirect(array('/site/login'));            
+            }
         } 
         if ($filterChain->action->id === 'view' || $filterChain->action->id === 'admin') {
-            if (!(Yii::app()->user->checkAccess('hrgaCreateMaster') || 
-            Yii::app()->user->checkAccess('hrgaEditMaster') || 
-            Yii::app()->user->checkAccess('hrgaViewMaster')))
-                $this->redirect(array('/site/login'));            
+            if (!(
+                Yii::app()->user->checkAccess('hrgaCreateMaster') || 
+                Yii::app()->user->checkAccess('hrgaEditMaster') || 
+                Yii::app()->user->checkAccess('hrgaViewMaster')
+            )) {
+                $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -35,41 +40,44 @@ class EmployeeController extends CrudController {
         }
         if (isset($_POST['EmployeeFamilyRelationship'])) {
             foreach ($_POST['EmployeeFamilyRelationship'] as $i => $item) {
-                if (isset($model->detailRelationships[$i]))
+            if (isset($model->detailRelationships[$i])) {
                     $model->detailRelationships[$i]->attributes = $item;
-                else {
+            } else {
                     $detail = new EmployeeFamilyRelationship();
                     $detail->attributes = $item;
                     $model->detailRelationships[] = $detail;
                 }
             }
-            if (count($_POST['EmployeeFamilyRelationship']) < count($model->detailRelationships))
+            if (count($_POST['EmployeeFamilyRelationship']) < count($model->detailRelationships)) {
                 array_splice($model->detailRelationships, $i + 1);
-        }
-        else
+            }
+        } else {
             $model->detailRelationships = array();
+        }
 
         if (isset($_POST['EmployeeFormalEducation'])) {
             foreach ($_POST['EmployeeFormalEducation'] as $i => $item) {
-                if (isset($model->detailEducations[$i]))
+                if (isset($model->detailEducations[$i])) {
                     $model->detailEducations[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new EmployeeFormalEducation();
                     $detail->attributes = $item;
                     $model->detailEducations[] = $detail;
                 }
             }
-            if (count($_POST['EmployeeFormalEducation']) < count($model->detailEducations))
+            
+            if (count($_POST['EmployeeFormalEducation']) < count($model->detailEducations)) {
                 array_splice($model->detailEducations, $i + 1);
-        }
-        else
+            }
+        } else {
             $model->detailEducations = array();
+        }
 
         if (isset($_POST['EmployeeJobExperience'])) {
             foreach ($_POST['EmployeeJobExperience'] as $i => $item) {
-                if (isset($model->detailExperiences[$i]))
+                if (isset($model->detailExperiences[$i])) {
                     $model->detailExperiences[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new EmployeeJobExperience();
                     $detail->attributes = $item;
                     $model->detailExperiences[] = $detail;
@@ -77,16 +85,16 @@ class EmployeeController extends CrudController {
             }
             if (count($_POST['EmployeeJobExperience']) < count($model->detailExperiences))
                 array_splice($model->detailExperiences, $i + 1);
-        }
-        else
+        } else {
             $model->detailExperiences = array();
+        }
     }
 
     public function instantiate($id) {
 
-        if (empty($id))
+        if (empty($id)) {
             $model = new EmployeeComponent(new Employee, array(), array(), array());
-        else {
+        } else {
             $header = $this->loadModel($id);
             $model = new EmployeeComponent($header, $header->employeeFamilyRelationships, $header->employeeFormalEducations, $header->employeeJobExperiences);
         }
@@ -191,11 +199,12 @@ class EmployeeController extends CrudController {
         if (Yii::app()->request->isPostRequest) {
             $this->loadModel($id)->delete();
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionIndex() {
@@ -208,9 +217,9 @@ class EmployeeController extends CrudController {
     public function actionAdmin() {
         $model = new Employee('search');
         $model->unsetAttributes();
-        if (isset($_GET['Employee']))
+        if (isset($_GET['Employee'])) {
             $model->attributes = $_GET['Employee'];
-
+        }
 
         if (isset($_GET['Export'])) {
             $this->saveToExcel(Employee::model()->findAll());
@@ -223,8 +232,11 @@ class EmployeeController extends CrudController {
 
     public function loadModel($id) {
         $model = Employee::model()->resetScope()->findByPk($id);
-        if ($model === null)
+        
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -442,8 +454,9 @@ class EmployeeController extends CrudController {
             $path = Yii::getPathOfAlias('webroot') . '/FileExcel/' . $fileUpload;
             $fileUpload->saveAs($path);
 
-            if (!file_exists($path))
+            if (!file_exists($path)) {
                 die('File could not be found at: ' . $path);
+            }
 
             $objPHPExcel = PHPExcel_IOFactory::load($path);
             $sheet = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);

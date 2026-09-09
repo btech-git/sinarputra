@@ -41,12 +41,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header' => 'Image',
             'type' => 'raw',
             'value' => '$data->file_extension ? CHtml::image(Yii::app()->baseUrl."/images/employee/".$data->file_extension, "image", array(
-					"width" => "90px"
-				)) : 
-				CHtml::image(Yii::app()->baseUrl."/images/employee/default.png", "image", array(
-					"width" => "90px"
-				))
-',
+                "width" => "90px"
+            )) : 
+            CHtml::image(Yii::app()->baseUrl."/images/employee/default.png", "image", array(
+                "width" => "90px"
+            ))',
             'htmlOptions' => array(
                 'style' => 'text-align:center;'  //project rims, create employee, warehouse. Finish this slide manager
             )
@@ -79,6 +78,4 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ));
 ?>
 
-
 <?php echo CHtml::submitButton('Export To Excel', array('name' => 'Export', 'style' => 'float: right;', 'class' => 'grey-btn')); ?>
-
