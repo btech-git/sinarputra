@@ -132,10 +132,12 @@ class EmployeeController extends CrudController {
 
     public function actionCreate() {
         $model = $this->instantiate(null);
-        $model->header->permanent_start_date = '2020-11-11';
-        $model->header->identity_expired = '2020-11-11';
-        $model->header->driver_license_expired = '2020-11-11';
-        $model->header->resignation_date = '2020-11-11';
+        $model->header->start_date = date('Y-m-d');
+        $model->header->permanent_start_date = date('Y-m-d');
+        $model->header->identity_expired = null;
+        $model->header->driver_license_expired = null;
+        $model->header->resignation_date = null;
+        $model->header->company = 'PT Sinar Putra Metalindo';
 
         if (isset($_POST['Employee'])) {
             $this->loadState($model);

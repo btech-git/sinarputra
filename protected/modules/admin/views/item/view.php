@@ -1,40 +1,41 @@
 <?php
 $this->breadcrumbs = array(
-    'Items' => array('admin'),
-    $model->name,
+	'Items'=>array('index'),
+	$model->name,
 );
 
 $this->menu = array(
-    array('label' => 'Create Item', 'url' => array('create')),
-    array('label' => 'Update Item', 'url' => array('update', 'id' => $model->id)),
-    array('label' => 'Manage Item', 'url' => array('admin')),
+	array('label'=>'List Item', 'url'=>array('index')),
+	array('label'=>'Create Item', 'url'=>array('create')),
+	array('label'=>'Update Item', 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>'Delete Item', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete', 'id'=>$model->id), 'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>'Manage Item', 'url'=>array('admin')),
 );
 ?>
 
 <h1>View Item #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
-    'data' => $model,
-    'attributes' => array(
-        'code',
-        'name',
-        'description',
-        array(
-            'label' => 'Category',
-            'value' => CHtml::encode(CHtml::value($model, 'itemCategory.name')),
-        ),
-        array(
-            'label' => 'Unit',
-            'value' => CHtml::encode(CHtml::value($model, 'unit.name')),
-        ),
-        array(
-            'label' => 'COA Beban',
-            'value' => CHtml::encode(CHtml::value($model, 'accountIdExpense.name')),
-        ),
-        array(
-            'label' => 'COA Inventory',
-            'value' => CHtml::encode(CHtml::value($model, 'accountIdInventory.name')),
-        ),
-        'status',
-    ),
+	'data'=>$model,
+	'attributes'=>array(
+		'id',
+		'code',
+		'name',
+		'description',
+		'item_category_id',
+		'unit_id',
+		'is_inactive',
+		'account_id_expense',
+		'account_id_inventory',
+		'type',
+		'tax_category',
+		'tax_percentage',
+		'account_id_cost_of_goods_sold',
+		'account_id_goods_in_transit',
+		'account_id_unbilled_goods',
+		'account_id_sale_transaction',
+		'account_id_sale_discount',
+		'account_id_sale_return',
+		'account_id_purchase_return',
+	),
 )); ?>

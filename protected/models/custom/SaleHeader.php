@@ -43,11 +43,11 @@ class SaleHeader extends SaleHeaderBase {
     public function searchWorkOrderCutting() {
         $dataProvider = $this->search();
         $dataProvider->criteria->addCondition(
-            "t.id NOT IN (
+            "EXISTS (
                 SELECT sale_header_id 
-                FROM " . WorkOrderCuttingHeader::model()->tableName() . " workOrder
-                WHERE workOrder.is_inactive = 0
-            ) AND t.date > '2021-12-31'"
+                FROM " . SaleDetail::model()->tableName() . "
+                WHERE sale_header_id = t.id AND is_inactive = 0 AND is_proceed_to_work_order = 0
+            ) AND t.date > '2023-12-31'"
         );
         $dataProvider->criteria->compare('t.is_inactive', 0);
 

@@ -19,6 +19,7 @@
  * @property string $created_datetime
  * @property integer $admin_id_updated
  * @property string $updated_datetime
+ * @property integer $customer_id
  *
  * @property DeliveryHeader[] $deliveryHeaders
  * @property ProductionPlanningCuttingHeader[] $productionPlanningCuttingHeaders
@@ -32,6 +33,7 @@
  * @property Admin $admin
  * @property AdminIdUpdated $adminIdUpdated
  * @property WorkOrderReplacementHeader[] $workOrderReplacementHeaders
+ * @property Customer $customer
  */
 class WorkOrderCuttingHeaderBase extends MonthlyTransactionActiveRecord {
 
@@ -59,11 +61,11 @@ class WorkOrderCuttingHeaderBase extends MonthlyTransactionActiveRecord {
     public function rules() {
         return array(
             array('cn_ordinal, cn_month, cn_year, date, time_created, sale_header_id, admin_id', 'required'),
-            array('cn_ordinal, cn_month, cn_year, sale_header_id, admin_id, is_service, is_miling_additional, is_pending, is_inactive, total_quantity_delivery_remaining, total_quantity_cutting_planning_remaining, admin_id_updated', 'numerical', 'integerOnly' => true),
+            array('cn_ordinal, cn_month, cn_year, sale_header_id, admin_id, is_service, is_miling_additional, is_pending, is_inactive, total_quantity_delivery_remaining, total_quantity_cutting_planning_remaining, admin_id_updated, customer_id', 'numerical', 'integerOnly' => true),
             array('cn_ordinal', 'uniqueValidator', 'attributeName' => array('cn_ordinal', 'cn_month', 'cn_year'), 'on' => 'insert'),
             array('note, created_datetime, updated_datetime', 'safe'),
             // The following rule is used by search().
-            array('id, cn_ordinal, cn_month, cn_year, date, note, time_created, sale_header_id, admin_id, is_service, is_miling_additional, is_pending, is_inactive, total_quantity_delivery_remaining, total_quantity_cutting_planning_remaining, search_sale_invoice_number, search_sale_invoice_date, search_manual_sale_invoice_number, search_manual_sale_invoice_date, search_sale_receipt_number, search_sale_receipt_date, search_manual_sale_receipt_number, search_manual_sale_receipt_date, search_quality_control_cutting_number, search_quality_control_cutting_date, search_delivery_cutting_number, search_delivery_cutting_date, search_quality_control_miling_number, search_quality_control_miling_date, search_delivery_miling_number, search_delivery_miling_date, admin_id_updated, created_datetime, updated_datetime', 'safe', 'on' => 'search'),
+            array('id, cn_ordinal, cn_month, cn_year, date, note, time_created, sale_header_id, admin_id, is_service, is_miling_additional, is_pending, is_inactive, total_quantity_delivery_remaining, total_quantity_cutting_planning_remaining, search_sale_invoice_number, search_sale_invoice_date, search_manual_sale_invoice_number, search_manual_sale_invoice_date, search_sale_receipt_number, search_sale_receipt_date, search_manual_sale_receipt_number, search_manual_sale_receipt_date, search_quality_control_cutting_number, search_quality_control_cutting_date, search_delivery_cutting_number, search_delivery_cutting_date, search_quality_control_miling_number, search_quality_control_miling_date, search_delivery_miling_number, search_delivery_miling_date, admin_id_updated, created_datetime, updated_datetime, customer_id', 'safe', 'on' => 'search'),
         );
     }
 
@@ -81,6 +83,7 @@ class WorkOrderCuttingHeaderBase extends MonthlyTransactionActiveRecord {
             'admin' => array(self::BELONGS_TO, 'Admin', 'admin_id'),
             'adminIdUpdated' => array(self::BELONGS_TO, 'Admin', 'admin_id_updated'),
             'workOrderReplacementHeaders' => array(self::HAS_MANY, 'WorkOrderReplacementHeader', 'work_order_cutting_header_id'),
+            'customer' => array(self::BELONGS_TO, 'Customer', 'customer_id'),
         );
     }
 
@@ -101,6 +104,7 @@ class WorkOrderCuttingHeaderBase extends MonthlyTransactionActiveRecord {
             'is_inactive' => 'Is Inactive',
             'total_quantity_delivery_remaining' => 'Total Delivery Remaining',
             'total_quantity_cutting_planning_remaining' => 'Total Production Cutting Remaining',
+            'customer_id' => 'Customer',
         );
     }
 
@@ -122,6 +126,7 @@ class WorkOrderCuttingHeaderBase extends MonthlyTransactionActiveRecord {
         $criteria->compare('t.is_inactive', $this->is_inactive);
         $criteria->compare('t.total_quantity_delivery_remaining', $this->total_quantity_delivery_remaining);
         $criteria->compare('t.total_quantity_cutting_planning_remaining', $this->total_quantity_cutting_planning_remaining);
+        $criteria->compare('t.customer_id', $this->customer_id);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,

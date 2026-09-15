@@ -23,8 +23,9 @@ class WorkOrderCuttingComponent extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($header !== null)
+        if ($header !== null) {
             $this->header->setCodeNumber($header->cn_ordinal, $header->cn_month, $header->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -37,10 +38,11 @@ class WorkOrderCuttingComponent extends CComponent {
             ->order('id DESC')
             ->queryRow();
 
-        if ($serialNumber != null)
+        if ($serialNumber != null) {
             return $serialNumber['serial_number'] + 1;
-        else
+        } else {
             return 1;
+        }
     }
 
     public function addDetail($modelId, $index, $type, $rowQuantity) {
@@ -76,9 +78,14 @@ class WorkOrderCuttingComponent extends CComponent {
             $detail->weight = $modelDetail->weight;
             $detail->receive_detail_id = ($type === 'work_order') ? $modelDetail->receive_detail_id : $modelId;
 
-            for ($i = 0; $i < $rowQuantity; $i++)
+            for ($i = 0; $i < $rowQuantity; $i++) {
                 $this->detailOffCuts[] = $detail;
+            }
         }
+    }
+
+    public function removeDetailAt($index) {
+        array_splice($this->details, $index, 1);
     }
 
     public function removeDetailMaterial($index) {
@@ -119,8 +126,9 @@ class WorkOrderCuttingComponent extends CComponent {
     
     public function validateDetailsCount() {
         $valid = true;
-        if (count($this->details) === 0)
+        if (count($this->details) === 0) {
             $valid = false;
+        }
         
         return $valid;
     }
@@ -145,16 +153,19 @@ class WorkOrderCuttingComponent extends CComponent {
     public function validate() {
         
         $valid = $this->header->validate();
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Header Error');
+        }
 
         $valid = $this->validateDetailsCount();
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Details Count Error');
+        }
 
         $valid = $this->validateMaterialsWeight();
-        if (!$valid)
+        if (!$valid) {
             $this->header->addError('error', 'Berat Material Tidak Diperbolehkan');
+        }
 
         return $valid;
     }
@@ -179,8 +190,9 @@ class WorkOrderCuttingComponent extends CComponent {
         $valid = $this->header->save(false);
 
         foreach ($this->details as $index => $detail) {
-            if ($detail->isNewRecord)
+            if ($detail->isNewRecord) {
                 $detail->work_order_cutting_header_id = $this->header->id;
+            }
             
             $valid = $detail->save(false) && $valid;
             
@@ -196,6 +208,10 @@ class WorkOrderCuttingComponent extends CComponent {
                     $valid = $detailMaterial->save(false) && $valid;
                 }
             }
+            
+            $detail->saleDetail->is_proceed_to_work_order = 1;
+            $valid = $detail->saleDetail->save(false) && $valid;
+            
         }
 
         return $valid;
@@ -206,10 +222,11 @@ class WorkOrderCuttingComponent extends CComponent {
         try {
             $valid = $this->flush();
 
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;

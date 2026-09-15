@@ -10,18 +10,19 @@ class WorkOrderCuttingController extends Controller {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('workOrderCreate')))
+            if (!(Yii::app()->user->checkAccess('workOrderCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('workOrderEdit')))
+            if (!(Yii::app()->user->checkAccess('workOrderEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'view'
-                || $filterChain->action->id === 'memo'
-                || $filterChain->action->id === 'admin') {
-            if (!(Yii::app()->user->checkAccess('workOrderCreate') || Yii::app()->user->checkAccess('workOrderEdit')))
+        if ($filterChain->action->id === 'view' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'admin') {
+            if (!(Yii::app()->user->checkAccess('workOrderCreate') || Yii::app()->user->checkAccess('workOrderEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -29,8 +30,10 @@ class WorkOrderCuttingController extends Controller {
 
     public function loadModel($id) {
         $model = WorkOrderCuttingHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -44,26 +47,28 @@ class WorkOrderCuttingController extends Controller {
 
     public function loadState($model) {
         //load header
-        if (isset($_POST['WorkOrderCuttingHeader']))
+        if (isset($_POST['WorkOrderCuttingHeader'])) {
             $model->header->attributes = $_POST['WorkOrderCuttingHeader'];
+        }
 
         //load detail product
         if (isset($_POST['WorkOrderCuttingDetail'])) {
             foreach ($_POST['WorkOrderCuttingDetail'] as $i => $item) {
-                if (isset($model->details[$i]))
+                if (isset($model->details[$i])) {
                     $model->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new WorkOrderCuttingDetail();
                     $detail->attributes = $item;
                     $model->details[] = $detail;
                 }
             }
-            if (count($_POST['WorkOrderCuttingDetail']) < count($model->details))
+            
+            if (count($_POST['WorkOrderCuttingDetail']) < count($model->details)) {
                 array_splice($model->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $model->details = array();
-
+        }
     }
 
     public function loadStateOffCut($workOrderCutting) {
@@ -72,32 +77,36 @@ class WorkOrderCuttingController extends Controller {
         if (isset($_POST['WorkOrderCuttingDetailMaterial'])) {
             foreach ($_POST['WorkOrderCuttingDetailMaterial'] as $i => $item) {
 
-                if (isset($workOrderCutting->detailOffCuts[$i]))
+                if (isset($workOrderCutting->detailOffCuts[$i])) {
                     $workOrderCutting->detailOffCuts[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new WorkOrderCuttingDetailMaterial();
                     $detail->attributes = $item;
                     $workOrderCutting->detailOffCuts[] = $detail;
                 }
             }
-            if (count($_POST['WorkOrderCuttingDetailMaterial']) < count($workOrderCutting->detailOffCuts))
+            
+            if (count($_POST['WorkOrderCuttingDetailMaterial']) < count($workOrderCutting->detailOffCuts)) {
                 array_splice($workOrderCutting->detailOffCuts, $i + 1);
-        }
-        else
+            }
+        } else {
             $workOrderCutting->detailOffCuts = array();
+        }
     }
 
     public function loadStateUpdateHeader($model) {
         //load header
-        if (isset($_POST['WorkOrderCuttingHeader']))
+        if (isset($_POST['WorkOrderCuttingHeader'])) {
             $model->attributes = $_POST['WorkOrderCuttingHeader'];
+        }
     }
 
     public function loadStateUpdate($workOrderCuttingDetailComponent) {
         if (isset($_POST['WorkOrderCuttingDetailMaterial'])) {
             foreach ($_POST['WorkOrderCuttingDetailMaterial'] as $i => $item) {
-                if (isset($workOrderCuttingDetailComponent->details[$i]))
+                if (isset($workOrderCuttingDetailComponent->details[$i])) {
                     $workOrderCuttingDetailComponent->details[$i]->attributes = $item;
+                }
             }
         }
     }
@@ -117,8 +126,9 @@ class WorkOrderCuttingController extends Controller {
             'quotationHeader',
         );
 
-        if (!empty($customerCompany))
+        if (!empty($customerCompany)) {
             $saleHeaderDataProvider->criteria->compare('customer.company', $customerCompany, TRUE);
+        }
 
         if (!empty($quotationOrdinal) || !empty($quotationMonth) || !empty($quotationYear)) {
             $saleHeaderDataProvider->criteria->compare('quotationHeader.cn_ordinal', $quotationOrdinal, TRUE);
@@ -140,18 +150,19 @@ class WorkOrderCuttingController extends Controller {
     }
 
     public function actionCreate($saleHeaderId) {
+        $saleHeader = SaleHeader::model()->findByPk($saleHeaderId);
         $model = $this->instantiate(null);
         $model->header->date = date('Y-m-d');
-        $model->generateCodeNumber(date('m'), date('y'));
         $model->header->admin_id = Yii::app()->user->id;
         $model->header->created_datetime = date('Y-m-d H:i:s');
         $model->header->sale_header_id = $saleHeaderId;
+        $model->header->customer_id = $saleHeader->customer_id;
+//        $model->generateCodeNumber(date('m'), date('y'));
         $model->addWorkOrderCuttingDetails($saleHeaderId);
         
         if (isset($_POST['Next'])) {
             $this->loadState($model);
             unset(Yii::app()->session['WorkOrderCutting']);
-
             Yii::app()->session['WorkOrderCutting'] = $model;
 
             $this->redirect(array('loop', 'index' => 0));
@@ -164,8 +175,8 @@ class WorkOrderCuttingController extends Controller {
 
     public function actionLoop($index) {
         $workOrderCutting = isset(Yii::app()->session['WorkOrderCutting']) ? Yii::app()->session['WorkOrderCutting'] : array();
-        $productName = isset($_GET['ProductName']) ? $_GET['ProductName'] : '';
-        $customerId = isset($_GET['CustomerId']) ? $_GET['CustomerId'] : '';
+//        $productName = isset($_GET['ProductName']) ? $_GET['ProductName'] : '';
+//        $customerId = isset($_GET['CustomerId']) ? $_GET['CustomerId'] : '';
 
         $receiveDetail = Search::bind(new ReceiveDetail(), isset($_GET['ReceiveDetail']) ? $_GET['ReceiveDetail'] : '');
         $receiveDetailDataProvider = $receiveDetail->searchNotSelectedInCuttingDetailMaterial();
@@ -185,8 +196,8 @@ class WorkOrderCuttingController extends Controller {
         $workOrderCuttingDetailMaterialDataProvider = $workOrderCuttingDetailMaterial->searchProcessedStock();
         $workOrderCuttingDetailMaterialDataProvider->criteria->with = array('receiveDetail');
         
-		$workOrderCuttingDetailMaterialDataProvider->criteria->addCondition("receiveDetail.serial_number LIKE :serial_number");
-		$workOrderCuttingDetailMaterialDataProvider->criteria->params[':serial_number'] = "%{$receiveSerialNumber}%";
+        $workOrderCuttingDetailMaterialDataProvider->criteria->addCondition("receiveDetail.serial_number LIKE :serial_number");
+        $workOrderCuttingDetailMaterialDataProvider->criteria->params[':serial_number'] = "%{$receiveSerialNumber}%";
 
 //        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.serial_number', $workOrderCuttingDetailMaterial->serial_number);
 //        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.height', $workOrderCuttingDetailMaterial->height);
@@ -195,8 +206,9 @@ class WorkOrderCuttingController extends Controller {
 
         $count = count($workOrderCutting->details);
 
-        if ($count === 0)
+        if ($count === 0) {
             $this->redirect(array('saleOrderList'));
+        }
         
         $workOrderCutting->detailOffCuts = array();
 
@@ -233,10 +245,10 @@ class WorkOrderCuttingController extends Controller {
 
     public function actionFinish() {
         $workOrderCutting = isset(Yii::app()->session['WorkOrderCutting']) ? Yii::app()->session['WorkOrderCutting'] : $this->instantiate(null);
-
         $workOrderCutting->detailOffCuts = array();
 
         if ($workOrderCutting->save(Yii::app()->db)) {
+            $workOrderCutting->generateCodeNumber(date('m'), date('y'));
             unset(Yii::app()->session['WorkOrderCutting']);
             $this->redirect(array('view', 'id' => $workOrderCutting->header->id));
         } else {
@@ -308,8 +320,9 @@ class WorkOrderCuttingController extends Controller {
         if (isset($_POST['Submit'])) {
             $this->loadStateUpdateHeader($model);
             
-            if ($model->save(Yii::app()->db))
+            if ($model->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('updateHeader', array(
@@ -323,8 +336,10 @@ class WorkOrderCuttingController extends Controller {
         
         if (isset($_POST['Submit'])) {
             $this->loadStateUpdate($workOrderCuttingDetailComponent);
-            if ($workOrderCuttingDetailComponent->save(Yii::app()->db))
+            
+            if ($workOrderCuttingDetailComponent->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $workOrderCuttingDetail->work_order_cutting_header_id));
+            }
         }
 
         $this->render('update', array(
@@ -408,20 +423,36 @@ class WorkOrderCuttingController extends Controller {
                     $model->is_inactive = ActiveRecord::INACTIVE;
                     $valid = $valid && $model->update(array('is_inactive'));
 
-                    if ($valid)
+                    if ($valid) {
                         $dbTransaction->commit();
-                    else
+                    } else {
                         $dbTransaction->rollBack();
+                    }
                 } catch (Exception $e) {
                     $dbTransaction->rollback();
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
+    }
+
+    public function actionAjaxHtmlRemoveDetail($id, $saleHeaderId, $index) {
+        if (Yii::app()->request->isAjaxRequest) {
+            $model = $this->instantiate($id);
+            $this->loadState($model);
+            
+            $model->header->sale_header_id = $saleHeaderId;
+            $model->removeDetailAt($index);
+
+            $this->renderPartial('_detailProduct', array(
+                'model' => $model,
+            ));
+        }
     }
 
     public function actionAjaxHtmlAddDetail($id, $index) {
@@ -429,10 +460,11 @@ class WorkOrderCuttingController extends Controller {
             $model = $this->instantiate($id);
             $this->loadStateOffcut($model);
 
-            if (!empty($_POST['ReceiveDetailId']))
+            if (!empty($_POST['ReceiveDetailId'])) {
                 $model->addDetail($_POST['ReceiveDetailId'], $index, 'receive', $_POST['RowQuantity']);
-            else if (!empty($_POST['WorkOrderCuttingDetailMaterialId']))
+            } else if (!empty($_POST['WorkOrderCuttingDetailMaterialId'])) {
                 $model->addDetail($_POST['WorkOrderCuttingDetailMaterialId'], $index, 'work_order', $_POST['RowQuantity']);
+            }
 
             $this->renderPartial('_detailMaterial', array(
                 'model' => $model

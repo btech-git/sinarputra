@@ -3,12 +3,12 @@
 <?php
 //$model as WorkOrderComponent component model
 ?>
-<table style="border: 1px solid">
+<table style="border: 1px solid; width: 110%">
     <tr style="background-color: skyblue">
         <th colspan="3">&nbsp;</th>
         <th colspan="3" style="text-align: center; border-left: 1px solid; border-right: 1px solid">Awal</th>
         <th colspan="3" style="text-align: center; border-left: 1px solid; border-right: 1px solid">Finish</th>
-        <th colspan=<?php echo ((int)$model->header->saleHeader->is_service == 1) ? "13" : "12";?>>&nbsp;</th>
+        <th colspan=<?php echo ((int)$model->header->saleHeader->is_service == 1) ? "14" : "13";?>>&nbsp;</th>
     </tr>
 
     <tr style="background-color: skyblue">
@@ -34,8 +34,9 @@
         <?php endif; ?>
         <th style="text-align: center; width: 5%">Kirim</th>
         <th style="text-align: center; width: 5%">Urgent</th>
-        <th style="text-align: center; width: 5%">Order Luar</th>
+        <th style="text-align: center; width: 8%">Order Luar</th>
         <th style="text-align: center; width: 5%">MH PIC</th>
+        <th>&nbsp;</th>
     </tr>
 
     <?php foreach ($model->details as $i => $detail): ?>
@@ -172,6 +173,21 @@
                     'empty' => '-Pilih MH-'
                 )); ?>
                 <?php echo CHtml::error($detail, 'employee_id'); ?>
+            </td>
+            <td>
+                <?php if ($detail->isNewRecord): ?>
+                    <?php echo CHtml::button('Delete', array(
+                        'onclick' => CHtml::ajax(array(
+                            'type' => 'POST',
+                            'url' => CController::createUrl('ajaxHtmlRemoveDetail', array(
+                                'id' => $model->header->id, 
+                                'saleHeaderId' => $model->header->sale_header_id, 
+                                'index' => $i,
+                            )),
+                            'update' => '#detail_product_div',
+                        )),
+                    )); ?>
+                <?php endif; ?>
             </td>
         </tr>
     <?php endforeach; ?>
