@@ -26,7 +26,10 @@
                 <?php echo CHtml::encode(Yii::app()->dateFormatter->format("d MMMM yyyy", CHtml::value($detail, 'saleInvoiceHeader.date'))); ?>
             </td>
             <td>
-                <?php echo CHtml::activeDropDownList($detail, "[$i]account_id", CHtml::listData(Account::model()->findAllByAttributes(array('account_category_id' => 59)), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
+                <?php echo CHtml::activeDropDownList($detail, "[$i]account_id", CHtml::listData(Account::model()->findAllByAttributes(array(
+                    'account_category_id' => 59,
+                    'order' => 't.name ASC',
+                )), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
                 <?php echo CHtml::error($detail, 'account_id'); ?>
             </td>
             <td style="text-align: center; margin-left: 20%">

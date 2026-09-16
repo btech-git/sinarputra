@@ -4,24 +4,25 @@ class PurchasePaymentController extends Controller {
 
      public function filters() {
         return array(
-			'access',
+            'access',
         );
     }
     
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('purchasePaymentCreate')))
+            if (!(Yii::app()->user->checkAccess('purchasePaymentCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('purchasePaymentEdit')))
+            if (!(Yii::app()->user->checkAccess('purchasePaymentEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'admin'
-            || $filterChain->action->id === 'memo'
-            || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('purchasePaymentCreate') || Yii::app()->user->checkAccess('purchasePaymentEdit')))
+        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('purchasePaymentCreate') || Yii::app()->user->checkAccess('purchasePaymentEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -29,8 +30,10 @@ class PurchasePaymentController extends Controller {
     
     public function loadModel($id) {
         $model = PurchasePaymentHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -40,25 +43,26 @@ class PurchasePaymentController extends Controller {
         }
         if (isset($_POST['PurchasePaymentDetail'])) {
             foreach ($_POST['PurchasePaymentDetail'] as $i => $item) {
-                if (isset($model->details[$i]))
+                if (isset($model->details[$i])) {
                     $model->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new PurchasePaymentDetail();
                     $detail->attributes = $item;
                     $model->details[] = $detail;
                 }
             }
-            if (count($_POST['PurchasePaymentDetail']) < count($model->details))
+            if (count($_POST['PurchasePaymentDetail']) < count($model->details)) {
                 array_splice($model->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $model->details = array();
+        }
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $model = new PurchasePaymentComponent(new PurchasePaymentHeader(), array());
-        else {
+        } else {
             $header = $this->loadModel($id);
             $model = new PurchasePaymentComponent($header, $header->purchasePaymentDetails);
         }
