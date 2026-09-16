@@ -2,9 +2,10 @@
     <tr style="background-color: skyblue">
         <th style="text-align: center">Code</th>
         <th style="text-align: center;">Product Name</th>
-        <th style="text-align: right;">Quantity</th>
-        <th style="text-align: right;">Unit Price</th>
-        <th style="text-align: right;">Total</th>
+        <th style="text-align: center;">Quantity</th>
+        <th style="text-align: center;">Unit Price</th>
+        <th style="text-align: center;">Disc</th>
+        <th style="text-align: center;">Total</th>
     </tr>
 
     <?php foreach ($receiveItemHeader->receiveItemDetails as $detail): ?>
@@ -17,7 +18,7 @@
                 <?php echo CHtml::encode(CHtml::value($detail, 'purchaseItemDetail.item.name')); ?>
             </td>
 
-            <td  style="text-align: right;"><!--quantity-->
+            <td  style="text-align: center;"><!--quantity-->
                 <?php echo CHtml::encode(CHtml::value($detail, 'quantity')); ?>
             </td>
 
@@ -25,19 +26,25 @@
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $detail->purchaseItemDetail->unit_price)); ?>
 
             </td>
+            
+            <td  style="text-align: right;"><!--unit price-->
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $detail->purchaseItemDetail->discount_amount)); ?>
+
+            </td>
+            
             <td  style="text-align: right;"><!--Product name-->
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $detail->total)); ?>
             </td>
         </tr>
     <?php endforeach; ?>
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="4">Sub Total:</td>
+        <td style="text-align: right; font-weight: bold" colspan="5">Sub Total:</td>
         <td style="text-align: right; font-weight: bold">
             <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($receiveItemHeader, 'subTotal'))); ?>
         </td>
     </tr>
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="4">Disc</td>
+        <td style="text-align: right; font-weight: bold" colspan="5">Disc</td>
         <td style="text-align: right; font-weight: bold">
             <?php //echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $receiveItemHeader->purchaseItemHeader->discount)); ?>
             <?php echo CHtml::activeTextField($model, 'discount_amount', array(
@@ -57,7 +64,7 @@
         </td>
     </tr>
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="4">PPN 11%</td>
+        <td style="text-align: right; font-weight: bold" colspan="5">PPN 11%</td>
         <td style="text-align: right; font-weight: bold">
             <span id="tax_item">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $model->calculatedTax)); ?>
@@ -65,7 +72,7 @@
         </td>
     </tr>
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="4">PPh 2%</td>
+        <td style="text-align: right; font-weight: bold" colspan="5">PPh 2%</td>
         <td style="text-align: right; font-weight: bold">
             <span id="tax_income">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $model->calculatedTaxIncome)); ?>
@@ -73,7 +80,7 @@
         </td>
     </tr>
     <tr style="background-color: aquamarine">
-        <td style="text-align: right; font-weight: bold" colspan="4">Grand Total:</td>
+        <td style="text-align: right; font-weight: bold" colspan="5">Grand Total:</td>
         <td style="text-align: right; font-weight: bold">
             <span id="grand_total">
                 <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $model->grandTotal)); ?>  

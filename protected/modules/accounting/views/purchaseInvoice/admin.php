@@ -68,7 +68,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeTextField($model, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->getCodeNumber(PurchaseInvoice::CN_CONSTANT)',
-            'htmlOptions' => array('style' => 'width: 300px'),
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Tanggal',
@@ -102,6 +102,7 @@
         'note',
         array(
             'name' => 'is_inactive',
+            'header' => 'Status', 
             'filter' => array(ActiveRecord::ACTIVE => 'Active', ActiveRecord::INACTIVE => 'Inactive'),
             'value' => '$data->status',
         ),

@@ -25,8 +25,9 @@ class PurchaseInvoice extends PurchaseInvoiceBase {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($purchaseInvoice !== null)
+        if ($purchaseInvoice !== null) {
             $this->setCodeNumber($purchaseInvoice->cn_ordinal, $purchaseInvoice->cn_month, $purchaseInvoice->cn_year);
+        }
 
         $this->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -118,7 +119,7 @@ class PurchaseInvoice extends PurchaseInvoiceBase {
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(
-                'pageSize' => Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']),
+                'pageSize' => 100,
             ),
             'sort' => array(
                 'defaultOrder' => 't.id DESC',

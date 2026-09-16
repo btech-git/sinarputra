@@ -143,7 +143,7 @@ class PurchaseHeader extends PurchaseHeaderBase {
             " . SqlViewGenerator::purchaseQuantityRemaining() . "
             WHERE t.id = p.purchase_header_id AND t.is_confirmed = 1
             HAVING quantity_purchased > 0
-        ) AND t.date > '2021-12-31'";
+        ) AND t.date > '2023-12-31'";
 
         $criteria->compare('cn_ordinal', $this->cn_ordinal);
         $criteria->compare('cn_month', $this->cn_month);
@@ -172,7 +172,7 @@ class PurchaseHeader extends PurchaseHeaderBase {
             WHERE t.id = p.purchase_header_id AND p.is_inactive = 0
             GROUP BY p.id
             HAVING quantity_purchased > 0
-        ) AND t.date > '2021-12-31'";
+        ) AND t.date > '2023-12-31'";
 
         if ($isNonTax !== null) {
             $criteria->addCondition('t.is_non_tax = :is_non_tax');
@@ -243,30 +243,4 @@ class PurchaseHeader extends PurchaseHeaderBase {
         
         return ($remaining > 0) ? 'Open' : 'Close';
     }
-//    public function getServiceSubTotal() {
-//        $total = 0.00;
-//
-//        foreach ($this->purchaseDetailServices as $service)
-//            $total += $service->totalService;
-//
-//        return $total;
-//    }
-//
-//    public function getServiceSubTotalQuantity() {
-//        $total = 0.00;
-//
-//        foreach ($this->purchaseDetailServices as $service)
-//            $total += $service->quantity;
-//
-//        return $total;
-//    }
-
-//    public function getTaxPercentage() {
-//        if ((int)$this->is_service === 1)
-//            $taxPercentage = ((int)$this->is_tax === 1) ? 2 : 0;
-//        else
-//            $taxPercentage = ((int)$this->is_tax === 1) ? 10 : 0;
-//        
-//        return $taxPercentage;
-//    }
 }

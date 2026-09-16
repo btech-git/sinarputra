@@ -68,21 +68,17 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
         <div class="row button">
             <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;')); ?>
             <?php echo CHtml::resetButton('Clear'); ?>
+            <?php echo CHtml::submitButton('Save To Excel', array('name' => 'SaveToExcel')); ?>
         </div>
 
         <?php echo CHtml::endForm(); ?>
-
-        <?php echo CHtml::beginForm(); ?>
-        <?php echo CHtml::submitButton('Save To Excel', array('name' => 'SaveToExcel')); ?>
-        <?php echo CHtml::endForm(); ?>
-
     </div>
 
     <hr />
 
     <div class="right"><?php echo ReportHelper::summaryText($receiveSummary->dataProvider); ?></div>
     <div class="clear"></div>
-    <div class="right"><?php echo ReportHelper::sortText($receiveSummary->dataProvider->sort, array('Tanggal', 'Supplier', 'No. Penerimaan', 'No. PO')); ?></div>
+    <div class="right"><?php //echo ReportHelper::sortText($receiveSummary->dataProvider->sort, array('Tanggal')); ?></div>
     <div class="clear"></div>
 </div>
 

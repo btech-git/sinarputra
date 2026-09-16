@@ -183,14 +183,14 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group">
-                <?php echo $form->labelEx($model, 'Akun Hutang'); ?>
+<!--            <div class="form-group">
+                <?php /*echo $form->labelEx($model, 'Akun Hutang'); ?>
                 <?php echo $form->dropDownList($model, 'account_id_payable', CHtml::listData(Account::model()->findAll(array(
                     'condition' => 'account_category_id = 24',
                     'order' => 'name ASC',
                 )), 'id', 'name'), array('empty' => '- Select Akun Hutang -')); ?>
-                <?php echo $form->error($model, 'account_id_payable'); ?>
-            </div>
+                <?php echo $form->error($model, 'account_id_payable');*/ ?>
+            </div>-->
 
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'status'); ?>

@@ -1,13 +1,13 @@
 <table style="border: 1px solid">
     <tr style="background-color: skyblue">
         <th style="text-align: center; width: 10%;">Kode</th>
-        <th style="text-align: center; width: 10%;">Nama Barang</th>
-        <th style="text-align: center; width: 10%;">Description</th>
+        <th style="text-align: center;">Nama Barang</th>
+        <th style="text-align: center;">Description</th>
         <th style="text-align: center; width: 10%;">Kategori</th>
         <th style="text-align: center; width: 5%;">Jumlah</th>	
-        <th style="text-align: center; width: 15%">Harga</th>
+        <th style="text-align: center; width: 10%">Harga</th>
         <th style="text-align: center; width: 10%">Disc</th>
-        <th style="text-align: center; width: 15%">Total</th>
+        <th style="text-align: center; width: 10%">Total</th>
         <th style="text-align: center; width: 5%"></th>
     </tr>
     <?php foreach ($purchaseItem->details as $i => $detail): ?>

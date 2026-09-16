@@ -31,7 +31,7 @@ class PurchaseItemDetail extends PurchaseItemDetailBase {
     }
 
     public function getReportTotalAfterDiscountItem() {
-        return ($this->quantity * $this->unit_price) - $this->reportDiscountItem;
+        return ($this->quantity * $this->unit_price) - $this->discount_amount;
     }
 
     public function getReportTaxItem() {

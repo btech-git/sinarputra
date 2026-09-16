@@ -98,28 +98,30 @@ class WorkOrderCuttingComponent extends CComponent {
         $saleHeader = SaleHeader::model()->findByPk($saleHeaderId);
         if ($saleHeader != null) {
             foreach ($saleHeader->saleDetails as $saleDetail) {
-                $saleDetailProductService = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService : $saleDetail->quotationDetailProduct;
-                $detail = new WorkOrderCuttingDetail();
-                $detail->sale_detail_id = $saleDetail->id;
-                $detail->job_number = $saleDetailProductService->job_number;
-                $detail->product_name = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService->product_name : $saleDetail->quotationDetailProduct->product_name_quote;
-                $detail->height_quote = $saleDetailProductService->height_quote;
-                $detail->width_quote = $saleDetailProductService->width_quote;
-                $detail->length_quote = $saleDetailProductService->length_quote;
-                $detail->height_request = $saleDetailProductService->height_request;
-                $detail->width_request = $saleDetailProductService->width_request;
-                $detail->length_request = $saleDetailProductService->length_request;
-                $detail->quantity = $saleDetailProductService->quantity_quote;
-                $detail->weight = $saleDetailProductService->weight;
-                $detail->product_category_id = $saleDetailProductService->product_category_id;
-                $detail->is_miling = $saleDetailProductService->is_miling;
-                $detail->is_grinding = $saleDetailProductService->is_grinding;
-                $detail->is_hardness = $saleDetailProductService->is_hardness;
-                $detail->is_annelying = $saleDetailProductService->is_annelying;
-                $detail->is_sidemiling = $saleDetailProductService->is_sidemiling;
-                $detail->is_coating = $saleDetailProductService->is_coating;
-                $detail->is_cut = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService->is_cutting : 1;
-                $this->details[] = $detail;
+                if ((int) $saleDetail->is_proceed_to_work_order === 0) {
+                    $saleDetailProductService = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService : $saleDetail->quotationDetailProduct;
+                    $detail = new WorkOrderCuttingDetail();
+                    $detail->sale_detail_id = $saleDetail->id;
+                    $detail->job_number = $saleDetailProductService->job_number;
+                    $detail->product_name = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService->product_name : $saleDetail->quotationDetailProduct->product_name_quote;
+                    $detail->height_quote = $saleDetailProductService->height_quote;
+                    $detail->width_quote = $saleDetailProductService->width_quote;
+                    $detail->length_quote = $saleDetailProductService->length_quote;
+                    $detail->height_request = $saleDetailProductService->height_request;
+                    $detail->width_request = $saleDetailProductService->width_request;
+                    $detail->length_request = $saleDetailProductService->length_request;
+                    $detail->quantity = $saleDetailProductService->quantity_quote;
+                    $detail->weight = $saleDetailProductService->weight;
+                    $detail->product_category_id = $saleDetailProductService->product_category_id;
+                    $detail->is_miling = $saleDetailProductService->is_miling;
+                    $detail->is_grinding = $saleDetailProductService->is_grinding;
+                    $detail->is_hardness = $saleDetailProductService->is_hardness;
+                    $detail->is_annelying = $saleDetailProductService->is_annelying;
+                    $detail->is_sidemiling = $saleDetailProductService->is_sidemiling;
+                    $detail->is_coating = $saleDetailProductService->is_coating;
+                    $detail->is_cut = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService->is_cutting : 1;
+                    $this->details[] = $detail;
+                }
             }
         }
     }

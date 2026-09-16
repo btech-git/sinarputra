@@ -18,7 +18,10 @@
         
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Biaya'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_expense', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Biaya --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_expense', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (81, 83)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Biaya --')); ?>
             <?php echo $form->error($model, 'account_id_expense'); ?>
         </div>
     </div>
@@ -45,7 +48,10 @@
 
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA COGS'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_cost_of_goods_sold', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA COGS --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_cost_of_goods_sold', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (81)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA COGS --')); ?>
             <?php echo $form->error($model, 'account_id_cost_of_goods_sold'); ?>
         </div>
     </div>
@@ -60,7 +66,10 @@
 
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Inventory'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_inventory', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Inventory --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_inventory', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (65)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Inventory --')); ?>
             <?php echo $form->error($model, 'account_id_inventory'); ?>
         </div>
     </div>
@@ -92,7 +101,10 @@
         
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Penjualan'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_sale_transaction', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Penjualan --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_sale_transaction', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (80)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Penjualan --')); ?>
             <?php echo $form->error($model, 'account_id_sale_transaction'); ?>
         </div>
     </div>
@@ -110,7 +122,10 @@
         
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Retur Penjualan'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_sale_return', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Retur Penjualan --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_sale_return', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (80)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Retur Penjualan --')); ?>
             <?php echo $form->error($model, 'account_id_sale_return'); ?>
         </div>
     </div>
@@ -124,7 +139,10 @@
 
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Diskon Penjualan'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_sale_discount', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Diskon Penjualan --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_sale_discount', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (80)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Diskon Penjualan --')); ?>
             <?php echo $form->error($model, 'account_id_sale_discount'); ?>
         </div>
     </div>
@@ -141,7 +159,10 @@
         
         <div class="form-group">
             <?php echo $form->labelEx($model, 'COA Retur Pembelian'); ?>
-            <?php echo $form->dropDownList($model, 'account_id_purchase_return', CHtml::listData(Account::model()->findAll(), 'id', 'name'), array('empty' => '-- Pilih COA Retur Pembelian --')); ?>
+            <?php echo $form->dropDownList($model, 'account_id_purchase_return', CHtml::listData(Account::model()->findAll(array(
+                'condition' => 'account_category_id IN (81)',
+                'order' => 'code ASC', 
+            )), 'id', 'name'), array('empty' => '-- Pilih COA Retur Pembelian --')); ?>
             <?php echo $form->error($model, 'account_id_purchase_return'); ?>
         </div>
     </div>

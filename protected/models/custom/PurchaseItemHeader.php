@@ -87,7 +87,7 @@ class PurchaseItemHeader extends PurchaseItemHeaderBase {
             " . SqlViewGenerator::purchaseItemQuantityRemaining() . "
             WHERE t.id = p.purchase_item_header_id
             HAVING quantity_purchased > 0
-        ) AND t.date > '2021-12-31'";
+        ) AND t.date > '2023-12-31'";
 
         $criteria->compare('cn_ordinal', $this->cn_ordinal);
         $criteria->compare('cn_month', $this->cn_month);

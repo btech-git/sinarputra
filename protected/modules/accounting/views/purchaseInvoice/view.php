@@ -54,6 +54,13 @@ $this->breadcrumbs = array(
                 ),
             ),
             array(
+                'header' => 'Discount',
+                'value' => 'number_format($data->purchaseItemDetail->discount_amount, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
                 'header' => 'Total',
                 'value' => 'number_format($data->total, 2)',
                 'htmlOptions' => array(
@@ -91,6 +98,13 @@ $this->breadcrumbs = array(
             array(
                 'header' => 'Harga',
                 'value' => 'number_format($data->unit_price, 2)',
+                'htmlOptions' => array(
+                    'style' => 'text-align: right',
+                ),
+            ),
+            array(
+                'header' => 'Diskon',
+                'value' => 'number_format($data->discount_amount, 2)',
                 'htmlOptions' => array(
                     'style' => 'text-align: right',
                 ),

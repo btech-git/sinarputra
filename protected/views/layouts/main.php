@@ -60,11 +60,11 @@
                                         <li><?php echo CHtml::link('Supplier', array('/admin/supplier/admin')); ?></li>
                                         <li><?php echo CHtml::link('Gudang', array('/admin/warehouse/admin')); ?></li>
                                     <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('inventoryCreateMaster') ||
+                                    <?php /*if (Yii::app()->user->checkAccess('inventoryCreateMaster') ||
                                     Yii::app()->user->checkAccess('inventoryEditMaster') ||
                                     Yii::app()->user->checkAccess('inventoryViewMaster')): ?>
                                         <li><?php echo CHtml::link('Material', array ('/admin/item/admin')); ?></li>
-                                    <?php endif; ?>
+                                    <?php endif;*/ ?>
                                     <?php if (Yii::app()->user->checkAccess('hrgaCreateMaster') ||
                                             Yii::app()->user->checkAccess('hrgaEditMaster') ||
                                             Yii::app()->user->checkAccess('hrgaViewMaster')): ?>    
@@ -173,7 +173,6 @@
                                         <li><?php echo CHtml::link('Supplier Material', array('/admin/supplier/admin')); ?></li>
                                         <li><?php echo CHtml::link('Product Category', array('/admin/productCategory/admin')); ?></li>  
                                         <li><?php echo CHtml::link('Location', array('/admin/location/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Material', array('/admin/item/admin')); ?></li>
                                     <?php endif; ?>   
                                 </ul>
                             </li>
@@ -309,7 +308,7 @@
                                         <li><?php echo CHtml::link('Penerimaan Kas / Bank', array('/accounting/deposit/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('journalVoucherCreate')): ?>
-                                        <li><?php echo CHtml::link('Jurnal Umum', array('/accounting/journalVoucher/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Jurnal Umum', array('/accounting/journalVoucher/create')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster')): ?>
                                         <li><?php echo CHtml::link('Item', array('/admin/item/admin')); ?></li>

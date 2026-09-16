@@ -50,6 +50,7 @@ class SupplierController extends CrudController {
             $ordinal = substr($existingCode->code, -4);
             $newOrdinal = $ordinal + 1;
             $model->code = 'SPM' . sprintf('%04d', $newOrdinal);
+            $model->account_id_payable = 838;
             
             if ($model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));

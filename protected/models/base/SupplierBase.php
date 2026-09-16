@@ -43,8 +43,8 @@ class SupplierBase extends ActiveRecord {
 
     public function rules() {
         return array(
-            array('name, company, account_id_payable', 'required'),
-            array('email', 'email'),
+            array('name, company', 'required'),
+//            array('email', 'email'),
             array('invoice_due_days, term_of_payment, account_id_payable, is_tax, is_inactive, tax_service_type', 'numerical', 'integerOnly' => true),
             array('code, tax_registration_number, category, bank_account_number', 'length', 'max' => 20),
             array('name, company, city, province, phone, fax, email, bank_account, mobile_phone', 'length', 'max' => 60),

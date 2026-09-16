@@ -125,7 +125,7 @@ class PurchaseInvoiceController extends Controller {
         $model->supplier_id = empty($receiveHeader) ? $receiveItemHeader->purchaseItemHeader->supplier_id : $receiveHeader->supplier_id;
         $model->receive_header_id = $receiveHeaderId;
         $model->receive_item_header_id = $receiveItemHeaderId;
-        $model->discount_amount = empty($receiveHeader) ? $receiveItemHeader->purchaseItemHeader->discount : $receiveHeader->purchaseHeader->discountAmount;
+        $model->discount_amount = empty($receiveHeader) ? $receiveItemHeader->purchaseItemHeader->discount : $receiveHeader->purchaseHeader->discount;
         $model->is_item = empty($receiveHeader) ? 1 : 0;
         $model->admin_id = Yii::app()->user->id;
         $model->created_datetime = date('Y-m-d H:i:s');
@@ -292,7 +292,7 @@ class PurchaseInvoiceController extends Controller {
             unset($_GET['pageSize']);
         }
 
-        $dataProvider = $model->search();
+        $dataProvider = $model->searchWithPaging();
 //        $dataProvider->criteria->condition = 't.is_inactive = 0';
         $dataProvider->criteria->with = array(
             'supplier:resetScope',
