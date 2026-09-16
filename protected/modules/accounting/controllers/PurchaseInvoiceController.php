@@ -158,7 +158,7 @@ class PurchaseInvoiceController extends Controller {
                 $payableLedger->posting_datetime = date('Y-m-d H:i:s');
                 $payableLedger->save(false);
 
-                /*JournalAccounting::model()->deleteAllByAttributes(array(
+                JournalAccounting::model()->deleteAllByAttributes(array(
                     'transaction_number' => $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT),
                     'transaction_type' => AccountingJournalHelper::PURCHASE_INVOICE,
                 ));
@@ -167,7 +167,7 @@ class PurchaseInvoiceController extends Controller {
                     'debit', 
                     $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT), 
                     AccountingJournalHelper::PURCHASE_INVOICE,  
-                    1012,
+                    820,
                     $model->grand_total, 
                     $model->supplier->company,
                     $model->note, 
@@ -187,7 +187,7 @@ class PurchaseInvoiceController extends Controller {
                     $model->date,
                     $model->admin_id
                 );
-                $accountingJournalCredit->save(false);*/
+                $accountingJournalCredit->save(false);
 
                 $this->redirect(array('view', 'id' => $model->id));
             }

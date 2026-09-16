@@ -147,11 +147,6 @@ class Receive extends CComponent {
     }
 
     public function flush() {
-        JournalAccounting::model()->deleteAllByAttributes(array(
-            'transaction_number' => $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT),
-            'transaction_type' => AccountingJournalHelper::RECEIVE_MATERIAL,
-        ));
-
         if ($this->header->receiving_type == 1) {
             $purchaseHeader = PurchaseHeader::model()->findByPk($this->header->purchase_header_id);
             $this->header->supplier_id = $purchaseHeader->supplier_id;
@@ -170,34 +165,6 @@ class Receive extends CComponent {
             }
 
             $valid = $detail->save(false) && $valid;
-        }
-
-        if ($this->header->receiving_type === ReceiveHeader::LOCAL) {
-            $journalLedgerDebit = AccountingJournalHelper::make(
-                'debit', 
-                $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT), 
-                AccountingJournalHelper::RECEIVE_MATERIAL, 
-                820, 
-                $this->getGrandTotal(), 
-                $this->header->supplier->company,
-                $this->header->note, 
-                $this->header->date,
-                $this->header->admin_id
-            );
-            $valid = $journalLedgerDebit->save(false) && $valid;
-            
-            $journalLedgerCredit = AccountingJournalHelper::make(
-                'credit', 
-                $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT), 
-                AccountingJournalHelper::RECEIVE_MATERIAL, 
-                1404, 
-                $this->getGrandTotal(), 
-                $this->header->supplier->company,
-                $this->header->note, 
-                $this->header->date,
-                $this->header->admin_id
-            );
-            $valid = $journalLedgerCredit->save(false) && $valid;
         }
 
         return $valid;
