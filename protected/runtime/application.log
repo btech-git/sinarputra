@@ -2956,3 +2956,52 @@ Stack trace:
 REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/purchaseInvoice/create&receiveHeaderId=3941&receiveItemHeaderId=
 HTTP_REFERER=http://localhost/~pmahendro/sinarputra/index.php?r=accounting/purchaseInvoice/receiveList
 ---
+2026/09/16 18:48:06 [error] [php] Undefined variable: expense (/home/pmahendro/public_html/sinarputra/protected/modules/accounting/views/journalVoucher/admin.php:43)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): JournalVoucherController->renderFile()
+#1 /home/pmahendro/public_html/yii/framework/web/CController.php(782): JournalVoucherController->renderPartial()
+#2 /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/JournalVoucherController.php(80): JournalVoucherController->render()
+#3 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): JournalVoucherController->actionAdmin()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(286): JournalVoucherController->runAction()
+#6 /home/pmahendro/public_html/yii/framework/web/CController.php(265): JournalVoucherController->runActionWithFilters()
+#7 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): JournalVoucherController->run()
+#8 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#10 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/journalVoucher/admin
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/views/journalVoucher/admin.php (43)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/JournalVoucherController.php (80)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/09/16 18:51:39 [error] [exception.CException] exception 'CException' with message 'Property "JournalVoucherHeader.account_id" is not defined.' in /home/pmahendro/public_html/yii/framework/base/CComponent.php:130
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/db/ar/CActiveRecord.php(145): CComponent->__get('account_id')
+#1 /home/pmahendro/public_html/yii/framework/web/helpers/CHtml.php(2529): CActiveRecord->__get('account_id')
+#2 /home/pmahendro/public_html/yii/framework/web/helpers/CHtml.php(1802): CHtml::resolveValue(Object(JournalVoucherHeader), 'account_id')
+#3 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CDataColumn.php(101): CHtml::activeDropDownList(Object(JournalVoucherHeader), 'account_id', Array, Array)
+#4 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridColumn.php(116): CDataColumn->renderFilterCellContent()
+#5 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridView.php(532): CGridColumn->renderFilterCell()
+#6 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridView.php(510): CGridView->renderFilter()
+#7 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridView.php(480): CGridView->renderTableHeader()
+#8 /home/pmahendro/public_html/yii/framework/zii/widgets/CBaseListView.php(167): CGridView->renderItems()
+#9 [internal function]: CBaseListView->renderSection(Array)
+#10 /home/pmahendro/public_html/yii/framework/zii/widgets/CBaseListView.php(150): preg_replace_callback('/{(\\w+)}/', Array, '{summary}\n{item...')
+#11 /home/pmahendro/public_html/yii/framework/zii/widgets/CBaseListView.php(135): CBaseListView->renderContent()
+#12 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(173): CBaseListView->run()
+#13 /home/pmahendro/public_html/sinarputra/protected/modules/accounting/views/journalVoucher/admin.php(87): CBaseController->widget('zii.widgets.gri...', Array)
+#14 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require('/home/pmahendro...')
+#15 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): CBaseController->renderInternal('/home/pmahendro...', Array, true)
+#16 /home/pmahendro/public_html/yii/framework/web/CController.php(869): CBaseController->renderFile('/home/pmahendro...', Array, true)
+#17 /home/pmahendro/public_html/yii/framework/web/CController.php(782): CController->renderPartial('admin', Array, true)
+#18 /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/JournalVoucherController.php(80): CController->render('admin', Array)
+#19 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): JournalVoucherController->actionAdmin()
+#20 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#21 /home/pmahendro/public_html/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#22 /home/pmahendro/public_html/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#23 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): CController->run('admin')
+#24 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/jour...')
+#25 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#26 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#27 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/journalVoucher/admin
+---

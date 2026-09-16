@@ -64,6 +64,22 @@ class JournalVoucherController extends Controller {
         ));
     }
 
+    public function actionAdmin() {
+        $model = Search::bind(new JournalVoucherHeader('search'), isset($_GET['JournalVoucherHeader']) ? $_GET['JournalVoucherHeader'] : array());
+
+        if (isset($_GET['pageSize'])) {
+            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+            unset($_GET['pageSize']);
+        }
+
+        $dataProvider = $model->searchWithPaging();
+
+        $this->render('admin', array(
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+        ));
+    }
+
     public function actionAjaxHtmlAddDetail($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $journalVoucher = $this->instantiate($id);

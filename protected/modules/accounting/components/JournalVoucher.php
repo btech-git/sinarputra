@@ -17,8 +17,9 @@ class JournalVoucher extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($journalVoucherHeader !== null)
+        if ($journalVoucherHeader !== null) {
             $this->header->setCodeNumber($journalVoucherHeader->cn_ordinal, $journalVoucherHeader->cn_month, $journalVoucherHeader->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -35,9 +36,9 @@ class JournalVoucher extends CComponent {
                 }
             }
 
-            if ($exist)
+            if ($exist) {
                 $this->details[$i]->debit++;
-            else {
+            } else {
                 $detail = new JournalVoucherDetail();
                 $detail->account_id = $account->id;
                 $this->details[] = $detail;
@@ -60,9 +61,9 @@ class JournalVoucher extends CComponent {
                 $fields = array('debit', 'credit', 'account_id');
                 $valid = $valid && $detail->validate($fields);
             }
-        }
-        else
+        } else {
             $valid = false;
+        }
 
         return $valid;
     }
@@ -83,8 +84,9 @@ class JournalVoucher extends CComponent {
         $detailsCount = count($this->details);
         for ($i = 0; $i < $detailsCount; $i++) {
             for ($j = $i; $j < $detailsCount; $j++) {
-                if ($i === $j)
+                if ($i === $j) {
                     continue;
+                }
 
                 if ($this->details[$i]->account_id === $this->details[$j]->account_id) {
                     $valid = false;
@@ -99,15 +101,16 @@ class JournalVoucher extends CComponent {
 
     public function flush() {
         JournalAccounting::model()->deleteAllByAttributes(array(
-            'transaction_number' => $this->header->getCodeNumber(PurchasePaymentHeader::CN_CONSTANT),
+            'transaction_number' => $this->header->getCodeNumber(JournalVoucherHeader::CN_CONSTANT),
             'transaction_type' => AccountingJournalHelper::ADJUSTMENT,
         ));
 
         $valid = $this->header->save(false);
 
         foreach ($this->details as $detail) {
-            if ($detail->isNewRecord)
+            if ($detail->isNewRecord) {
                 $detail->journal_voucher_header_id = $this->header->id;
+            }
 
             $valid = $valid && $detail->save(false);
 
@@ -146,19 +149,20 @@ class JournalVoucher extends CComponent {
     }
 
     public function getTotalDebit() {
-        $total = 0.00;
-        foreach ($this->details as $detail)
+        $total = '0.00';
+        foreach ($this->details as $detail) {
             $total += $detail->debit;
+        }
 
         return $total;
     }
 
     public function getTotalCredit() {
-        $total = 0.00;
-        foreach ($this->details as $detail)
+        $total = '0.00';
+        foreach ($this->details as $detail) {
             $total += $detail->credit;
+        }
 
         return $total;
     }
-
 }

@@ -33,7 +33,10 @@
 
             <div class="row">
                 <?php echo CHtml::label('Account', false); ?>
-                <?php echo CHtml::activeDropDownList($deposit->header, 'account_id', CHtml::listData(Account::model()->findAll(array('condition' => 'account_category_id IN (1, 2)', 'order' => 't.name ASC')), 'id', 'name'), array(
+                <?php echo CHtml::activeDropDownList($deposit->header, 'account_id', CHtml::listData(Account::model()->findAll(array(
+                    'condition' => 'account_category_id IN (59)', 
+                    'order' => 't.name ASC'
+                )), 'id', 'name'), array(
                     'empty' => '-Select Account-'
                 )); ?>
                 <?php echo CHtml::error($deposit->header, 'account_id'); ?>
