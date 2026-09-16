@@ -9,18 +9,17 @@ $this->menu = array(
 );
 
 Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
-    $('.search-form').toggle();
-    return false;
-});
-$('.search-form form').submit(function(){
-    $.fn.yiiGridView.update('item-grid', {
-        data: $(this).serialize()
+    $('.search-button').click(function(){
+        $('.search-form').toggle();
+        return false;
     });
-    return false;
-});
-");
-?>
+    $('.search-form form').submit(function(){
+        $.fn.yiiGridView.update('item-grid', {
+            data: $(this).serialize()
+        });
+        return false;
+    });
+"); ?>
 
 <h1>Manage Items</h1>
 

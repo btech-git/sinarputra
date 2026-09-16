@@ -147,6 +147,11 @@ class Receive extends CComponent {
     }
 
     public function flush() {
+        JournalAccounting::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT),
+            'transaction_type' => AccountingJournalHelper::RECEIVE_MATERIAL,
+        ));
+
         if ($this->header->receiving_type == 1) {
             $purchaseHeader = PurchaseHeader::model()->findByPk($this->header->purchase_header_id);
             $this->header->supplier_id = $purchaseHeader->supplier_id;
@@ -158,7 +163,6 @@ class Receive extends CComponent {
         foreach ($this->details as $detail) {
             if ($detail->isNewRecord) {
                 $serialNumber = $this->generateSerialNumber($detail->product_category_id);
-
                 $detail->serial_number = $serialNumber;
                 $serialNumber++;
 
@@ -166,6 +170,34 @@ class Receive extends CComponent {
             }
 
             $valid = $detail->save(false) && $valid;
+        }
+
+        if ($this->header->receiving_type === ReceiveHeader::LOCAL) {
+            $journalLedgerDebit = AccountingJournalHelper::make(
+                'debit', 
+                $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT), 
+                AccountingJournalHelper::RECEIVE_MATERIAL, 
+                820, 
+                $this->getGrandTotal(), 
+                $this->header->supplier->company,
+                $this->header->note, 
+                $this->header->date,
+                $this->header->admin_id
+            );
+            $valid = $journalLedgerDebit->save(false) && $valid;
+            
+            $journalLedgerCredit = AccountingJournalHelper::make(
+                'credit', 
+                $this->header->getCodeNumber(ReceiveHeader::CN_CONSTANT), 
+                AccountingJournalHelper::RECEIVE_MATERIAL, 
+                1404, 
+                $this->getGrandTotal(), 
+                $this->header->supplier->company,
+                $this->header->note, 
+                $this->header->date,
+                $this->header->admin_id
+            );
+            $valid = $journalLedgerCredit->save(false) && $valid;
         }
 
         return $valid;
@@ -182,5 +214,34 @@ class Receive extends CComponent {
 
         return $purchaseNumber;
     }
+    
+    public function getSubTotal() {
+        $total = '0.00';
 
+        foreach ($this->details as $detail) {
+            $total += $detail->total;
+        }
+
+        return $total;
+    }
+
+    public function getDiscountAmount() {
+        return $this->header->purchaseHeader->discount / 100 * $this->getSubTotal();
+    }
+
+    public function getTotalBeforeTax() {
+        return $this->getSubTotal() - $this->getDiscountAmount();
+    }
+
+    public function getCalculatedTax() {
+        return ((int) $this->header->purchaseHeader->is_tax === 1) ? $this->getTotalBeforeTax() * .11 : '0.00';
+    }
+
+    public function getCalculatedTaxIncome() {
+        return ((int) $this->header->purchaseHeader->is_tax_income === 1) ? $this->getTotalBeforeTax() * .02 : '0.00';
+    }
+
+    public function getGrandTotal() {
+        return $this->getTotalBeforeTax() + $this->getCalculatedTax() - $this->getCalculatedTaxIncome();
+    }
 }

@@ -50,29 +50,6 @@ class PurchasePaymentComponent extends CComponent {
         array_splice($this->details, $index, 1);
     }
 
-//	public function validateDetailsUnique()
-//	{
-//		$valid = true;
-//		
-//		$detailsCount = count($this->details);
-//		for ($i = 0; $i < $detailsCount; $i++)
-//		{
-//			for ($j = $i; $j < $detailsCount; $j++)
-//			{
-//				if ($i === $j) continue;
-//				
-//				if ($this->details[$i]->purchase_receipt_header_id === $this->details[$j]->purchase_receipt_header_id)
-//				{
-//					$valid = false;
-//					$this->header->addError('error', 'Detail tidak boleh sama.');
-//					break;
-//				}
-//			}
-//		}
-//
-//		return $valid;
-//	}
-
     public function validateDetailsCount() {
         $valid = true;
         if (count($this->details) === 0) {

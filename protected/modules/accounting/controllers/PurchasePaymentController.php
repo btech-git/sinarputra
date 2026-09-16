@@ -86,13 +86,15 @@ class PurchasePaymentController extends Controller {
 
         $account = Search::bind(new Account('search'), isset($_GET['Account']) ? $_GET['Account'] : '');
         $accountDataProvider = $account->search();
+        $accountDataProvider->criteria->addCondition('t.account_category_id IN (59)');
 
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($model);
             $model->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($model->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($model->header->date)));
             
-            if ($model->save(Yii::app()->db))
+            if ($model->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $model->header->id));
+            }
         }
 
         $this->render('create', array(
@@ -139,12 +141,14 @@ class PurchasePaymentController extends Controller {
 
         $account = Search::bind(new Account('search'), isset($_GET['Account']) ? $_GET['Account'] : '');
         $accountDataProvider = $account->search();
+        $accountDataProvider->criteria->addCondition('t.account_category_id IN (59)');
 
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($model);
             
-            if ($model->save(Yii::app()->db))
+            if ($model->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $model->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -173,7 +177,6 @@ class PurchasePaymentController extends Controller {
                 ),
             ),
         );
-//        $dataProvider->criteria->condition = 't.is_inactive = 0';
         
         $supplierCompany = isset($_GET['SupplierCompany']) ? $_GET['SupplierCompany'] : '';
         if (!empty($supplierCompany)) {
@@ -212,20 +215,22 @@ class PurchasePaymentController extends Controller {
                     $model->is_inactive = ActiveRecord::INACTIVE;
                     $valid = $valid && $model->update(array('is_inactive'));
 
-                    if ($valid)
+                    if ($valid) {
                         $dbTransaction->commit();
-                    else
+                    } else {
                         $dbTransaction->rollBack();
+                    }
                 } catch (Exception $e) {
                     $dbTransaction->rollback();
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionAjaxJsonPurchaseReceipt() {
@@ -249,8 +254,9 @@ class PurchasePaymentController extends Controller {
             $model = $this->instantiate($id);
             $this->loadState($model);
             
-            if (isset($_POST['AccountId']))
+            if (isset($_POST['AccountId'])) {
                 $model->addDetail($_POST['AccountId']);
+            }
 
             $this->renderPartial('_detail', array(
                 'model' => $model,
@@ -270,5 +276,4 @@ class PurchasePaymentController extends Controller {
             ));
         }
     }
-
 }

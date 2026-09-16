@@ -152,11 +152,11 @@ class ReceiveHeader extends ReceiveHeaderBase {
     }
 
     public function getTotalBeforeTax() {
-        return $this->subTotal - $this->purchaseHeader->discount;
+        return $this->subTotal - $this->discountAmount;
     }
 
     public function getCalculatedTax() {
-        return ((int) $this->purchaseHeader->is_tax === 1) ? $this->getTotalBeforeTax() * .1 : 0.00;
+        return ((int) $this->purchaseHeader->is_tax === 1) ? $this->getTotalBeforeTax() * .11 : 0.00;
     }
 
     public function getCalculatedTaxIncome() {
