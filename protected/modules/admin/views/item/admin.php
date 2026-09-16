@@ -10,14 +10,14 @@ $this->menu = array(
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
-	$('.search-form').toggle();
-	return false;
+    $('.search-form').toggle();
+    return false;
 });
 $('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('item-grid', {
-		data: $(this).serialize()
-	});
-	return false;
+    $.fn.yiiGridView.update('item-grid', {
+        data: $(this).serialize()
+    });
+    return false;
 });
 ");
 ?>
@@ -48,11 +48,11 @@ $('.search-form form').submit(function(){
         'description',
         array(
             'header' => 'Category',
-            'value' => '$data->itemCategory->name',
+            'value' => 'CHtml::encode(CHtml::value($data, "itemCategory.name"))',
         ),
         array(
             'header' => 'Unit',
-            'value' => '$data->unit->name',
+            'value' => 'CHtml::encode(CHtml::value($data, "unit.name"))',
         ),
         array(
             'class' => 'CButtonColumn',
