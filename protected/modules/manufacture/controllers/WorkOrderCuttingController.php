@@ -246,7 +246,7 @@ class WorkOrderCuttingController extends Controller {
     public function actionFinish() {
         $workOrderCutting = isset(Yii::app()->session['WorkOrderCutting']) ? Yii::app()->session['WorkOrderCutting'] : $this->instantiate(null);
         $workOrderCutting->detailOffCuts = array();
-        $workOrderCutting->generateCodeNumber(date('m'), date('y'));
+//        $workOrderCutting->generateCodeNumber(date('m'), date('y'));
 
         if ($workOrderCutting->save(Yii::app()->db)) {
             unset(Yii::app()->session['WorkOrderCutting']);
