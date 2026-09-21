@@ -60,10 +60,11 @@ class MaterialPayment extends CComponent {
         $dbTransaction = $dbConnection->beginTransaction();
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -78,15 +79,17 @@ class MaterialPayment extends CComponent {
         try {
             $valid = true;
 
-            foreach ($this->details as $detail)
+            foreach ($this->details as $detail) {
                 $valid = $valid && $detail->delete();
+            }
 
             $valid = $valid && $this->header->delete();
 
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -106,9 +109,9 @@ class MaterialPayment extends CComponent {
                 $fields = array('memo', 'amount', 'income_tax');
                 $valid = $detail->validate($fields) && $valid;
             }
-        }
-        else
+        } else {
             $valid = false;
+        }
 
         return $valid;
     }
@@ -129,8 +132,9 @@ class MaterialPayment extends CComponent {
         $detailsCount = count($this->details);
         for ($i = 0; $i < $detailsCount; $i++) {
             for ($j = $i; $j < $detailsCount; $j++) {
-                if ($i === $j)
+                if ($i === $j) {
                     continue;
+                }
 
                 if ($this->details[$i]->material_invoice_header_id === $this->details[$j]->material_invoice_header_id) {
                     $valid = false;
@@ -144,6 +148,11 @@ class MaterialPayment extends CComponent {
     }
 
     public function flush() {
+        JournalAccounting::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT),
+            'transaction_type' => AccountingJournalHelper::SALE_PAYMENT_MATERIAL,
+        ));
+
         ReceivableLedger::model()->deleteAllByAttributes(array(
             'transaction_number' => $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT),
         ));
@@ -168,6 +177,45 @@ class MaterialPayment extends CComponent {
                 $valid = $materialInvoiceHeader->update(array('total_payment', 'remaining_payment')) && $valid;
             }
             
+            $accountingJournalDebitAccount = AccountingJournalHelper::make(
+                'debit', 
+                $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT), 
+                AccountingJournalHelper::SALE_PAYMENT_MATERIAL, 
+                $detail->account_id, 
+                $detail->amount, 
+                'Pelunasan ' . $this->header->customer->company,
+                $detail->memo, 
+                $this->header->date,
+                $this->header->admin_id
+            );
+            $valid = $accountingJournalDebitAccount->save(false) && $valid;
+
+            $accountingJournalCreditAdditional1 = AccountingJournalHelper::make(
+                'credit', 
+                $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT), 
+                AccountingJournalHelper::SALE_PAYMENT_MATERIAL, 
+                $detail->account_id_additional_payment_1, 
+                $detail->additional_payment_1, 
+                'Pelunasan ' . $this->header->customer->company, 
+                $detail->memo,
+                $this->header->date,
+                $this->header->admin_id
+            );
+            $valid = $accountingJournalCreditAdditional1->save(false) && $valid;
+
+            $accountingJournalCreditAdditional2 = AccountingJournalHelper::make(
+                'credit', 
+                $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT), 
+                AccountingJournalHelper::SALE_PAYMENT_MATERIAL, 
+                $detail->account_id_additional_payment_2, 
+                $detail->additional_payment_2, 
+                $detail->memo,
+                'Pelunasan ' . $this->header->customer->company, 
+                $this->header->date,
+                $this->header->admin_id
+            );
+            $valid = $accountingJournalCreditAdditional2->save(false) && $valid;
+
             $receivableLedger = new ReceivableLedger();
             $receivableLedger->transaction_number = $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT);
             $receivableLedger->transaction_date = $this->header->date_payment; 
@@ -181,11 +229,50 @@ class MaterialPayment extends CComponent {
             $valid = $receivableLedger->save(false) && $valid;
         }
 
+        $accountingJournalCreditTotalAmount = AccountingJournalHelper::make(
+            'credit', 
+            $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT_MATERIAL,
+            $this->header->customer->account_id_receivable, 
+            $this->totalPayment,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalCreditTotalAmount->save(false) && $valid;
+
+        $accountingJournalTotalDebitAdditional1 = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT_MATERIAL,
+            $this->header->customer->account_id_receivable, 
+            $this->totalAdditionalPayment1,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalTotalDebitAdditional1->save(false) && $valid;
+
+        $accountingJournalTotalDebitAdditional2 = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(MaterialPaymentHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_PAYMENT_MATERIAL,
+            $this->header->customer->account_id_receivable, 
+            $this->totalAdditionalPayment2,
+            'Pelunasan ' . $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalTotalDebitAdditional2->save(false) && $valid;
+
         return $valid;
     }
 
     public function getTotalReceivable() {
-        $total = 0.00;
+        $total = '0.00';
 
         foreach ($this->details as $detail) {
             $total += $detail->materialInvoiceHeader->remaining_payment;
@@ -195,7 +282,7 @@ class MaterialPayment extends CComponent {
     }
 
     public function getTotalPayment() {
-        $total = 0.00;
+        $total = '0.00';
 
         foreach ($this->details as $detail) {
             $total += $detail->amount;
@@ -205,7 +292,7 @@ class MaterialPayment extends CComponent {
     }
     
     public function getTotalAdditionalPayment1() {
-        $total = 0.00;
+        $total = '0.00';
 
         foreach ($this->details as $detail) {
             $total += $detail->additional_payment_1;
@@ -215,7 +302,7 @@ class MaterialPayment extends CComponent {
     }
 
     public function getTotalAdditionalPayment2() {
-        $total = 0.00;
+        $total = '0.00';
 
         foreach ($this->details as $detail) {
             $total += $detail->additional_payment_2;

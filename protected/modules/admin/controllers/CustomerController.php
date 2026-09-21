@@ -48,6 +48,7 @@ class CustomerController extends CrudController {
             $model->date_created = date('Y-m-d H:m:s');
             $model->date_updated = null;
             $model->admin_id_updated = null;
+            $model->account_id_receivable = 11;
             
             if ($model->validateCreditLimit() && IdempotentManager::build()->save() && $model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));

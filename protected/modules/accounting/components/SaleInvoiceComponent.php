@@ -17,8 +17,9 @@ class SaleInvoiceComponent extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($saleInvoice !== null)
+        if ($saleInvoice !== null) {
             $this->header->setCodeNumber($saleInvoice->cn_ordinal, $saleInvoice->cn_month, $saleInvoice->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -53,9 +54,9 @@ class SaleInvoiceComponent extends CComponent {
                 $fields = array('length', 'width', 'height', 'weight');
                 $valid = $detail->validate($fields) && $valid;
             }
-        }
-        else
+        } else {
             $valid = false;
+        }
 
         return $valid;
     }
@@ -74,10 +75,11 @@ class SaleInvoiceComponent extends CComponent {
         $dbTransaction = $dbConnection->beginTransaction();
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -96,21 +98,17 @@ class SaleInvoiceComponent extends CComponent {
         ReceivableLedger::model()->deleteAllByAttributes(array(
             'transaction_number' => $this->header->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT),
         ));
-        
-//        if ((int)$this->header->service_type === 0)
-//           $this->header->is_tax_income = 0;
-//        else
-//           $this->header->is_tax_income = 1;
-        
+       
         $this->header->grand_total = $this->grandTotal;
-        $this->header->total_payment = 0.00;
+        $this->header->total_payment = '0.00';
         $this->header->date_receipt = empty($this->header->date_receipt) ? null : $_POST['SaleInvoiceHeader']['date_receipt'];
 
         $valid = $this->header->save(false);
 
         foreach ($this->details as $detail) {
-            if ($detail->isNewRecord)
+            if ($detail->isNewRecord) {
                 $detail->sale_invoice_header_id = $this->header->id;
+            }
                 
             $valid = $valid && $detail->save(false);
         }
@@ -157,10 +155,11 @@ class SaleInvoiceComponent extends CComponent {
     }
 
     public function getSubTotal() {
-        $total = 0.00;
+        $total = '0.00';
 
-        foreach ($this->details as $detail)
+        foreach ($this->details as $detail) {
             $total += $detail->getTotal();
+        }
 
         return $total;
     }
@@ -172,8 +171,6 @@ class SaleInvoiceComponent extends CComponent {
 
     public function getCalculatedTax() {
 
-//        $this->header->tax_percentage = (int) $this->header->is_tax === 1 ? 11 : 0;
-        
         return round($this->getSubTotalBeforeTax() * $this->header->tax_percentage / 100);
     }
 
@@ -186,12 +183,4 @@ class SaleInvoiceComponent extends CComponent {
         
         return $this->getSubTotalBeforeTax() + $this->getCalculatedTax() - $this->getCalculatedTaxIncome();
     }
-
-//    public function getDetailTotal($index) {
-//        $detail = $this->details[$index];
-//        $header = ($detail->saleInvoiceHeader === null) ? $this->header : $detail->saleInvoiceHeader;
-//        $optionMultiplication = ($header->is_using_weight == 0) ? $detail->quantity : $detail->weight;
-//        
-//        return $optionMultiplication * $detail->unit_price;
-//    }
 }

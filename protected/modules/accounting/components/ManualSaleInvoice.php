@@ -17,8 +17,9 @@ class ManualSaleInvoice extends CComponent {
             'order' => 'cn_year DESC, cn_month DESC, cn_ordinal DESC',
         ));
 
-        if ($saleInvoice !== null)
+        if ($saleInvoice !== null) {
             $this->header->setCodeNumber($saleInvoice->cn_ordinal, $saleInvoice->cn_month, $saleInvoice->cn_year);
+        }
 
         $this->header->setCodeNumberByNext($currentMonth, $currentYear);
     }
@@ -46,9 +47,9 @@ class ManualSaleInvoice extends CComponent {
                 $detail->is_using_weight = empty($deliveryDetail->workOrderCuttingDetail->saleDetail->quotationDetailProduct) ? $deliveryDetail->workOrderCuttingDetail->saleDetail->quotationDetailService->is_using_weight : $deliveryDetail->workOrderCuttingDetail->saleDetail->quotationDetailProduct->is_using_weight;
                 $this->details[] = $detail;
             }
-        }
-        else
+        } else {
             $this->header->addError('error', 'Invoice tidak ada di dalam detail');
+        }
     }
 
     public function removeDetailAt($index) {
@@ -68,9 +69,9 @@ class ManualSaleInvoice extends CComponent {
                 $fields = array('length', 'width', 'height', 'weight');
                 $valid = $detail->validate($fields) && $valid;
             }
-        }
-        else
+        } else {
             $valid = false;
+        }
 
         return $valid;
     }
@@ -89,10 +90,11 @@ class ManualSaleInvoice extends CComponent {
         $dbTransaction = $dbConnection->beginTransaction();
         try {
             $valid = $this->validate() && IdempotentManager::build()->save() && $this->flush();
-            if ($valid)
+            if ($valid) {
                 $dbTransaction->commit();
-            else
+            } else {
                 $dbTransaction->rollback();
+            }
         } catch (Exception $e) {
             $dbTransaction->rollback();
             $valid = false;
@@ -103,6 +105,10 @@ class ManualSaleInvoice extends CComponent {
     }
 
     public function flush() {
+        JournalAccounting::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT),
+            'transaction_type' => AccountingJournalHelper::SALE_INVOICE_MANUAL,
+        ));
         
         ReceivableLedger::model()->deleteAllByAttributes(array(
             'transaction_number' => $this->header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT),
@@ -111,7 +117,7 @@ class ManualSaleInvoice extends CComponent {
         $saleHeader = SaleHeader::model()->findByPk($this->details[0]->deliveryDetail->workOrderCuttingDetail->workOrderCuttingHeader->sale_header_id);
         $this->header->purchase_order_number = $saleHeader->customer_order_number;
         $this->header->grand_total = $this->grandTotal;
-        $this->header->total_payment = 0.00;
+        $this->header->total_payment = '0.00';
         $this->header->work_order_cutting_header_id = null;
         $this->header->date_receipt = empty($this->header->date_receipt) ? null : $_POST['ManualSaleInvoiceHeader']['date_receipt'];
 
@@ -124,6 +130,32 @@ class ManualSaleInvoice extends CComponent {
                 
             $valid = $valid && $detail->save(false);
         }
+
+        $accountingJournalDebit = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT), 
+            AccountingJournalHelper::SALE_INVOICE_MANUAL, 
+            $this->header->customer->account_id_receivable, 
+            $this->header->grand_total, 
+            $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalDebit->save(false) && $valid;
+
+        $accountingJournalCredit = AccountingJournalHelper::make(
+            'credit', 
+            $this->header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_INVOICE_MANUAL,
+            1005,
+            $this->header->grand_total,
+            $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalCredit->save(false) && $valid;
 
         $receivableLedger = new ReceivableLedger();
         $receivableLedger->transaction_number = $this->header->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT);
@@ -141,10 +173,11 @@ class ManualSaleInvoice extends CComponent {
     }
 
     public function getSubTotal() {
-        $total = 0.00;
+        $total = '0.00';
 
-        foreach ($this->details as $detail)
+        foreach ($this->details as $detail) {
             $total += $detail->getTotal();
+        }
 
         return $total;
     }

@@ -84,13 +84,18 @@ class MaterialInvoice extends CComponent {
     }
 
     public function flush() {
+        JournalAccounting::model()->deleteAllByAttributes(array(
+            'transaction_number' => $this->header->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT),
+            'transaction_type' => AccountingJournalHelper::SALE_INVOICE_MATERIAL,
+        ));
+
         ReceivableLedger::model()->deleteAllByAttributes(array(
             'transaction_number' => $this->header->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT),
         ));
         
         //save header
         $this->header->grand_total = $this->grandTotal;
-        $this->header->total_payment = 0.00;
+        $this->header->total_payment = '0.00';
         $this->header->remaining_payment = $this->remainingPayment;
         $valid = $this->header->save(false);
 
@@ -106,6 +111,32 @@ class MaterialInvoice extends CComponent {
             
             $valid = $detail->save(false) && $valid;
         }
+
+        $accountingJournalDebit = AccountingJournalHelper::make(
+            'debit', 
+            $this->header->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT), 
+            AccountingJournalHelper::SALE_INVOICE_MATERIAL, 
+            $this->header->customer->account_id_receivable, 
+            $this->header->grand_total, 
+            $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalDebit->save(false) && $valid;
+
+        $accountingJournalCredit = AccountingJournalHelper::make(
+            'credit', 
+            $this->header->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT),
+            AccountingJournalHelper::SALE_INVOICE_MATERIAL,
+            1005,
+            $this->header->grand_total,
+            $this->header->customer->company,
+            $this->header->note, 
+            $this->header->date,
+            $this->header->admin_id
+        );
+        $valid = $accountingJournalCredit->save(false) && $valid;
 
         $receivableLedger = new ReceivableLedger();
         $receivableLedger->transaction_number = $this->header->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT);
@@ -123,7 +154,7 @@ class MaterialInvoice extends CComponent {
     }
 
     public function getSubTotal() {
-        $total = 0.00;
+        $total = '0.00';
 
         foreach ($this->details as $detail) {
             if ((int)$detail->is_inactive == 0) {

@@ -71,7 +71,7 @@ $this->menu = array(
         'status',
         array(
             'label' => 'Akun Piutang',
-            'value' => $model->accountIdReceivable->name,
+            'value' => CHtml::encode(CHtml::value($model, 'accountIdReceivable.name')),
         ),
         array(
             'label' => 'User Updated',

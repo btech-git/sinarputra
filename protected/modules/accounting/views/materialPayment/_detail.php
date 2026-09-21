@@ -28,8 +28,7 @@
             <td>
                 <?php echo CHtml::activeDropDownList($detail, "[$i]account_id", CHtml::listData(Account::model()->findAllByAttributes(array(
                     'account_category_id' => 59,
-                    'order' => 't.name ASC',
-                )), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
+                ), array('order' => 't.name ASC',)), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
                 <?php echo CHtml::error($detail, 'account_id'); ?>
             </td>
             <td style="text-align: center; margin-left: 20%">
@@ -77,8 +76,7 @@
             <td>
                 <?php echo CHtml::activeDropDownList($detail, "[$i]account_id_additional_payment_1", CHtml::listData(Account::model()->findAll(array(
                     'condition' => 'account_category_id IN (63, 87)',
-                    'order' => 't.name ASC',
-                )), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
+                ), array('order' => 't.name ASC',)), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
                 <?php echo CHtml::error($detail, 'account_id_additional_payment_1'); ?>
             </td>
             <td style="text-align: center; margin-left: 20%">
@@ -100,8 +98,7 @@
             <td>
                 <?php echo CHtml::activeDropDownList($detail, "[$i]account_id_additional_payment_2", CHtml::listData(Account::model()->findAll(array(
                     'condition' => 'account_category_id IN (63, 87)',
-                    'order' => 't.name ASC',
-                )), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
+                ), array('order' => 't.name ASC',)), 'id', 'name'), array('empty' => '-- Pilih --')); ?>
                 <?php echo CHtml::error($detail, 'account_id_additional_payment_2'); ?>
             </td>
             <td style="text-align: center; margin-left: 20%">

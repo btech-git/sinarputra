@@ -173,9 +173,9 @@ class WorkOrderCuttingComponent extends CComponent {
     }
 
     public function flush() {
-        $this->header->cn_ordinal = $this->header->saleHeader->cn_ordinal;
-        $this->header->cn_month = $this->header->saleHeader->cn_month;
-        $this->header->cn_year = $this->header->saleHeader->cn_year;
+//        $this->header->cn_ordinal = $this->header->saleHeader->cn_ordinal;
+//        $this->header->cn_month = $this->header->saleHeader->cn_month;
+//        $this->header->cn_year = $this->header->saleHeader->cn_year;
         $this->header->is_service = $this->header->saleHeader->is_service;
         
         $totalQuantityRemaining = 0;

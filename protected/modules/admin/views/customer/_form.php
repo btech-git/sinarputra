@@ -185,14 +185,14 @@
                 )); ?>
                 <?php echo $form->error($model, 'is_delivery_approval_needed'); ?>
             </div>
-            
+
             <div class="form-group">
-                <?php echo $form->labelEx($model, 'Akun Piutang'); ?>
-                <?php echo $form->dropDownList($model, 'account_id_receivable', CHtml::listData(Account::model()->findAll(array(
-                    'condition' => 'account_category_id = 3', 
-                    'order' => 'name ASC'
-                )), 'id', 'name'), array('empty' => '-Select Akun Piutang-')); ?>
-                <?php echo $form->error($model, 'account_id_receivable'); ?>
+                <?php echo $form->labelEx($model, 'status'); ?>
+                <?php echo $form->dropDownList($model, 'is_inactive', array(
+                    ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL,
+                    ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL
+                )); ?>
+                <?php echo $form->error($model, 'is_inactive'); ?>
             </div>
         </div>
     </fieldset>
@@ -204,15 +204,6 @@
             <?php echo $form->labelEx($model, 'note'); ?>
             <?php echo $form->textArea($model, 'note', array('rows' => 5, 'cols' => 50)); ?>
             <?php echo $form->error($model, 'note'); ?>
-        </div>
-
-        <div class="form-group">
-            <?php echo $form->labelEx($model, 'status'); ?>
-            <?php echo $form->dropDownList($model, 'is_inactive', array(
-                ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL,
-                ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL
-            )); ?>
-            <?php echo $form->error($model, 'is_inactive'); ?>
         </div>
     </div>
 
