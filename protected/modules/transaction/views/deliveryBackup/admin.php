@@ -28,18 +28,19 @@
             ),
         )); ?>
     </div>
+    
     <div class="row">
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>
 
+    <br />
+    
     <div class="row button">
         <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;', 'name' => 'Submit')); ?>
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
     <?php echo CHtml::endForm(); ?>
 </center>
-
-<br/>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'delivery-backup-grid',
@@ -65,16 +66,11 @@
         ),
         array(
             'header' => 'Customer',
+            'filter' => CHtml::textField('CustomerCompany', $customerCompany, array('size' => '30', 'maxLength' => '60')),
             'value' => 'CHtml::value($data, "customer.company")',
         ),
-        array(
-            'header' => 'Sopir',
-            'value' => 'CHtml::value($data, "employeeIdDriver.name")',
-        ),
-        array(
-            'header' => 'Gudang',
-            'value' => 'CHtml::value($data, "warehouse.name")',
-        ),
+        'purchase_order_number: PO #',
+        'work_order_number: WO #',
         'note',
         array(
             'name' => 'is_inactive',

@@ -115,7 +115,9 @@ class DeliveryBackupController extends Controller {
         }
 
         $dataProvider = $deliveryBackupHeader->search();
+        $dataProvider->criteria->with = array('customer:resetScope',);     
 
+        $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
         $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
         $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
 
@@ -126,11 +128,17 @@ class DeliveryBackupController extends Controller {
             $dataProvider->criteria->addBetweenCondition('t.transaction_date', $startDate, $endDate);
         }
 
+        if (!empty($customerCompany)) {
+            $dataProvider->criteria->addCondition('customer.company LIKE :customer_company');
+            $dataProvider->criteria->params[':customer_company'] = "%{$customerCompany}%";
+        }
+
         $dataProvider->criteria->order = 't.id DESC';
 
         $this->render('admin', array(
             'deliveryBackupHeader' => $deliveryBackupHeader,
-            'dataProvider' => $dataProvider,              
+            'dataProvider' => $dataProvider, 
+            'customerCompany' => $customerCompany,               
         ));
     }
 
