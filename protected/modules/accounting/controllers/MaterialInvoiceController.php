@@ -4,24 +4,25 @@ class MaterialInvoiceController extends Controller {
 
     public function filters() {
         return array(
-            'access',
+//            'access',
         );
     }
     
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'admin'
-                || $filterChain->action->id === 'memo'
-                || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit')))
+        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -108,10 +109,10 @@ class MaterialInvoiceController extends Controller {
         $materialInvoice = Search::bind(new MaterialInvoiceHeader('search'), isset($_GET['MaterialInvoiceHeader']) ? $_GET['MaterialInvoiceHeader'] : array());
         $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
 
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
+//        if (isset($_GET['pageSize'])) {
+//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+//            unset($_GET['pageSize']);
+//        }
         
         $dataProvider = $materialInvoice->search();
         $dataProvider->criteria->with = array(
@@ -119,7 +120,6 @@ class MaterialInvoiceController extends Controller {
             'employeeIdSalesman:resetScope',
         );
         
-        $dataProvider->criteria->addCondition('t.is_inactive = 0');
         $dataProvider->criteria->order = 't.id DESC';
 
         if (!empty($customerCompany)) {
@@ -127,6 +127,58 @@ class MaterialInvoiceController extends Controller {
             $dataProvider->criteria->params[':customer_company'] = "%{$customerCompany}%";
         }
         
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        $this->render('admin', array(
+            'materialInvoice' => $materialInvoice,
+            'customerCompany' => $customerCompany,
+            'dataProvider' => $dataProvider,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ));
+    }
+
+    public function actionIndexCoretax() {
+        $materialInvoice = Search::bind(new MaterialInvoiceHeader('search'), isset($_GET['MaterialInvoiceHeader']) ? $_GET['MaterialInvoiceHeader'] : array());
+        $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
+
+//        if (isset($_GET['pageSize'])) {
+//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+//            unset($_GET['pageSize']);
+//        }
+        
+        $dataProvider = $materialInvoice->search();
+        $dataProvider->criteria->with = array(
+            'customer:resetScope',
+            'employeeIdSalesman:resetScope',
+        );
+        
+        $dataProvider->criteria->addCondition('t.is_inactive = 0 AND (t.tax_number is null OR t.tax_number = "")');
+        $dataProvider->criteria->order = 't.id DESC';
+
+        if (!empty($customerCompany)) {
+            $dataProvider->criteria->addCondition('customer.company LIKE :customer_company');
+            $dataProvider->criteria->params[':customer_company'] = "%{$customerCompany}%";
+        }
+        
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
         $arr_category = array();
         if (isset($_GET['SaveXml'])) {
             if (isset($_GET['selectedIds'])) {
@@ -143,10 +195,12 @@ class MaterialInvoiceController extends Controller {
             }
         }
 
-        $this->render('admin', array(
+        $this->render('indexCoretax', array(
             'materialInvoice' => $materialInvoice,
             'customerCompany' => $customerCompany,
             'dataProvider' => $dataProvider,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 

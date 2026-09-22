@@ -4,7 +4,7 @@ class ManualSaleInvoiceController extends Controller {
 
     public function filters() {
         return array(
-            'access',
+//            'access',
         );
     }
 
@@ -280,6 +280,81 @@ class ManualSaleInvoiceController extends Controller {
             $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
         }
 
+        $this->render('admin', array(
+            'saleInvoice' => $saleInvoice,
+            'dataProvider' => $dataProvider,
+            'customerCompany' => $customerCompany,
+            'workOrderOrdinal' => $workOrderOrdinal,
+            'workOrderMonth' => $workOrderMonth,
+            'workOrderYear' => $workOrderYear,
+            'customerPurchaseNumber' => $customerPurchaseNumber,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ));
+    }
+
+    public function actionIndexCoretax() {
+        $saleInvoice = Search::bind(new ManualSaleInvoiceHeader('search'), isset($_GET['ManualSaleInvoiceHeader']) ? $_GET['ManualSaleInvoiceHeader'] : array());
+        $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
+        $workOrderOrdinal = isset($_GET['WorkOrderOrdinal']) ? $_GET['WorkOrderOrdinal'] : '';
+        $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
+        $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
+        $customerPurchaseNumber = isset($_GET['CustomerPurchaseNumber']) ? $_GET['CustomerPurchaseNumber'] : '';
+
+        if (isset($_GET['pageSize'])) {
+            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+            unset($_GET['pageSize']);
+        }
+
+        $dataProvider = $saleInvoice->search();
+        $dataProvider->criteria->with = array(
+            'workOrderCuttingHeader' => array(
+                'with' => array(
+                    'saleHeader:resetScope'
+                ),
+            ),
+            'customer:resetScope',
+            'employeeIdSalesman:resetScope',
+        );
+        
+        $dataProvider->criteria->addCondition('t.is_inactive = 0 AND (t.tax_number is null OR t.tax_number = "")');
+        $dataProvider->criteria->order = 't.id DESC';
+        
+        if (!empty($customerCompany)) {
+            $dataProvider->criteria->addCondition('customer.company LIKE :customer_company');
+            $dataProvider->criteria->params[':customer_company'] = "%{$customerCompany}%";
+        }
+        
+        if (!empty($workOrderOrdinal)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_ordinal LIKE :cn_ordinal');
+            $dataProvider->criteria->params[':cn_ordinal'] = "%{$workOrderOrdinal}%";
+        }
+        
+        if (!empty($workOrderMonth)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_month = :cn_month');
+            $dataProvider->criteria->params[':cn_month'] = $workOrderMonth;
+        }
+        
+        if (!empty($workOrderYear)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_year LIKE :cn_year');
+            $dataProvider->criteria->params[':cn_year'] = "%{$workOrderYear}%";
+        }
+        
+        if (!empty($customerPurchaseNumber)) {
+            $dataProvider->criteria->addCondition('saleHeader.customer_order_number LIKE :customer_order_number');
+            $dataProvider->criteria->params[':customer_order_number'] = "%{$customerPurchaseNumber}%";
+        }
+        
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
         $arr_category = array();
         if (isset($_GET['SaveXml'])) {
             if (isset($_GET['selectedIds'])) {
@@ -296,7 +371,7 @@ class ManualSaleInvoiceController extends Controller {
             }
         }
 
-        $this->render('admin', array(
+        $this->render('indexCoretax', array(
             'saleInvoice' => $saleInvoice,
             'dataProvider' => $dataProvider,
             'customerCompany' => $customerCompany,
@@ -304,6 +379,8 @@ class ManualSaleInvoiceController extends Controller {
             'workOrderMonth' => $workOrderMonth,
             'workOrderYear' => $workOrderYear,
             'customerPurchaseNumber' => $customerPurchaseNumber,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 

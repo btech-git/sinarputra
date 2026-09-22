@@ -9,6 +9,7 @@
         Tanggal Mulai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'StartDate',
+            'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
             ),
@@ -20,6 +21,7 @@
         Sampai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'EndDate',
+            'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
             ),
@@ -32,12 +34,14 @@
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>
 
+    <br/>
+    
     <div class="row button">
         <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;', 'name' => 'Submit')); ?>
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
-    <br/>
-    <?php
+    
+    <?php /*
     $pageSize = Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']);
     $pageSizeDropDown = CHtml::dropDownList(
         'pageSize', $pageSize, array(10 => 10, 25 => 25, 50 => 50, 100 => 100), array(
@@ -47,21 +51,17 @@
     ); ?>
 
     <div class="page-size-wrap">
-        <span>Display by:</span><?php echo $pageSizeDropDown; ?>
-    </div>
+        <span>Display by:</span><?php echo $pageSizeDropDown;*/ ?>
+    <!--</div>-->
     <?php echo CHtml::endForm(); ?>
 </center>
+
 <?php echo CHtml::beginForm(array(''), 'get'); ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'saleInvoice-grid',
     'dataProvider' => $dataProvider,
     'filter' => $saleInvoice,
     'columns' => array(
-        array(
-            'id' => 'selectedIds',
-            'class' => 'CCheckBoxColumn',
-            'selectableRows' => '50',
-        ),
         array(
             'name' => 'id',
             'header' => 'Sale Invoice #',
@@ -126,6 +126,7 @@
         ),
         array(
             'name' => 'is_inactive',
+            'header' => 'Status',
             'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
             'value' => '$data->status',
         ),
@@ -136,5 +137,4 @@
     ),
 )); ?>
 
-<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>

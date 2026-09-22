@@ -1,10 +1,7 @@
 <h1>Kelola Data Manual Invoice 2</h1>
-<div id="link">
-    <?php echo CHtml::link('Create', array('create'), array('target' => '_blank')); ?>
-</div>
+
 <center>
     <?php echo CHtml::beginForm(array(''), 'get'); ?>
-    
     <div class="row">
         Tanggal Mulai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
@@ -35,12 +32,14 @@
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>
 
-    <br />
+    <br/>
     
     <div class="row button">
         <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;', 'name' => 'Submit')); ?>
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
+    
+    <br/>
     
     <?php /*
     $pageSize = Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']);
@@ -49,19 +48,25 @@
             'class' => 'change-pagesize',
             'onchange' => "$.fn.yiiGridView.update('material-invoice-grid',{data:{pageSize:$(this).val()}});",
         )
-    ); */
+    );
     ?>
 
-<!--    <div class="page-size-wrap">
-        <span>Display by:</span><?php //echo $pageSizeDropDown; ?>
-    </div>-->
+    <div class="page-size-wrap">
+        <span>Display by:</span><?php echo $pageSizeDropDown;*/ ?>
+    <!--</div>-->
 </center>
+
 <?php echo CHtml::beginForm(array(''), 'get'); ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'material-invoice-grid',
     'dataProvider' => $dataProvider,
     'filter' => $materialInvoice,
     'columns' => array(
+        array(
+            'id' => 'selectedIds',
+            'class' => 'CCheckBoxColumn',
+            'selectableRows' => '50',
+        ),
         array(
             'name' => 'cn_ordinal',
             'header' => 'Pembelian Item #',
@@ -128,10 +133,7 @@
             'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
             'value' => '$data->employeeIdSalesman->name',
         ),
-        array(
-            'class' => 'CButtonColumn',
-            'updateButtonUrl' => 'CHtml::normalizeUrl(array("update", "id"=>$data->id))',
-        ),
     ),
 )); ?>
+<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>

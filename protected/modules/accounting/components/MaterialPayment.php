@@ -185,7 +185,7 @@ class MaterialPayment extends CComponent {
                 $detail->amount, 
                 'Pelunasan ' . $this->header->customer->company,
                 $detail->memo, 
-                $this->header->date,
+                $this->header->date_transaction,
                 $this->header->admin_id
             );
             $valid = $accountingJournalDebitAccount->save(false) && $valid;
@@ -198,7 +198,7 @@ class MaterialPayment extends CComponent {
                 $detail->additional_payment_1, 
                 'Pelunasan ' . $this->header->customer->company, 
                 $detail->memo,
-                $this->header->date,
+                $this->header->date_transaction,
                 $this->header->admin_id
             );
             $valid = $accountingJournalCreditAdditional1->save(false) && $valid;
@@ -211,7 +211,7 @@ class MaterialPayment extends CComponent {
                 $detail->additional_payment_2, 
                 $detail->memo,
                 'Pelunasan ' . $this->header->customer->company, 
-                $this->header->date,
+                $this->header->date_transaction,
                 $this->header->admin_id
             );
             $valid = $accountingJournalCreditAdditional2->save(false) && $valid;
@@ -237,7 +237,7 @@ class MaterialPayment extends CComponent {
             $this->totalPayment,
             'Pelunasan ' . $this->header->customer->company,
             $this->header->note, 
-            $this->header->date,
+            $this->header->date_transaction,
             $this->header->admin_id
         );
         $valid = $accountingJournalCreditTotalAmount->save(false) && $valid;
@@ -250,7 +250,7 @@ class MaterialPayment extends CComponent {
             $this->totalAdditionalPayment1,
             'Pelunasan ' . $this->header->customer->company,
             $this->header->note, 
-            $this->header->date,
+            $this->header->date_transaction,
             $this->header->admin_id
         );
         $valid = $accountingJournalTotalDebitAdditional1->save(false) && $valid;
@@ -263,7 +263,7 @@ class MaterialPayment extends CComponent {
             $this->totalAdditionalPayment2,
             'Pelunasan ' . $this->header->customer->company,
             $this->header->note, 
-            $this->header->date,
+            $this->header->date_transaction,
             $this->header->admin_id
         );
         $valid = $accountingJournalTotalDebitAdditional2->save(false) && $valid;

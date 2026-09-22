@@ -4,18 +4,20 @@ class SaleInvoiceController extends Controller {
 
     public function filters() {
         return array(
-            'access',
+//            'access',
         );
     }
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'view'
                 || $filterChain->action->id === 'memo'
@@ -24,8 +26,9 @@ class SaleInvoiceController extends Controller {
                 || $filterChain->action->id === 'ajaxHtmlAddProduct'
                 || $filterChain->action->id === 'ajaxHtmlRemoveProduct'
                 || $filterChain->action->id === 'ajaxJsonDelivery') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -106,8 +109,9 @@ class SaleInvoiceController extends Controller {
             $this->loadState($saleInvoice);
             $saleInvoice->header->due_date = date('Y-m-d', strtotime($saleInvoice->header->date . ' + ' . $saleInvoice->header->customer->invoice_due_days . ' days'));
         
-            if ($saleInvoice->save(Yii::app()->db))
+            if ($saleInvoice->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $saleInvoice->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -134,11 +138,12 @@ class SaleInvoiceController extends Controller {
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionView($id) {
@@ -183,13 +188,13 @@ class SaleInvoiceController extends Controller {
 //        Yii::app()->session->remove('SaleInvoiceMemoAllowed');
 
         $saleInvoice = $this->loadModel($id);
-
         $isTax = 0;
 
-        if ($saleInvoice->workOrderCuttingHeader->saleHeader->saleDetails[0]->quotationDetailProduct !== null)
+        if ($saleInvoice->workOrderCuttingHeader->saleHeader->saleDetails[0]->quotationDetailProduct !== null) {
             $isTax = $saleInvoice->workOrderCuttingHeader->saleHeader->saleDetails[0]->quotationDetailProduct->quotationHeader->is_tax;
-        else
+        } else {
             $isTax = $saleInvoice->workOrderCuttingHeader->saleHeader->saleDetails[0]->quotationDetailService->quotationHeader->is_tax;
+        }
 
         $this->render('memoDelivery', array(
             'saleInvoice' => $saleInvoice,
@@ -205,10 +210,10 @@ class SaleInvoiceController extends Controller {
         $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
         $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
 
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
+//        if (isset($_GET['pageSize'])) {
+//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+//            unset($_GET['pageSize']);
+//        }
 
         $dataProvider = $saleInvoice->search();
         $dataProvider->criteria->with = array(
@@ -221,7 +226,78 @@ class SaleInvoiceController extends Controller {
             ),
         );
         $dataProvider->criteria->order = 't.id DESC';
-//        $dataProvider->criteria->condition = 't.is_inactive = 0';
+        
+        if (!empty($workOrderOrdinal)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_ordinal = :cn_ordinal');
+            $dataProvider->criteria->params[':cn_ordinal'] = $workOrderOrdinal;
+        }
+        if (!empty($workOrderMonth)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_month = :cn_month');
+            $dataProvider->criteria->params[':cn_month'] = $workOrderMonth;
+        }
+        if (!empty($workOrderYear)) {
+            $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_year = :cn_year');
+            $dataProvider->criteria->params[':cn_year'] = $workOrderYear;
+        }
+        
+        if (!empty($customerCompany)) {
+            $dataProvider->criteria->addCondition('customer.company LIKE :customer_company');
+            $dataProvider->criteria->params[':customer_company'] = "%{$customerCompany}%";
+        }
+        
+        if (!empty($customerOrderNumber)) {
+            $dataProvider->criteria->addCondition('saleHeader.customer_order_number LIKE :customer_order_number');
+            $dataProvider->criteria->params[':customer_order_number'] = "%{$customerOrderNumber}%";
+        }
+
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        $this->render('admin', array(
+            'saleInvoice' => $saleInvoice,
+            'dataProvider' => $dataProvider,
+            'customerCompany' => $customerCompany,
+            'customerOrderNumber' => $customerOrderNumber,
+            'workOrderOrdinal' => $workOrderOrdinal,
+            'workOrderMonth' => $workOrderMonth,
+            'workOrderYear' => $workOrderYear,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ));
+    }
+
+    public function actionIndexCoretax() {
+        $saleInvoice = Search::bind(new SaleInvoiceHeader('search'), isset($_GET['SaleInvoiceHeader']) ? $_GET['SaleInvoiceHeader'] : array());
+        $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
+        $customerOrderNumber = isset($_GET['CustomerOrderNumber']) ? $_GET['CustomerOrderNumber'] : '';
+        $workOrderOrdinal = isset($_GET['WorkOrderOrdinal']) ? $_GET['WorkOrderOrdinal'] : '';
+        $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
+        $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
+
+//        if (isset($_GET['pageSize'])) {
+//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
+//            unset($_GET['pageSize']);
+//        }
+
+        $dataProvider = $saleInvoice->search();
+        $dataProvider->criteria->with = array(
+            'customer:resetScope',
+            'employeeIdSalesman:resetScope',
+            'workOrderCuttingHeader' => array(
+                'with' => array(
+                    'saleHeader'
+                ),
+            ),
+        );
+        $dataProvider->criteria->order = 't.id DESC';
+        $dataProvider->criteria->condition = 't.is_inactive = 0 AND (t.tax_number is null OR t.tax_number = "")';
         
         if (!empty($workOrderOrdinal)) {
             $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_ordinal = :cn_ordinal');
@@ -272,7 +348,7 @@ class SaleInvoiceController extends Controller {
             }
         }
 
-        $this->render('admin', array(
+        $this->render('indexCoretax', array(
             'saleInvoice' => $saleInvoice,
             'dataProvider' => $dataProvider,
             'customerCompany' => $customerCompany,
@@ -280,6 +356,8 @@ class SaleInvoiceController extends Controller {
             'workOrderOrdinal' => $workOrderOrdinal,
             'workOrderMonth' => $workOrderMonth,
             'workOrderYear' => $workOrderYear,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 
@@ -345,19 +423,22 @@ class SaleInvoiceController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $saleInvoice = new SaleInvoiceComponent(new SaleInvoiceHeader, array());
-        else {
+        } else {
             $saleInvoiceHeader = $this->loadModel($id);
             $saleInvoice = new SaleInvoiceComponent($saleInvoiceHeader, $saleInvoiceHeader->saleInvoiceDetails);
         }
+        
         return $saleInvoice;
     }
 
     public function loadModel($id) {
         $model = SaleInvoiceHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -367,19 +448,20 @@ class SaleInvoiceController extends Controller {
         }
         if (isset($_POST['SaleInvoiceDetail'])) {
             foreach ($_POST['SaleInvoiceDetail'] as $i => $item) {
-                if (isset($saleInvoice->details[$i]))
+                if (isset($saleInvoice->details[$i])) {
                     $saleInvoice->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new SaleInvoiceDetail();
                     $detail->attributes = $item;
                     $saleInvoice->details[] = $detail;
                 }
             }
-            if (count($_POST['SaleInvoiceDetail']) < count($saleInvoice->details))
+            if (count($_POST['SaleInvoiceDetail']) < count($saleInvoice->details)) {
                 array_splice($saleInvoice->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $saleInvoice->details = array();
+        }
     }
 
     protected function saveToXml($saleInvoiceHeaders) {

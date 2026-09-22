@@ -1,10 +1,7 @@
-<h1>Kelola Data Manual Invoice 2</h1>
-<div id="link">
-    <?php echo CHtml::link('Create', array('create'), array('target' => '_blank')); ?>
-</div>
+<h1>Kelola Data Manual Sale Invoice</h1>
+
 <center>
     <?php echo CHtml::beginForm(array(''), 'get'); ?>
-    
     <div class="row">
         Tanggal Mulai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
@@ -35,7 +32,7 @@
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>
 
-    <br />
+    <br/>
     
     <div class="row button">
         <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;', 'name' => 'Submit')); ?>
@@ -47,38 +44,42 @@
     $pageSizeDropDown = CHtml::dropDownList(
         'pageSize', $pageSize, array(10 => 10, 25 => 25, 50 => 50, 100 => 100), array(
             'class' => 'change-pagesize',
-            'onchange' => "$.fn.yiiGridView.update('material-invoice-grid',{data:{pageSize:$(this).val()}});",
+            'onchange' => "$.fn.yiiGridView.update('sale-invoice-grid',{data:{pageSize:$(this).val()}});",
         )
-    ); */
-    ?>
+    ); ?>
 
-<!--    <div class="page-size-wrap">
-        <span>Display by:</span><?php //echo $pageSizeDropDown; ?>
-    </div>-->
+    <div class="page-size-wrap">
+        <span>Display by:</span><?php echo $pageSizeDropDown;*/ ?>
+    <!--</div>-->
+    <?php echo CHtml::endForm(); ?>
 </center>
+
 <?php echo CHtml::beginForm(array(''), 'get'); ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-    'id' => 'material-invoice-grid',
+    'id' => 'sale-invoice-grid',
     'dataProvider' => $dataProvider,
-    'filter' => $materialInvoice,
+    'filter' => $saleInvoice,
     'columns' => array(
         array(
-            'name' => 'cn_ordinal',
-            'header' => 'Pembelian Item #',
-            'filter' => '<div style="display: inline-block">' . CHtml::activeTextField($materialInvoice, 'cn_ordinal', array('maxLength' => 4, 'size' => 2)) . '</div>' .
-            '<div style="display: inline-block"> &nbsp; /' . MaterialInvoiceHeader::CN_CONSTANT . '/ &nbsp; </div>' .
-            '<div style="display: inline-block">' . CHtml::activeDropDownList($materialInvoice, 'cn_month', array(1 => 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'), array('empty' => '')) . '</div>' .
+            'id' => 'selectedIds',
+            'class' => 'CCheckBoxColumn',
+            'selectableRows' => '50',
+        ),
+        array(
+            'name' => 'id',
+            'header' => 'Sale Invoice #',
+            'filter' => '<div style="display: inline-block">' . CHtml::activeTextField($saleInvoice, 'cn_ordinal', array('maxLength' => 4, 'size' => 2)) . '</div>' .
+            '<div style="display: inline-block"> &nbsp; /' . ManualSaleInvoiceHeader::CN_CONSTANT . '/ &nbsp; </div>' .
+            '<div style="display: inline-block">' . CHtml::activeDropDownList($saleInvoice, 'cn_month', array(1 => 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'), array('empty' => '')) . '</div>' .
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
-            '<div style="display: inline-block">' . CHtml::activeTextField($materialInvoice, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
-            'value' => '$data->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT)',
-            'htmlOptions' => array('style' => 'width: 300px'),
+            '<div style="display: inline-block">' . CHtml::activeTextField($saleInvoice, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
+            'value' => '$data->getCodeNumber(ManualSaleInvoiceHeader::CN_CONSTANT)',
         ),
         array(
             'header' => 'Tanggal',
             'name' => 'date',
-            'filter' => false, 
-            'value' => 'Yii::app()->dateFormatter->format("d MMM yyyy", $data->date)',
-            'htmlOptions' => array('style' => 'width: 100px'),
+            'filter' => false,
+            'value' => 'Yii::app()->dateFormatter->format("d MMM yyyy", $data->date)'
         ),
         array(
             'header' => 'Jatuh Tempo',
@@ -88,34 +89,32 @@
         ),
         array(
             'header' => 'Customer',
-            'name' => 'customer_id',
             'filter' => CHtml::textField('CustomerCompany', $customerCompany, array('maxLength' => 60, 'size' => 10)),
             'value' => '$data->customer->company',
         ),
         array(
+            'header' => 'Customer PO #',
+            'name' => 'purchase_order_number',
+            'value' => '$data->purchase_order_number',
+        ),
+        array(
             'header' => 'TT #',
             'filter' => false,
-            'value' => 'empty($data->materialReceiptDetails) ? "" : $data->materialReceiptDetails[0]->materialReceiptHeader->getCodeNumber(MaterialReceiptHeader::CN_CONSTANT)',
+            'value' => 'empty($data->manualSaleReceiptDetails) ? "" : $data->manualSaleReceiptDetails[0]->manualSaleReceiptHeader->getCodeNumber(ManualSaleReceiptHeader::CN_CONSTANT)',
         ),
         array(
             'header' => 'Tanggal TT',
             'name' => 'date',
-            'filter' => false, 
-            'value' => 'empty($data->materialReceiptDetails) ? "" : Yii::app()->dateFormatter->format("d MMM yyyy", $data->materialReceiptDetails[0]->materialReceiptHeader->date)',
-            'htmlOptions' => array('style' => 'width: 100px'),
+            'filter' => false,
+            'value' => 'empty($data->manualSaleReceiptDetails) ? "" : Yii::app()->dateFormatter->format("d MMM yyyy", $data->manualSaleReceiptDetails[0]->manualSaleReceiptHeader->date)'
         ),
         array(
             'header' => 'Total',
             'filter' => false,
-            'value' => 'number_format($data->grand_total, 2)',
+            'value' => 'number_format($data->grandTotal, 2)',
             'htmlOptions' => array(
                 'style' => 'text-align: right',
             ),
-        ),
-        array(
-            'header' => 'PO Customer',
-            'name' => 'reference_number',
-            'value' => '$data->reference_number',
         ),
         array(
             'header' => 'F. Pajak',
@@ -126,12 +125,16 @@
             'header' => 'Salesman',
             'name' => 'employee_id_salesman',
             'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
-            'value' => '$data->employeeIdSalesman->name',
+            'value' => 'CHtml::encode(CHtml::value($data, "employeeIdSalesman.name"))',
         ),
         array(
-            'class' => 'CButtonColumn',
-            'updateButtonUrl' => 'CHtml::normalizeUrl(array("update", "id"=>$data->id))',
+            'name' => 'is_inactive',
+            'header' => 'Status',
+            'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
+            'value' => '$data->status',
         ),
     ),
 )); ?>
+
+<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>
