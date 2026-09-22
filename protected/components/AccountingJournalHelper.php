@@ -10,6 +10,10 @@ class AccountingJournalHelper extends CComponent {
     const EXPENSE = 6;
     const ADJUSTMENT = 7;
     const RECEIVE_MATERIAL = 8;
+    const SALE_INVOICE_MATERIAL = 9;
+    const SALE_PAYMENT_MATERIAL = 10;
+    const SALE_INVOICE_MANUAL = 11;
+    const SALE_PAYMENT_MANUAL = 12;
 
     public static function make($type, $transactionNumber, $transactionType, $accountId, $total, $transactionSubject, $transactionNote, $transactionDate, $transactionAdmin) {
         $accountingJournal = new JournalAccounting();
