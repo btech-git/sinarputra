@@ -28,7 +28,7 @@ class MaterialPaymentHeaderBase extends MonthlyTransactionActiveRecord {
 
     public function rules() {
         return array(
-            array('cn_ordinal, cn_month, cn_year, date_transaction, datetime_created, customer_id, admin_id', 'required'),
+            array('cn_ordinal, cn_month, cn_year, date_transaction, datetime_created, customer_id', 'required'),
             array('cn_ordinal, cn_month, cn_year, customer_id, admin_id, is_inactive, admin_id_updated', 'numerical', 'integerOnly' => true),
             array('note, date_payment, updated_datetime', 'safe'),
             // The following rule is used by search().
