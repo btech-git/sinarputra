@@ -11,7 +11,7 @@ class PurchaseDetail extends PurchaseDetailBase {
             return 0;
         } else {
             if ($this->product_category_id == 2) {
-                $this->width = 1;
+                $this->width = $this->height;
             }
 
             return round($this->height * $this->width * $this->length * $this->quantity * $this->productCategory->mass, 2);

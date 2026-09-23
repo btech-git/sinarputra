@@ -2,7 +2,7 @@
 
 class DeliveryBackupHeader extends DeliveryBackupHeaderBase {
 
-    const CN_CONSTANT = 'SMT';
+    const CN_CONSTANT = 'DLB';
     
     public static function model($className = __CLASS__) {
         return parent::model($className);
