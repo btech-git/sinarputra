@@ -12,6 +12,8 @@
             'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -24,6 +26,8 @@
             'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -71,7 +75,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeTextField($materialInvoice, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->getCodeNumber(MaterialInvoiceHeader::CN_CONSTANT)',
-            'htmlOptions' => array('style' => 'width: 300px'),
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Tanggal',

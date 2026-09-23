@@ -12,6 +12,8 @@
             'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -24,6 +26,8 @@
             'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,

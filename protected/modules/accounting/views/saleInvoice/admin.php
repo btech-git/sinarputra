@@ -13,6 +13,8 @@
             'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -25,6 +27,8 @@
             'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -74,6 +78,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeTextField($saleInvoice, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT)',
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Tanggal',
@@ -109,6 +114,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::textField('WorkOrderYear', $workOrderYear, array('maxLength' => 2, 'size' => 1)) . '</div>',
             'value' => 'empty($data->work_order_cutting_header_id) ? "" : $data->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)',
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'TT #',
@@ -131,12 +137,12 @@
             'name' => 'tax_number',
             'value' => '$data->tax_number',
         ),
-        array(
-            'header' => 'Salesman',
-            'name' => 'employee_id_salesman',
-            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
-            'value' => 'CHtml::value($data, "employeeIdSalesman.name")',
-        ),
+//        array(
+//            'header' => 'Salesman',
+//            'name' => 'employee_id_salesman',
+//            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
+//            'value' => 'CHtml::value($data, "employeeIdSalesman.name")',
+//        ),
         array(
             'name' => 'is_inactive',
             'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
