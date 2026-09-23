@@ -4,28 +4,25 @@ class ManualSaleInvoiceController extends Controller {
 
     public function filters() {
         return array(
-//            'access',
+            'access',
         );
     }
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit')))
+            if (!(Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'view'
-                || $filterChain->action->id === 'memo'
-                || $filterChain->action->id === 'memoDelivery'
-                || $filterChain->action->id === 'admin'
-                || $filterChain->action->id === 'ajaxHtmlAddProduct'
-                || $filterChain->action->id === 'ajaxHtmlRemoveProduct'
-                || $filterChain->action->id === 'ajaxJsonDelivery') {
-            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit')))
+        if ($filterChain->action->id === 'view' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'memoDelivery' || $filterChain->action->id === 'admin') {
+            if (!(Yii::app()->user->checkAccess('saleInvoiceCreate') || Yii::app()->user->checkAccess('saleInvoiceEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -88,7 +85,7 @@ class ManualSaleInvoiceController extends Controller {
         
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($saleInvoice);
-			$saleInvoice->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($saleInvoice->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($saleInvoice->header->date)));
+            $saleInvoice->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($saleInvoice->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($saleInvoice->header->date)));
             
             if ($saleInvoice->save(Yii::app()->db)) {
                 Yii::app()->session['SaleInvoiceMemoAllowed'] = true;
@@ -160,8 +157,9 @@ class ManualSaleInvoiceController extends Controller {
             $this->loadState($saleInvoice);
             $saleInvoice->header->due_date = date('Y-m-d', strtotime($saleInvoice->header->date . ' + ' . $saleInvoice->header->customer->invoice_due_days . ' days'));
         
-            if ($saleInvoice->save(Yii::app()->db))
+            if ($saleInvoice->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $saleInvoice->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -190,11 +188,12 @@ class ManualSaleInvoiceController extends Controller {
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionView($id) {
@@ -445,8 +444,9 @@ class ManualSaleInvoiceController extends Controller {
                 $deliveryDetails = array();
                 $deliveryDetails = $_POST['selectedIds'];
 
-                foreach ($deliveryDetails as $deliveryDetail)
+                foreach ($deliveryDetails as $deliveryDetail) {
                     $saleInvoice->addDelivery($deliveryDetail);
+                }
             }
 
             $this->renderPartial('_detail', array(
@@ -513,7 +513,6 @@ class ManualSaleInvoiceController extends Controller {
     public function actionAjaxJsonGrandTotal($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $saleInvoice = $this->instantiate($id);
-
             $this->loadState($saleInvoice);
 
             $ppn = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $saleInvoice->calculatedTax));
@@ -529,19 +528,22 @@ class ManualSaleInvoiceController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $saleInvoice = new ManualSaleInvoice(new ManualSaleInvoiceHeader, array());
-        else {
+        } else {
             $saleInvoiceHeader = $this->loadModel($id);
             $saleInvoice = new ManualSaleInvoice($saleInvoiceHeader, $saleInvoiceHeader->manualSaleInvoiceDetails);
         }
+        
         return $saleInvoice;
     }
 
     public function loadModel($id) {
         $model = ManualSaleInvoiceHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -549,21 +551,24 @@ class ManualSaleInvoiceController extends Controller {
         if (isset($_POST['ManualSaleInvoiceHeader'])) {
             $saleInvoice->header->attributes = $_POST['ManualSaleInvoiceHeader'];
         }
+        
         if (isset($_POST['ManualSaleInvoiceDetail'])) {
             foreach ($_POST['ManualSaleInvoiceDetail'] as $i => $item) {
-                if (isset($saleInvoice->details[$i]))
+                if (isset($saleInvoice->details[$i])) {
                     $saleInvoice->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new ManualSaleInvoiceDetail();
                     $detail->attributes = $item;
                     $saleInvoice->details[] = $detail;
                 }
             }
-            if (count($_POST['ManualSaleInvoiceDetail']) < count($saleInvoice->details))
+            
+            if (count($_POST['ManualSaleInvoiceDetail']) < count($saleInvoice->details)) {
                 array_splice($saleInvoice->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $saleInvoice->details = array();
+        }
     }
 
     protected function saveToExcel($arr_category, array $options = array()) {

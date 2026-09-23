@@ -4,20 +4,15 @@ class JournalVoucherController extends Controller {
 
     public function filters() {
         return array(
-//			'access',
+            'access',
         );
     }
 
     public function filterAccess($filterChain) {
-        if ($filterChain->action->id === 'create'
-                || $filterChain->action->id === 'ajaxHtmlAddProduct'
-                || $filterChain->action->id === 'ajaxHtmlAddAccount'
-                || $filterChain->action->id === 'ajaxHtmlRemoveAccount'
-                || $filterChain->action->id === 'ajaxJsonTotalCredit'
-                || $filterChain->action->id === 'ajaxJsonTotalDebit'
-                || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('adjustmentCreate')))
+        if ($filterChain->action->id === 'create' || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('adjustmentCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -36,8 +31,9 @@ class JournalVoucherController extends Controller {
             $this->loadState($journalVoucher);
             $journalVoucher->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($journalVoucher->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($journalVoucher->header->date)));
 
-            if ($journalVoucher->save(Yii::app()->db))
+            if ($journalVoucher->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $journalVoucher->header->id));
+            }
         }
 
         $this->render('create', array(
@@ -53,8 +49,8 @@ class JournalVoucherController extends Controller {
         $criteria = new CDbCriteria;
         $criteria->compare('journal_voucher_header_id', $journalVoucher->id);
         $detailsDataProvider = new CActiveDataProvider('JournalVoucherDetail', array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
 
         $detailsDataProvider->criteria->with = array('account:resetScope');
 
@@ -83,11 +79,11 @@ class JournalVoucherController extends Controller {
     public function actionAjaxHtmlAddDetail($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $journalVoucher = $this->instantiate($id);
-
             $this->loadState($journalVoucher);
 
-            if (isset($_POST['AccountId']))
+            if (isset($_POST['AccountId'])) {
                 $journalVoucher->addDetail($_POST['AccountId']);
+            }
 
             $this->renderPartial('_detail', array(
                 'journalVoucher' => $journalVoucher,
@@ -98,7 +94,6 @@ class JournalVoucherController extends Controller {
     public function actionAjaxHtmlRemoveDetail($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
             $journalVoucher = $this->instantiate($id);
-
             $this->loadState($journalVoucher);
 
             $journalVoucher->removeDetailAt($index);
@@ -112,7 +107,6 @@ class JournalVoucherController extends Controller {
     public function actionAjaxJsonTotalDebit($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
             $journalVoucher = $this->instantiate($id);
-
             $this->loadState($journalVoucher);
 
             $debit = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($journalVoucher->details[$index], 'debit')));
@@ -128,7 +122,6 @@ class JournalVoucherController extends Controller {
     public function actionAjaxJsonTotalCredit($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
             $journalVoucher = $this->instantiate($id);
-
             $this->loadState($journalVoucher);
 
             $credit = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($journalVoucher->details[$index], 'credit')));
@@ -142,9 +135,9 @@ class JournalVoucherController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $journalVoucher = new JournalVoucher(new JournalVoucherHeader(), array());
-        else {
+        } else {
             $journalVoucherHeader = $this->loadModel($id);
             $journalVoucher = new JournalVoucher($journalVoucherHeader, $journalVoucherHeader->journalVoucherDetails);
         }
@@ -155,8 +148,9 @@ class JournalVoucherController extends Controller {
     public function loadModel($id) {
         $model = JournalVoucherHeader::model()->findByPk($id);
 
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
 
         return $model;
     }
@@ -165,15 +159,15 @@ class JournalVoucherController extends Controller {
         if (isset($_POST['JournalVoucherHeader'])) {
             $journalVoucher->header->attributes = $_POST['JournalVoucherHeader'];
         }
+        
         if (isset($_POST['JournalVoucherDetail'])) {
             foreach ($_POST['JournalVoucherDetail'] as $item) {
                 $detail = new JournalVoucherDetail();
                 $detail->attributes = $item;
                 $journalVoucher->details[] = $detail;
             }
-        }
-        else
+        } else {
             $journalVoucher->details = array();
+        }
     }
-
 }

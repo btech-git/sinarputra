@@ -4,29 +4,25 @@ class ManualSalePaymentController extends Controller {
 
     public function filters() {
         return array(
-			'access',
+            'access',
         );
     }
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('salePaymentCreate')))
+            if (!(Yii::app()->user->checkAccess('salePaymentCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('salePaymentEdit')))
+            if (!(Yii::app()->user->checkAccess('salePaymentEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'admin'
-                || $filterChain->action->id === 'ajaxHtmlResetPayment' 
-                || $filterChain->action->id === 'ajaxHtmlRemovePayment'
-                || $filterChain->action->id === 'ajaxHtmlAddAccount' 
-                || $filterChain->action->id === 'ajaxJsonTotal'
-                || $filterChain->action->id === 'ajaxJsonSaleReceipt' 
-                || $filterChain->action->id === 'memo' 
-                || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('salePaymentCreate') || Yii::app()->user->checkAccess('salePaymentEdit')))
+        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('salePaymentCreate') || Yii::app()->user->checkAccess('salePaymentEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -54,10 +50,11 @@ class ManualSalePaymentController extends Controller {
         
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($salePayment);
-			$salePayment->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($salePayment->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($salePayment->header->date)));
+            $salePayment->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($salePayment->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($salePayment->header->date)));
 
-            if ($salePayment->save(Yii::app()->db))
+            if ($salePayment->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $salePayment->header->id));
+            }
         }
 
         $this->render('create', array(
@@ -87,8 +84,9 @@ class ManualSalePaymentController extends Controller {
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($salePayment);
 
-            if ($salePayment->save(Yii::app()->db))
+            if ($salePayment->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $salePayment->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -120,33 +118,41 @@ class ManualSalePaymentController extends Controller {
                 $salePayment->delete(Yii::app()->db);
                 Yii::app()->user->setFlash('message', 'Delete Successful');
             }
-        }
-        else
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionAdmin() {
         $salePayment = Search::bind(new ManualSalePaymentHeader('search'), isset($_GET['ManualSalePaymentHeader']) ? $_GET['ManualSalePaymentHeader'] : array());
         $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
-
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
         
         $dataProvider = $salePayment->searchWithPaging();
         $dataProvider->criteria->with = array('customer');
-        
-		$dataProvider->criteria->addCondition("customer.company LIKE :company");
-		$dataProvider->criteria->params[':company'] = "%{$customerCompany}%";
-        
-        $dataProvider->criteria->addCondition('t.is_inactive = 0');
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        if (!empty($customerCompany)) {
+            $dataProvider->criteria->addCondition("customer.company LIKE :company");
+            $dataProvider->criteria->params[':company'] = "%{$customerCompany}%";
+        }
+
+//        $dataProvider->criteria->addCondition('t.is_inactive = 0');
         $dataProvider->criteria->order = 't.id DESC';
 
         $this->render('admin', array(
             'salePayment' => $salePayment,
             'dataProvider' => $dataProvider,
             'customerCompany' => $customerCompany,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 
@@ -205,8 +211,9 @@ class ManualSalePaymentController extends Controller {
                 $invoices = array();
                 $invoices = $_POST['selectedIds'];
 
-                foreach ($invoices as $invoice)
+                foreach ($invoices as $invoice) {
                     $salePayment->addInvoice($invoice);
+                }
             }
 
             $this->renderPartial('_detail', array(
@@ -242,9 +249,9 @@ class ManualSalePaymentController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $salePayment = new ManualSalePayment(new ManualSalePaymentHeader(), array());
-        else {
+        } else {
             $salePaymentHeader = $this->loadModel($id);
             $salePayment = new ManualSalePayment($salePaymentHeader, $salePaymentHeader->manualSalePaymentDetails);
         }
@@ -255,8 +262,9 @@ class ManualSalePaymentController extends Controller {
     public function loadModel($id) {
         $model = ManualSalePaymentHeader::model()->findByPk($id);
 
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
 
         return $model;
     }
@@ -265,21 +273,22 @@ class ManualSalePaymentController extends Controller {
         if (isset($_POST['ManualSalePaymentHeader'])) {
             $salePayment->header->attributes = $_POST['ManualSalePaymentHeader'];
         }
+        
         if (isset($_POST['ManualSalePaymentDetail'])) {
             foreach ($_POST['ManualSalePaymentDetail'] as $i => $item) {
-                if (isset($salePayment->details[$i]))
+                if (isset($salePayment->details[$i])) {
                     $salePayment->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new ManualSalePaymentDetail();
                     $detail->attributes = $item;
                     $salePayment->details[] = $detail;
                 }
             }
-            if (count($_POST['ManualSalePaymentDetail']) < count($salePayment->details))
+            if (count($_POST['ManualSalePaymentDetail']) < count($salePayment->details)) {
                 array_splice($salePayment->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $salePayment->details = array();
+        }
     }
-
 }
