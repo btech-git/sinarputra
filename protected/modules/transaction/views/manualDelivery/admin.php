@@ -9,8 +9,11 @@
         Tanggal Mulai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'StartDate',
+            'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -20,14 +23,20 @@
         Sampai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'EndDate',
+            'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
             ),
         )); ?>
     </div>
+    
+    <br />
+    
     <div class="row">
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>
@@ -36,20 +45,7 @@
         <?php echo CHtml::submitButton('Show', array('onclick' => '$("#CurrentSort").val(""); return true;', 'name' => 'Submit')); ?>
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
-    <br/>
-    <?php
-    $pageSize = Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']);
-    $pageSizeDropDown = CHtml::dropDownList(
-        'pageSize', $pageSize, array(10 => 10, 25 => 25, 50 => 50, 100 => 100), array(
-            'class' => 'change-pagesize',
-            'onchange' => "$.fn.yiiGridView.update('manual-delivery-grid',{data:{pageSize:$(this).val()}});",
-        )
-    );
-    ?>
-
-    <div class="page-size-wrap">
-        <span>Display by:</span><?php echo $pageSizeDropDown; ?>
-    </div>
+    
     <?php echo CHtml::endForm(); ?>
 </center>
 
@@ -67,13 +63,13 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeTextField($delivery, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->getCodeNumber(DeliveryHeader::CN_CONSTANT)',
-            'htmlOptions' => array('style' => 'width: 300px'),
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Tanggal',
             'name' => 'date',
             'filter' => false,
-            'value' => 'Yii::app()->dateFormatter->format("d MMMM yyyy", $data->date)'
+            'value' => 'Yii::app()->dateFormatter->format("d MMM yyyy", $data->date)'
         ),
         array(
             'header' => 'Customer',
@@ -89,7 +85,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::textField('WorkOrderCnYear', $workOrderCnYear, array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)',
-            'htmlOptions' => array('style' => 'width: 300px'),
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Customer PO #',

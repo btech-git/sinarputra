@@ -268,14 +268,15 @@ class DeliveryController extends Controller {
             'customerPurchaseNumber' => $customerPurchaseNumber,         
             'workOrderCnOrdinal' => $workOrderCnOrdinal,   
             'workOrderCnMonth' => $workOrderCnMonth,   
-            'workOrderCnYear' => $workOrderCnYear,               
+            'workOrderCnYear' => $workOrderCnYear,  
+            'startDate' => $startDate,
+            'endDate' => $endDate,             
         ));
     }
 
     public function actionAjaxHtmlRemoveDetail($index, $id) {
         if (Yii::app()->request->isAjaxRequest) {
             $delivery = $this->instantiate($id);
-
             $this->loadState($delivery);
 
             $delivery->removeDetailAt($index);
@@ -289,7 +290,6 @@ class DeliveryController extends Controller {
     public function actionAjaxJsonCutting($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $delivery = $this->instantiate($id);
-
             $this->loadState($delivery);
 
             $cuttingHeader = CuttingHeader::model()->findByPk($_POST['DeliveryHeader']['cutting_header_id']);
@@ -313,7 +313,6 @@ class DeliveryController extends Controller {
     public function actionAjaxJsonWorkOrderCutting($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $delivery = $this->instantiate($id);
-
             $this->loadState($delivery);
 
             $workOrderCuttingHeader = WorkOrderCuttingHeader::model()->findByPk($_POST['DeliveryHeader']['work_order_cutting_header_id']);
@@ -340,8 +339,9 @@ class DeliveryController extends Controller {
         if (Yii::app()->request->isAjaxRequest) {
             $delivery = $this->instantiate($id);
 
-            if (isset($_POST['DeliveryHeader']['work_order_cutting_header_id']))
+            if (isset($_POST['DeliveryHeader']['work_order_cutting_header_id'])) {
                 $delivery->addDetails($_POST['DeliveryHeader']['work_order_cutting_header_id']);
+            }
 
             $this->renderPartial('_detail', array(
                 'delivery' => $delivery,
@@ -350,9 +350,9 @@ class DeliveryController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $delivery = new Delivery(new DeliveryHeader(), array());
-        else {
+        } else {
             $deliveryHeader = $this->loadModel($id);
             $delivery = new Delivery($deliveryHeader, $deliveryHeader->deliveryDetails);
         }
@@ -362,8 +362,10 @@ class DeliveryController extends Controller {
 
     public function loadModel($id) {
         $model = DeliveryHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -371,21 +373,22 @@ class DeliveryController extends Controller {
         if (isset($_POST['DeliveryHeader'])) {
             $delivery->header->attributes = $_POST['DeliveryHeader'];
         }
+        
         if (isset($_POST['DeliveryDetail'])) {
             foreach ($_POST['DeliveryDetail'] as $i => $item) {
-                if (isset($delivery->details[$i]))
+                if (isset($delivery->details[$i])) {
                     $delivery->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new DeliveryDetail();
                     $detail->attributes = $item;
                     $delivery->details[] = $detail;
                 }
             }
-            if (count($_POST['DeliveryDetail']) < count($delivery->details))
+            if (count($_POST['DeliveryDetail']) < count($delivery->details)) {
                 array_splice($delivery->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $delivery->details = array();
+        }
     }
-
 }

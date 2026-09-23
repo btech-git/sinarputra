@@ -9,8 +9,11 @@
         Tanggal Mulai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'StartDate',
+            'value' => $startDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
@@ -20,14 +23,20 @@
         Sampai
         <?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             'name' => 'EndDate',
+            'value' => $endDate,
             'options' => array(
                 'dateFormat' => 'yy-mm-dd',
+                'changeMonth' => true,
+                'changeYear' => true,
             ),
             'htmlOptions' => array(
                 'readonly' => true,
             ),
         )); ?>
     </div>
+    
+    <br />
+    
     <div class="row">
         <?php echo CHtml::hiddenField('sort', '', array('id' => 'CurrentSort')); ?>
     </div>

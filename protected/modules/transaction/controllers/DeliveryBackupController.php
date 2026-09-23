@@ -4,7 +4,7 @@ class DeliveryBackupController extends Controller {
 
     public function filters() {
         return array(
-//            'access',
+            'access',
         );
     }
 
@@ -138,7 +138,9 @@ class DeliveryBackupController extends Controller {
         $this->render('admin', array(
             'deliveryBackupHeader' => $deliveryBackupHeader,
             'dataProvider' => $dataProvider, 
-            'customerCompany' => $customerCompany,               
+            'customerCompany' => $customerCompany,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 

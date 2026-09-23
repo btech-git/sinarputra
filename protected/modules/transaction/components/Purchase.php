@@ -158,7 +158,6 @@ class Purchase extends CComponent {
 
     public function flush() {
         //save header
-//        $this->header->tax_percentage = ((int) $this->header->is_tax === 0) ? 0 : 10;
         $valid = $this->header->save(false);
         
         if ($this->header->is_service == 0) {

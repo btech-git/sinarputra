@@ -19,7 +19,7 @@ class PurchaseController extends Controller {
                 $this->redirect(array('/site/login')); 
             }
         }
-        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'ajaxHtmlAddProduct' || $filterChain->action->id === 'ajaxJsonDestinationList' || $filterChain->action->id === 'ajaxJsonSupplier' || $filterChain->action->id === 'ajaxJsonTaxTotal' || $filterChain->action->id === 'ajaxHtmlRemoveProduct' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
+        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
             if (!(Yii::app()->user->checkAccess('purchaseCreate') || Yii::app()->user->checkAccess('purchaseEdit'))) {
                 $this->redirect(array('/site/login'));
             }
@@ -80,8 +80,9 @@ class PurchaseController extends Controller {
             $this->loadState($purchase);
             $purchase->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($purchase->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($purchase->header->date)));
 
-            if ($purchase->save(Yii::app()->db))
+            if ($purchase->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $purchase->header->id));
+            }
         }
 
         $this->render('create', array(
@@ -144,8 +145,10 @@ class PurchaseController extends Controller {
 
         if (isset($_POST['Submit'])) {
             $this->loadState($purchase);
-            if ($purchase->save(Yii::app()->db))
+            
+            if ($purchase->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $purchase->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -205,20 +208,35 @@ class PurchaseController extends Controller {
 
     public function actionAdmin() {
         $purchase = Search::bind(new PurchaseHeader('search'), isset($_GET['PurchaseHeader']) ? $_GET['PurchaseHeader'] : array());
-
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
+        $supplierCompany = isset($_GET['SupplierCompany']) ? $_GET['SupplierCompany'] : '';
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
 
         $dataProvider = $purchase->searchWithPaging();
-        $dataProvider->criteria->addCondition('t.is_inactive = 0');
+        $dataProvider->criteria->with = array('supplier');
+
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
+
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        if (!empty($supplierCompany)) {
+            $dataProvider->criteria->addCondition("supplier.company LIKE :company");
+            $dataProvider->criteria->params[':company'] = "%{$supplierCompany}%";
+        }
+
+//        $dataProvider->criteria->addCondition('t.is_inactive = 0');
         $dataProvider->criteria->order = 't.id DESC';
 
 
         $this->render('admin', array(
             'purchase' => $purchase,
             'dataProvider' => $dataProvider,
+            'supplierCompany' => $supplierCompany,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 
@@ -235,10 +253,12 @@ class PurchaseController extends Controller {
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        } else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionAjaxJsonSupplier($id) {
@@ -274,45 +294,6 @@ class PurchaseController extends Controller {
             echo CJSON::encode($object);
         }
     }
-
-//    public function actionAjaxJsonTotal($id, $index) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//            $this->loadState($purchase);
-//
-//            $weight = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->details[$index], 'calculatedWeight')));
-//            $unitPrice = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->details[$index], 'unit_price')));
-//            $total = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->details[$index], 'total')));
-//            $subTotal = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->subTotal));
-//            $serviceTax = CHtml::encode(CHtml::value($purchase, 'serviceTax'));
-//            $formattedServiceTax = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'serviceTax')));
-//            $totalService = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'totalService')));
-//            $allDetailSubTotal = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'allDetailSubTotal')));
-//            $discountAmount = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'discountAmount')));
-//            $totalBeforeTax = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'totalBeforeTax')));
-//            $taxPercentage = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->getTaxPercentage()));
-//            $taxValue = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->getCalculatedTax()));
-//            $grandTotal = CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', $purchase->getGrandTotal()));
-//            $amount = Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->details[$index], 'unit_price'));            
-//
-//            echo CJSON::encode(array(
-//                'weight' => $weight,
-//                'unitPrice' => $unitPrice,
-//                'total' => $total,
-//                'subTotal' => $subTotal,
-//                'serviceTax' => $serviceTax,                
-//                'formattedServiceTax' => $formattedServiceTax,
-//                'totalService' => $totalService,
-//                'allDetailSubTotal' => $allDetailSubTotal,
-//                'discountAmount' => $discountAmount,
-//                'totalBeforeTax' => $totalBeforeTax,
-//                'taxPercentage' => $taxPercentage,
-//                'taxValue' => $taxValue,
-//                'grandTotal' => $grandTotal,
-//                'amount' => $amount,
-//            ));            
-//        }
-//    }
 
     public function actionAjaxJsonTotalByWeight($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
@@ -358,30 +339,6 @@ class PurchaseController extends Controller {
         }
     }
 
-//    public function actionAjaxJsonTotalService($id, $index) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//            $this->loadState($purchase);
-//
-//            $object = array(
-//                'total' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->purchaseDetailServices[$index], 'totalService'))),
-//                'amount' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase->purchaseDetailServices[$index], 'amount'))),
-//                'serviceSubTotal' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'serviceSubTotal'))),
-//                'serviceTax' => CHtml::encode(CHtml::value($purchase, 'serviceTax')),
-//                'formattedServiceTax' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'serviceTax'))),
-//                'totalService' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'totalService'))),
-//                'allDetailSubTotal' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'allDetailSubTotal'))),
-//                'discountAmount' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'discountAmount'))),
-//                'totalBeforeTax' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'totalBeforeTax'))),
-//                'taxPercentage' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'taxPercentage'))),
-//                'taxValue' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'calculatedTax'))),
-//                'grandTotal' => CHtml::encode(Yii::app()->numberFormatter->format('#,##0.00', CHtml::value($purchase, 'grandTotal'))),
-//            );
-//
-//            echo CJSON::encode($object);
-//        }
-//    }
-
     public function actionAjaxHtmlResetDetail($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
@@ -412,7 +369,6 @@ class PurchaseController extends Controller {
     public function actionAjaxHtmlAddProduct($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
-
             $this->loadState($purchase);
 
             $purchase->details[] = new PurchaseDetail();
@@ -423,25 +379,9 @@ class PurchaseController extends Controller {
         }
     }
 
-//    public function actionAjaxHtmlAddProduct($id) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//
-//            $this->loadState($purchase);
-//
-//            if (isset($_POST['ProductSizeId']))
-//                $purchase->addDetail($_POST['ProductSizeId']);
-//
-//            $this->renderPartial('_detail', array(
-//                'purchase' => $purchase,
-//            ));
-//        }
-//    }
-
     public function actionAjaxHtmlRemoveProduct($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
-
             $this->loadState($purchase);
 
             $purchase->removeDetailAt($index);
@@ -455,7 +395,6 @@ class PurchaseController extends Controller {
     public function actionAjaxHtmlUpdateProducts($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
-
             $this->loadState($purchase);
 
             $this->renderPartial('_detail', array(
@@ -463,47 +402,6 @@ class PurchaseController extends Controller {
             ));
         }
     }
-
-//    public function actionAjaxHtmlAddService($id) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//
-//            $this->loadState($purchase);
-//
-//            $purchase->addService();
-//
-//            $this->renderPartial('_service', array(
-//                'purchase' => $purchase,
-//            ));
-//        }
-//    }
-//
-//    public function actionAjaxHtmlRemoveService($id, $index) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//
-//            $this->loadState($purchase);
-//
-//            $purchase->removeServiceAt($index);
-//
-//            $this->renderPartial('_service', array(
-//                'purchase' => $purchase,
-//            ));
-//        }
-//    }
-//    public function actionAjaxHtmlAddExternalOrder($id) {
-//        if (Yii::app()->request->isAjaxRequest) {
-//            $purchase = $this->instantiate($id);
-//            $this->loadState($purchase);
-//
-//            if (isset($_POST['WorkOrderCuttingDetailProductId']))
-//                $purchase->addExternalOrder($_POST['WorkOrderCuttingDetailProductId']);
-//
-//            $this->renderPartial('_detail', array(
-//                'purchase' => $purchase,
-//            ));
-//        }
-//    }
 
     public function actionAjaxHtmlAddExternalOrders($id) {
         if (Yii::app()->request->isAjaxRequest) {
@@ -538,27 +436,10 @@ class PurchaseController extends Controller {
         }
     }
 
-    /*
-      public function actionAjaxHtmlUpdateTax($id)
-      {
-      if (Yii::app()->request->isAjaxRequest)
-      {
-      //$sale = $this->instantiate($id);
-      $purchase = $this->instantiate(null);
-      $this->loadState($purchase);
-
-      $purchase->updateTax();
-
-      $this->renderPartial('_detail', array(
-      'purchase' => $purchase,
-      ));
-      }
-      } */
-
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $purchase = new Purchase(new PurchaseHeader(), array(), array());
-        else {
+        } else {
             $purchaseHeader = $this->loadModel($id);
             $purchase = new Purchase($purchaseHeader, $purchaseHeader->purchaseDetails, $purchaseHeader->purchaseDetailServices);
         }
@@ -568,8 +449,10 @@ class PurchaseController extends Controller {
 
     public function loadModel($id) {
         $model = PurchaseHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -580,33 +463,36 @@ class PurchaseController extends Controller {
 
         if (isset($_POST['PurchaseDetail'])) {
             foreach ($_POST['PurchaseDetail'] as $i => $item) {
-                if (isset($purchase->details[$i]))
+                if (isset($purchase->details[$i])) {
                     $purchase->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new PurchaseDetail();
                     $detail->attributes = $item;
                     $purchase->details[] = $detail;
                 }
             }
-            if (count($_POST['PurchaseDetail']) < count($purchase->details))
+            if (count($_POST['PurchaseDetail']) < count($purchase->details)) {
                 array_splice($purchase->details, $i + 1);
-        } else
+            }
+        } else {
             $purchase->details = array();
+        }
 
         if (isset($_POST['PurchaseDetailService'])) {
             foreach ($_POST['PurchaseDetailService'] as $i => $item) {
-                if (isset($purchase->purchaseDetailServices[$i]))
+                if (isset($purchase->purchaseDetailServices[$i])) {
                     $purchase->purchaseDetailServices[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new PurchaseDetailService();
                     $detail->attributes = $item;
                     $purchase->purchaseDetailServices[] = $detail;
                 }
             }
-            if (count($_POST['PurchaseDetailService']) < count($purchase->purchaseDetailServices))
+            if (count($_POST['PurchaseDetailService']) < count($purchase->purchaseDetailServices)) {
                 array_splice($purchase->purchaseDetailServices, $i + 1);
-        } else
+            }
+        } else {
             $purchase->purchaseDetailServices = array();
+        }
     }
-
 }

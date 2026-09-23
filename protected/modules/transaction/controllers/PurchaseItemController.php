@@ -4,24 +4,25 @@ class PurchaseItemController extends Controller {
 
     public function filters() {
         return array(
-			'access',
+            'access',
         );
     }
     
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('purchaseCreate')))
+            if (!(Yii::app()->user->checkAccess('purchaseCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('purchaseEdit')))
+            if (!(Yii::app()->user->checkAccess('purchaseEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'admin'
-                || $filterChain->action->id === 'memo'
-                || $filterChain->action->id === 'view') {
-            if (!(Yii::app()->user->checkAccess('purchaseCreate') || Yii::app()->user->checkAccess('purchaseEdit')))
+        if ($filterChain->action->id === 'admin' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'view') {
+            if (!(Yii::app()->user->checkAccess('purchaseCreate') || Yii::app()->user->checkAccess('purchaseEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -49,8 +50,9 @@ class PurchaseItemController extends Controller {
             $this->loadState($purchaseItem);
             $purchaseItem->generateCodeNumber(Yii::app()->dateFormatter->format('M', strtotime($purchaseItem->header->date)), Yii::app()->dateFormatter->format('yy', strtotime($purchaseItem->header->date)));
             
-            if ($purchaseItem->save(Yii::app()->db))
+            if ($purchaseItem->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $purchaseItem->header->id));
+            }
         }
 
         $this->render('create', array(
@@ -77,8 +79,10 @@ class PurchaseItemController extends Controller {
 
         if (isset($_POST['Submit'])) {
             $this->loadState($purchaseItem);
-            if ($purchaseItem->save(Yii::app()->db))
+            
+            if ($purchaseItem->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $purchaseItem->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -115,27 +119,33 @@ class PurchaseItemController extends Controller {
 
     public function actionAdmin() {
         $purchaseItem = Search::bind(new PurchaseItemHeader('search'), isset($_GET['PurchaseItemHeader']) ? $_GET['PurchaseItemHeader'] : array());
+        $supplierCompany = isset($_GET['SupplierCompany']) ? $_GET['SupplierCompany'] : '';
+        $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : '';
+        $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : '';
 
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
-        
         $dataProvider = $purchaseItem->searchWithPaging();
+        $dataProvider->criteria->with = array('supplier');
 
+        if ($startDate != '' || $endDate != '') {
+            $startDate = (empty($startDate)) ? date('Y-m-d') : $startDate;
+            $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
 
-//        $dataProvider->sort->attributes = array(
-//            'id' => 't.id',
-//            'date' => 't.date',
-//            'supplierCompany' => 'supplier.company'
-//        );
+            $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
 
-        $dataProvider->criteria->addCondition('t.is_inactive = 0');
+        if (!empty($supplierCompany)) {
+            $dataProvider->criteria->addCondition("supplier.company LIKE :company");
+            $dataProvider->criteria->params[':company'] = "%{$supplierCompany}%";
+        }
+
         $dataProvider->criteria->order = 't.id DESC';
 
         $this->render('admin', array(
             'purchaseItem' => $purchaseItem,
             'dataProvider' => $dataProvider,
+            'supplierCompany' => $supplierCompany,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 
@@ -152,11 +162,12 @@ class PurchaseItemController extends Controller {
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionAjaxJsonSupplier($id) {
@@ -210,11 +221,9 @@ class PurchaseItemController extends Controller {
     public function actionAjaxHtmlResetDetail($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
-
             $this->loadState($purchase);
 
             $type = Yii::app()->request->getParam('type');
-
 
             if ($type == 1) {
                 $purchase->details = array();
@@ -237,11 +246,11 @@ class PurchaseItemController extends Controller {
     public function actionAjaxHtmlAddItem($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchaseItem = $this->instantiate($id);
-
             $this->loadState($purchaseItem);
 
-            if (isset($_POST['ItemId']))
+            if (isset($_POST['ItemId'])) {
                 $purchaseItem->addDetail($_POST['ItemId']);
+            }
 
             $this->renderPartial('_detail', array(
                 'purchaseItem' => $purchaseItem,
@@ -252,7 +261,6 @@ class PurchaseItemController extends Controller {
     public function actionAjaxHtmlRemoveItem($id, $index) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchaseItem = $this->instantiate($id);
-
             $this->loadState($purchaseItem);
 
             $purchaseItem->removeDetailAt($index);
@@ -266,7 +274,6 @@ class PurchaseItemController extends Controller {
     public function actionAjaxHtmlUpdateProducts($id) {
         if (Yii::app()->request->isAjaxRequest) {
             $purchase = $this->instantiate($id);
-
             $this->loadState($purchase);
 
             $this->renderPartial('_detail', array(
@@ -276,9 +283,9 @@ class PurchaseItemController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $purchaseItem = new PurchaseItem(new PurchaseItemHeader(), array());
-        else {
+        } else {
             $purchaseItemHeader = $this->loadModel($id);
             $purchaseItem = new PurchaseItem($purchaseItemHeader, $purchaseItemHeader->purchaseItemDetails);
         }
@@ -288,8 +295,10 @@ class PurchaseItemController extends Controller {
 
     public function loadModel($id) {
         $model = PurchaseItemHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -300,19 +309,19 @@ class PurchaseItemController extends Controller {
 
         if (isset($_POST['PurchaseItemDetail'])) {
             foreach ($_POST['PurchaseItemDetail'] as $i => $item) {
-                if (isset($purchaseItem->details[$i]))
+                if (isset($purchaseItem->details[$i])) {
                     $purchaseItem->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new PurchaseItemDetail();
                     $detail->attributes = $item;
                     $purchaseItem->details[] = $detail;
                 }
             }
-            if (count($_POST['PurchaseItemDetail']) < count($purchaseItem->details))
+            if (count($_POST['PurchaseItemDetail']) < count($purchaseItem->details)) {
                 array_splice($purchaseItem->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $purchaseItem->details = array();
+        }
     }
-
 }

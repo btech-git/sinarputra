@@ -1,16 +1,16 @@
 <table style="border: 1px solid">
     <thead>
         <tr style="background-color: skyblue">
-            <th style="text-align: center; width: 10%;">GRADE</th>
-            <th style="text-align: center; width: 10%;">Kategori</th>
-            <th style="text-align: center; width: 10%;">Tbl/Dmtr</th>
-            <th style="text-align: center; width: 10%;">Lbr/Dmtr</th>
-            <th style="text-align: center; width: 10%;">Pjg</th>
+            <th style="text-align: center;">GRADE</th>
+            <th style="text-align: center; width: 7%;">Kategori</th>
+            <th style="text-align: center; width: 8%;">Tbl/Dmtr</th>
+            <th style="text-align: center; width: 8%;">Lbr/Dmtr</th>
+            <th style="text-align: center; width: 7%;">Pjg</th>
             <th style="text-align: center; width: 5%;">Qty.</th>		
-            <th style="text-align: center; width: 10%">Berat</th>
-            <th style="text-align: center; width: 15%">Harga</th>
+            <th style="text-align: center; width: 5%">Berat</th>
+            <th style="text-align: center; width: 10%">Harga</th>
             <th style="text-align: center; width: 10%">Disc</th>
-            <th style="text-align: center; width: 15%">Total</th>
+            <th style="text-align: center; width: 10%">Total</th>
             <th style="text-align: center; width: 5%"></th>
         </tr>
     </thead>
@@ -33,7 +33,7 @@
                 <?php else: ?>
                     <td>
                         <?php echo CHtml::activeTextField($detail, "[$i]product_name", array(
-                            'maxLength' => 60, 
+                            'maxLength' => 60, 'size' => 30, 
                             'class' => 'TabOnEnter', 
                             'tabindex' => $tabIndex + 1,
                         )); ?>
@@ -72,7 +72,7 @@
                 <!--height-->
                 <td style="text-align: center">
                     <?php echo CHtml::activeTextField($detail, "[$i]height", array(
-                        'maxLength' => 10,
+                        'maxLength' => 10, 'size' => 10,
                         'onchange' => CHtml::ajax(array(
                             'type' => 'POST',
                             'dataType' => 'JSON',
@@ -91,7 +91,7 @@
                 <!--width-->
                 <td style="text-align: center">
                     <?php echo CHtml::activeTextField($detail, "[$i]width", array(
-                        'maxLength' => 10, 
+                        'maxLength' => 10, 'size' => 10,
                         'readonly' => $detail->product_category_id == 2 ? 'TRUE' : 'FALSE',
                         'onchange' => CHtml::ajax(array(
                             'type' => 'POST',
@@ -111,7 +111,7 @@
                 <!--length-->
                 <td style="text-align: center">
                     <?php echo CHtml::activeTextField($detail, "[$i]length", array(
-                        'maxLength' => 10,
+                        'maxLength' => 10, 'size' => 10,
                         'onchange' => CHtml::ajax(array(
                             'type' => 'POST',
                             'dataType' => 'JSON',
@@ -129,7 +129,7 @@
 
                 <td style="text-align: center">
                     <?php echo CHtml::activeTextField($detail, "[$i]quantity", array(
-                        'maxLength' => 10,
+                        'maxLength' => 10, 'size' => 10,
                         'onchange' => CHtml::ajax(array(
                             'type' => 'POST',
                             'dataType' => 'JSON',
@@ -146,7 +146,7 @@
                 </td>
                 <td style="text-align: center">
                     <?php echo CHtml::activeTextField($detail, "[$i]weight", array(
-                        'maxLength' => 10,
+                        'maxLength' => 10, 'size' => 10,
                         'onchange' => CHtml::ajax(array(
                             'type' => 'POST',
                             'dataType' => 'JSON',

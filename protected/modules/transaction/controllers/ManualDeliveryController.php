@@ -10,18 +10,19 @@ class ManualDeliveryController extends Controller {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'create') {
-            if (!(Yii::app()->user->checkAccess('deliveryCreate')))
+            if (!(Yii::app()->user->checkAccess('deliveryCreate'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
         if ($filterChain->action->id === 'delete' || $filterChain->action->id === 'update') {
-            if (!(Yii::app()->user->checkAccess('deliveryEdit')))
+            if (!(Yii::app()->user->checkAccess('deliveryEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
-        if ($filterChain->action->id === 'view'
-                || $filterChain->action->id === 'memo'
-                || $filterChain->action->id === 'admin') {
-            if (!(Yii::app()->user->checkAccess('deliveryCreate') || Yii::app()->user->checkAccess('deliveryEdit')))
+        if ($filterChain->action->id === 'view' || $filterChain->action->id === 'memo' || $filterChain->action->id === 'admin') {
+            if (!(Yii::app()->user->checkAccess('deliveryCreate') || Yii::app()->user->checkAccess('deliveryEdit'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
@@ -94,8 +95,9 @@ class ManualDeliveryController extends Controller {
         if (isset($_POST['Submit']) && IdempotentManager::check()) {
             $this->loadState($delivery);
             
-            if ($delivery->save(Yii::app()->db))
+            if ($delivery->save(Yii::app()->db)) {
                 $this->redirect(array('view', 'id' => $delivery->header->id));
+            }
         }
 
         $this->render('update', array(
@@ -116,11 +118,12 @@ class ManualDeliveryController extends Controller {
                 }
             }
 
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     public function actionView($id) {
@@ -148,11 +151,6 @@ class ManualDeliveryController extends Controller {
         $workOrderCnMonth = isset($_GET['WorkOrderCnMonth']) ? $_GET['WorkOrderCnMonth'] : '';          
         $workOrderCnYear = isset($_GET['WorkOrderCnYear']) ? $_GET['WorkOrderCnYear'] : '';  
         
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
-
         $dataProvider = $delivery->search();
         $dataProvider->criteria->with = array(
             'workOrderCuttingHeader' => array(
@@ -201,6 +199,8 @@ class ManualDeliveryController extends Controller {
             'workOrderCnOrdinal' => $workOrderCnOrdinal,   
             'workOrderCnMonth' => $workOrderCnMonth,   
             'workOrderCnYear' => $workOrderCnYear,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ));
     }
 
@@ -232,9 +232,9 @@ class ManualDeliveryController extends Controller {
     }
 
     public function instantiate($id) {
-        if (empty($id))
+        if (empty($id)) {
             $delivery = new ManualDelivery(new ManualDeliveryHeader(), array());
-        else {
+        } else {
             $deliveryHeader = $this->loadModel($id);
             $delivery = new ManualDelivery($deliveryHeader, $deliveryHeader->manualDeliveryDetails);
         }
@@ -244,8 +244,10 @@ class ManualDeliveryController extends Controller {
 
     public function loadModel($id) {
         $model = ManualDeliveryHeader::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        
         return $model;
     }
 
@@ -255,18 +257,20 @@ class ManualDeliveryController extends Controller {
         }
         if (isset($_POST['ManualDeliveryDetail'])) {
             foreach ($_POST['ManualDeliveryDetail'] as $i => $item) {
-                if (isset($delivery->details[$i]))
+                if (isset($delivery->details[$i])) {
                     $delivery->details[$i]->attributes = $item;
-                else {
+                } else {
                     $detail = new ManualDeliveryDetail();
                     $detail->attributes = $item;
                     $delivery->details[] = $detail;
                 }
             }
-            if (count($_POST['ManualDeliveryDetail']) < count($delivery->details))
+            
+            if (count($_POST['ManualDeliveryDetail']) < count($delivery->details)) {
                 array_splice($delivery->details, $i + 1);
-        }
-        else
+            }
+        } else {
             $delivery->details = array();
+        }
     }
 }
