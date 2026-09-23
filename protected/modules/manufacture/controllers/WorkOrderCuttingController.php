@@ -175,21 +175,9 @@ class WorkOrderCuttingController extends Controller {
 
     public function actionLoop($index) {
         $workOrderCutting = isset(Yii::app()->session['WorkOrderCutting']) ? Yii::app()->session['WorkOrderCutting'] : array();
-//        $productName = isset($_GET['ProductName']) ? $_GET['ProductName'] : '';
-//        $customerId = isset($_GET['CustomerId']) ? $_GET['CustomerId'] : '';
 
         $receiveDetail = Search::bind(new ReceiveDetail(), isset($_GET['ReceiveDetail']) ? $_GET['ReceiveDetail'] : '');
         $receiveDetailDataProvider = $receiveDetail->searchNotSelectedInCuttingDetailMaterial();
-
-//        if (!empty($productName)) {
-//            $receiveDetailDataProvider->criteria->addCondition('t.product_name LIKE :productName');
-//            $receiveDetailDataProvider->criteria->params[':productName'] = "%$productName%";
-//        }
-
-//        $receiveDetailDataProvider->criteria->compare('t.serial_number', $receiveDetail->serial_number,true);
-//        $receiveDetailDataProvider->criteria->compare('t.height', $receiveDetail->height);
-//        $receiveDetailDataProvider->criteria->compare('t.width', $receiveDetail->width);
-//        $receiveDetailDataProvider->criteria->compare('t.length', $receiveDetail->length);
 
         $receiveSerialNumber = isset($_GET['ReceiveSerialNumber']) ? $_GET['ReceiveSerialNumber'] : '';
         $workOrderCuttingDetailMaterial = Search::bind(new WorkOrderCuttingDetailMaterial(), isset($_GET['WorkOrderCuttingDetailMaterial']) ? $_GET['WorkOrderCuttingDetailMaterial'] : '');
@@ -198,11 +186,6 @@ class WorkOrderCuttingController extends Controller {
         
         $workOrderCuttingDetailMaterialDataProvider->criteria->addCondition("receiveDetail.serial_number LIKE :serial_number");
         $workOrderCuttingDetailMaterialDataProvider->criteria->params[':serial_number'] = "%{$receiveSerialNumber}%";
-
-//        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.serial_number', $workOrderCuttingDetailMaterial->serial_number);
-//        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.height', $workOrderCuttingDetailMaterial->height);
-//        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.width', $workOrderCuttingDetailMaterial->width);
-//        $workOrderCuttingDetailMaterialDataProvider->criteria->compare('t.length', $workOrderCuttingDetailMaterial->length);
 
         $count = count($workOrderCutting->details);
 

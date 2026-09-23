@@ -98,7 +98,7 @@ class WorkOrderCuttingComponent extends CComponent {
         $saleHeader = SaleHeader::model()->findByPk($saleHeaderId);
         if ($saleHeader != null) {
             foreach ($saleHeader->saleDetails as $saleDetail) {
-                if ((int) $saleDetail->is_proceed_to_work_order === 0) {
+                if ((int) $saleDetail->is_proceed_to_work_order == 0 && (int) $saleDetail->is_inactive == 0) {
                     $saleDetailProductService = ((int)$saleDetail->quotation_detail_product_id == null) ? $saleDetail->quotationDetailService : $saleDetail->quotationDetailProduct;
                     $detail = new WorkOrderCuttingDetail();
                     $detail->sale_detail_id = $saleDetail->id;
