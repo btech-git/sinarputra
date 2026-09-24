@@ -129,10 +129,11 @@ Yii::app()->clientScript->registerCss('memo', '
                     <?php $detail = $deliveryBackup->deliveryBackupDetails[$i]; ?>
                     <tr class="titems" style="font-size: 14px">
                         <td style="text-align: center"><?php echo $i + 1; ?></td>
-                        <td style="text-align: center"><?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?></td>
+                        <td style="text-align: center">
+                            <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', CHtml::value($detail, 'quantity'))); ?>
+                        </td>
                         <td>
                             <?php echo CHtml::encode(CHtml::value($detail, 'grade_name')); ?> -
-                            <?php echo CHtml::encode(CHtml::value($detail, 'productCategory.name')); ?>
                             <?php if ($detail->height != 0.00 && $detail->length != 0.00): ?>
                                 --
                                 <?php if ($detail->product_category_id == 2): ?>
