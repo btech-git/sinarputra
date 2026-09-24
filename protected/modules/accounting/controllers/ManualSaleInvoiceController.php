@@ -221,16 +221,12 @@ class ManualSaleInvoiceController extends Controller {
     
     public function actionAdmin() {
         $saleInvoice = Search::bind(new ManualSaleInvoiceHeader('search'), isset($_GET['ManualSaleInvoiceHeader']) ? $_GET['ManualSaleInvoiceHeader'] : array());
+        
         $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
         $workOrderOrdinal = isset($_GET['WorkOrderOrdinal']) ? $_GET['WorkOrderOrdinal'] : '';
         $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
         $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
         $customerPurchaseNumber = isset($_GET['CustomerPurchaseNumber']) ? $_GET['CustomerPurchaseNumber'] : '';
-
-        if (isset($_GET['pageSize'])) {
-            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-            unset($_GET['pageSize']);
-        }
 
         $dataProvider = $saleInvoice->search();
         $dataProvider->criteria->with = array(
@@ -277,6 +273,22 @@ class ManualSaleInvoiceController extends Controller {
             $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
 
             $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        $arr_category = array();
+        if (isset($_GET['SaveXml'])) {
+            if (isset($_GET['selectedIds'])) {
+                foreach ($_GET['selectedIds'] as $id) {
+                    $saleInvoice = $this->loadModel($id);
+                    array_push($arr_category, $saleInvoice);
+                }
+            }
+        }
+
+        if ($arr_category) {
+            if (isset($_GET['SaveXml'])) {
+                $this->saveToXml($arr_category);
+            }
         }
 
         $this->render('admin', array(

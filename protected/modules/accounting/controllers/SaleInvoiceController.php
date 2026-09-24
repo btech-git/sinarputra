@@ -210,11 +210,6 @@ class SaleInvoiceController extends Controller {
         $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
         $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
 
-//        if (isset($_GET['pageSize'])) {
-//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-//            unset($_GET['pageSize']);
-//        }
-
         $dataProvider = $saleInvoice->search();
         $dataProvider->criteria->with = array(
             'customer:resetScope',
@@ -260,6 +255,22 @@ class SaleInvoiceController extends Controller {
             $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
         }
 
+        $arr_category = array();
+        if (isset($_GET['SaveXml'])) {
+            if (isset($_GET['selectedIds'])) {
+                foreach ($_GET['selectedIds'] as $id) {
+                    $saleInvoice = $this->loadModel($id);
+                    array_push($arr_category, $saleInvoice);
+                }
+            }
+        }
+
+        if ($arr_category) {
+            if (isset($_GET['SaveXml'])) {
+                $this->saveToXml($arr_category);
+            }
+        }
+
         $this->render('admin', array(
             'saleInvoice' => $saleInvoice,
             'dataProvider' => $dataProvider,
@@ -275,16 +286,12 @@ class SaleInvoiceController extends Controller {
 
     public function actionIndexCoretax() {
         $saleInvoice = Search::bind(new SaleInvoiceHeader('search'), isset($_GET['SaleInvoiceHeader']) ? $_GET['SaleInvoiceHeader'] : array());
+        
         $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
         $customerOrderNumber = isset($_GET['CustomerOrderNumber']) ? $_GET['CustomerOrderNumber'] : '';
         $workOrderOrdinal = isset($_GET['WorkOrderOrdinal']) ? $_GET['WorkOrderOrdinal'] : '';
         $workOrderMonth = isset($_GET['WorkOrderMonth']) ? $_GET['WorkOrderMonth'] : '';
         $workOrderYear = isset($_GET['WorkOrderYear']) ? $_GET['WorkOrderYear'] : '';
-
-//        if (isset($_GET['pageSize'])) {
-//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-//            unset($_GET['pageSize']);
-//        }
 
         $dataProvider = $saleInvoice->search();
         $dataProvider->criteria->with = array(
@@ -296,8 +303,8 @@ class SaleInvoiceController extends Controller {
                 ),
             ),
         );
-        $dataProvider->criteria->order = 't.id DESC';
-        $dataProvider->criteria->condition = 't.is_inactive = 0 AND (t.tax_number is null OR t.tax_number = "")';
+        $dataProvider->criteria->order = 't.date DESC, t.id DESC';
+        $dataProvider->criteria->addCondition('t.is_inactive = 0 AND (t.tax_number is null OR t.tax_number = "")');
         
         if (!empty($workOrderOrdinal)) {
             $dataProvider->criteria->addCondition('workOrderCuttingHeader.cn_ordinal = :cn_ordinal');

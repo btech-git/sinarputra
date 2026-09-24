@@ -75,6 +75,7 @@
             '<div style="display: inline-block"> &nbsp; / &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeTextField($saleInvoice, 'cn_year', array('maxLength' => 2, 'size' => 2)) . '</div>',
             'value' => '$data->getCodeNumber(SaleInvoiceHeader::CN_CONSTANT)',
+            'htmlOptions' => array('style' => 'width: 200px'),
         ),
         array(
             'header' => 'Tanggal',
@@ -111,17 +112,17 @@
             '<div style="display: inline-block">' . CHtml::textField('WorkOrderYear', $workOrderYear, array('maxLength' => 2, 'size' => 1)) . '</div>',
             'value' => 'empty($data->work_order_cutting_header_id) ? "" : $data->workOrderCuttingHeader->getCodeNumber(WorkOrderCuttingHeader::CN_CONSTANT)',
         ),
-        array(
-            'header' => 'TT #',
-            'filter' => false,
-            'value' => 'empty($data->saleReceiptDetails) ? "" : $data->saleReceiptDetails[0]->saleReceiptHeader->getCodeNumber(SaleReceiptHeader::CN_CONSTANT)',
-        ),
-        array(
-            'header' => 'Tanggal TT',
-            'name' => 'date',
-            'filter' => false,
-            'value' => 'empty($data->saleReceiptDetails) ? "" : Yii::app()->dateFormatter->format("d MMM yyyy", $data->saleReceiptDetails[0]->saleReceiptHeader->date)'
-        ),
+//        array(
+//            'header' => 'TT #',
+//            'filter' => false,
+//            'value' => 'empty($data->saleReceiptDetails) ? "" : $data->saleReceiptDetails[0]->saleReceiptHeader->getCodeNumber(SaleReceiptHeader::CN_CONSTANT)',
+//        ),
+//        array(
+//            'header' => 'Tanggal TT',
+//            'name' => 'date',
+//            'filter' => false,
+//            'value' => 'empty($data->saleReceiptDetails) ? "" : Yii::app()->dateFormatter->format("d MMM yyyy", $data->saleReceiptDetails[0]->saleReceiptHeader->date)'
+//        ),
         array(
             'header' => 'PO Customer',
             'filter' => CHtml::textField('CustomerOrderNumber', $customerOrderNumber, array('maxLength' => 60, 'size' => 10)),
@@ -132,18 +133,18 @@
             'name' => 'tax_number',
             'value' => '$data->tax_number',
         ),
-        array(
-            'header' => 'Salesman',
-            'name' => 'employee_id_salesman',
-            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
-            'value' => 'CHtml::value($data, "employeeIdSalesman.name")',
-        ),
-        array(
-            'name' => 'is_inactive',
-            'header' => 'Status',
-            'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
-            'value' => '$data->status',
-        ),
+//        array(
+//            'header' => 'Salesman',
+//            'name' => 'employee_id_salesman',
+//            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
+//            'value' => 'CHtml::value($data, "employeeIdSalesman.name")',
+//        ),
+//        array(
+//            'name' => 'is_inactive',
+//            'header' => 'Status',
+//            'filter' => false,
+//            'value' => '$data->status',
+//        ),
     ),
 )); ?>
 

@@ -109,17 +109,11 @@ class MaterialInvoiceController extends Controller {
         $materialInvoice = Search::bind(new MaterialInvoiceHeader('search'), isset($_GET['MaterialInvoiceHeader']) ? $_GET['MaterialInvoiceHeader'] : array());
         $customerCompany = isset($_GET['CustomerCompany']) ? $_GET['CustomerCompany'] : '';
 
-//        if (isset($_GET['pageSize'])) {
-//            Yii::app()->user->setState('pageSize', (int) $_GET['pageSize']);
-//            unset($_GET['pageSize']);
-//        }
-        
         $dataProvider = $materialInvoice->search();
         $dataProvider->criteria->with = array(
             'customer:resetScope',
             'employeeIdSalesman:resetScope',
         );
-        
         $dataProvider->criteria->order = 't.id DESC';
 
         if (!empty($customerCompany)) {
@@ -135,6 +129,22 @@ class MaterialInvoiceController extends Controller {
             $endDate = (empty($endDate)) ? date('Y-m-d') : $endDate;
 
             $dataProvider->criteria->addBetweenCondition('t.date', $startDate, $endDate);
+        }
+
+        $arr_category = array();
+        if (isset($_GET['SaveXml'])) {
+            if (isset($_GET['selectedIds'])) {
+                foreach ($_GET['selectedIds'] as $id) {
+                    $saleInvoice = $this->loadModel($id);
+                    array_push($arr_category, $saleInvoice);
+                }
+            }
+        }
+
+        if ($arr_category) {
+            if (isset($_GET['SaveXml'])) {
+                $this->saveToXml($arr_category);
+            }
         }
 
         $this->render('admin', array(

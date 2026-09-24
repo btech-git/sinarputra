@@ -45,18 +45,6 @@
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
     
-    <?php /*
-    $pageSize = Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']);
-    $pageSizeDropDown = CHtml::dropDownList(
-        'pageSize', $pageSize, array(10 => 10, 25 => 25, 50 => 50, 100 => 100), array(
-            'class' => 'change-pagesize',
-            'onchange' => "$.fn.yiiGridView.update('saleInvoice-grid',{data:{pageSize:$(this).val()}});",
-        )
-    ); ?>
-
-    <div class="page-size-wrap">
-        <span>Display by:</span><?php echo $pageSizeDropDown;*/ ?>
-    <!--</div>-->
     <?php echo CHtml::endForm(); ?>
 </center>
 
@@ -66,6 +54,11 @@
     'dataProvider' => $dataProvider,
     'filter' => $saleInvoice,
     'columns' => array(
+        array(
+            'id' => 'selectedIds',
+            'class' => 'CCheckBoxColumn',
+            'selectableRows' => '50',
+        ),
         array(
             'name' => 'id',
             'header' => 'Sale Invoice #',
@@ -122,12 +115,12 @@
             'name' => 'tax_number',
             'value' => '$data->tax_number',
         ),
-        array(
-            'header' => 'Salesman',
-            'name' => 'employee_id_salesman',
-            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
-            'value' => 'CHtml::encode(CHtml::value($data, "employeeIdSalesman.name"))',
-        ),
+//        array(
+//            'header' => 'Salesman',
+//            'name' => 'employee_id_salesman',
+//            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
+//            'value' => 'CHtml::encode(CHtml::value($data, "employeeIdSalesman.name"))',
+//        ),
         array(
             'name' => 'is_inactive',
             'header' => 'Status',
@@ -141,4 +134,5 @@
     ),
 )); ?>
 
+<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>

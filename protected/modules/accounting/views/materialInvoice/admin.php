@@ -46,19 +46,7 @@
         <?php echo CHtml::resetButton('Clear'); ?>
     </div>
     
-    <?php /*
-    $pageSize = Yii::app()->user->getState('pageSize', Yii::app()->params['defaultPageSize']);
-    $pageSizeDropDown = CHtml::dropDownList(
-        'pageSize', $pageSize, array(10 => 10, 25 => 25, 50 => 50, 100 => 100), array(
-            'class' => 'change-pagesize',
-            'onchange' => "$.fn.yiiGridView.update('material-invoice-grid',{data:{pageSize:$(this).val()}});",
-        )
-    ); */
-    ?>
-
-<!--    <div class="page-size-wrap">
-        <span>Display by:</span><?php //echo $pageSizeDropDown; ?>
-    </div>-->
+    <?php echo CHtml::endForm(); ?>
 </center>
 <?php echo CHtml::beginForm(array(''), 'get'); ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -67,8 +55,13 @@
     'filter' => $materialInvoice,
     'columns' => array(
         array(
+            'id' => 'selectedIds',
+            'class' => 'CCheckBoxColumn',
+            'selectableRows' => '50',
+        ),
+        array(
             'name' => 'cn_ordinal',
-            'header' => 'Pembelian Item #',
+            'header' => 'Transaksi #',
             'filter' => '<div style="display: inline-block">' . CHtml::activeTextField($materialInvoice, 'cn_ordinal', array('maxLength' => 4, 'size' => 2)) . '</div>' .
             '<div style="display: inline-block"> &nbsp; /' . MaterialInvoiceHeader::CN_CONSTANT . '/ &nbsp; </div>' .
             '<div style="display: inline-block">' . CHtml::activeDropDownList($materialInvoice, 'cn_month', array(1 => 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'), array('empty' => '')) . '</div>' .
@@ -127,15 +120,23 @@
             'value' => '$data->tax_number',
         ),
         array(
-            'header' => 'Salesman',
-            'name' => 'employee_id_salesman',
-            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
-            'value' => '$data->employeeIdSalesman->name',
+            'name' => 'is_inactive',
+            'header' => 'Status',
+            'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
+            'value' => '$data->status',
         ),
+//        array(
+//            'header' => 'Salesman',
+//            'name' => 'employee_id_salesman',
+//            'filter' => CHtml::listData(Employee::model()->findAll(array('condition' => 'department_id = 2', 'order' => 'name ASC')), 'id', 'name'),
+//            'value' => '$data->employeeIdSalesman->name',
+//        ),
         array(
             'class' => 'CButtonColumn',
             'updateButtonUrl' => 'CHtml::normalizeUrl(array("update", "id"=>$data->id))',
         ),
     ),
 )); ?>
+
+<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>

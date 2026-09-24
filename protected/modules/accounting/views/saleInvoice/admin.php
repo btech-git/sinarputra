@@ -63,12 +63,18 @@
     
     <?php echo CHtml::endForm(); ?>
 </center>
+
 <?php echo CHtml::beginForm(array(''), 'get'); ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'sale-invoice-grid',
     'dataProvider' => $dataProvider,
     'filter' => $saleInvoice,
     'columns' => array(
+        array(
+            'id' => 'selectedIds',
+            'class' => 'CCheckBoxColumn',
+            'selectableRows' => '50',
+        ),
         array(
             'name' => 'id',
             'header' => 'Sale Invoice #',
@@ -145,6 +151,7 @@
 //        ),
         array(
             'name' => 'is_inactive',
+            'header' => 'Status',
             'filter' => array(ActiveRecord::ACTIVE => ActiveRecord::ACTIVE_LITERAL, ActiveRecord::INACTIVE => ActiveRecord::INACTIVE_LITERAL),
             'value' => '$data->status',
         ),
@@ -155,4 +162,5 @@
     ),
 )); ?>
 
+<?php echo CHtml::submitButton('Export E-Faktur (XML)', array('name' => 'SaveXml', 'style' => 'float: left;', 'class' => 'grey-btn')); ?>
 <?php echo CHtml::endForm(); ?>
