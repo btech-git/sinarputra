@@ -3005,3 +3005,267 @@ Stack trace:
 #27 {main}
 REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/journalVoucher/admin
 ---
+2026/09/18 13:06:12 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:06:30 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:06:59 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:07:12 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:08:40 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:08:52 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:09:12 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:11:38 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:12:28 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:14:01 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:20:06 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:28:51 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:29:12 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '753-9-26' for key 'tblsp_work_order_cutting_header.cn_ordinal'. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11, :yp12, :yp13, :yp14).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:31:21 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:33:39 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'cn_ordinal' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:33:50 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:34:07 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'cn_ordinal' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:34:28 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/18 13:34:46 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'cn_ordinal' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_work_order_cutting_header` (`is_service`, `is_miling_additional`, `is_pending`, `is_inactive`, `total_quantity_cutting_planning_remaining`, `total_quantity_delivery_remaining`, `date`, `admin_id`, `created_datetime`, `sale_header_id`, `customer_id`, `note`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7, :yp8, :yp9, :yp10, :yp11).
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (192)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/components/WorkOrderCuttingComponent.php (225)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (250)
+2026/09/18 13:38:08 [warning] [application] Failed to set unsafe attribute "is_coating" of "WorkOrderCuttingDetail".
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (58)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (164)
+in /home/pmahendro/public_html/sinarputra/protected/modules/manufacture/controllers/WorkOrderCuttingController.php (28)
+2026/09/22 09:29:33 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:37:51 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:39:34 [error] [system.db.CDbCommand] CDbCommand::fetchColumn() failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '== "")))' at line 1. The SQL statement executed was: SELECT COUNT(DISTINCT `t`.`id`) FROM `tblsp_manual_sale_invoice_header` `t`  LEFT OUTER JOIN `tblsp_work_order_cutting_header` `workOrderCuttingHeader` ON (`t`.`work_order_cutting_header_id`=`workOrderCuttingHeader`.`id`) AND (workOrderCuttingHeader.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_sale_header` `saleHeader` ON (`workOrderCuttingHeader`.`sale_header_id`=`saleHeader`.`id`) AND (saleHeader.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_customer` `customer` ON (`t`.`customer_id`=`customer`.`id`) AND (customer.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_employee` `employeeIdSalesman` ON (`t`.`employee_id_salesman`=`employeeIdSalesman`.`id`) AND (employeeIdSalesman.is_inactive = :is_inactive)  WHERE ((t.is_inactive = :is_inactive) AND (t.is_inactive = 0 AND (t.tax_number is null OR t.tax_number == ""))).
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/views/manualSaleInvoice/indexCoretax.php (138)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/ManualSaleInvoiceController.php (380)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/09/22 09:39:34 [error] [exception.CDbException] exception 'CDbException' with message 'CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '== "")))' at line 1. The SQL statement executed was: SELECT COUNT(DISTINCT `t`.`id`) FROM `tblsp_manual_sale_invoice_header` `t`  LEFT OUTER JOIN `tblsp_work_order_cutting_header` `workOrderCuttingHeader` ON (`t`.`work_order_cutting_header_id`=`workOrderCuttingHeader`.`id`) AND (workOrderCuttingHeader.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_sale_header` `saleHeader` ON (`workOrderCuttingHeader`.`sale_header_id`=`saleHeader`.`id`) AND (saleHeader.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_customer` `customer` ON (`t`.`customer_id`=`customer`.`id`) AND (customer.is_inactive = :is_inactive)  LEFT OUTER JOIN `tblsp_employee` `employeeIdSalesman` ON (`t`.`employee_id_salesman`=`employeeIdSalesman`.`id`) AND (employeeIdSalesman.is_inactive = :is_inactive)  WHERE ((t.is_inactive = :is_inactive) AND (t.is_inactive = 0 AND (t.tax_number is null OR t.tax_number == "")))' in /home/pmahendro/public_html/yii/framework/db/CDbCommand.php:543
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/db/CDbCommand.php(433): CDbCommand->queryInternal('fetchColumn', 0, Array)
+#1 /home/pmahendro/public_html/yii/framework/db/ar/CActiveFinder.php(759): CDbCommand->queryScalar()
+#2 /home/pmahendro/public_html/yii/framework/db/ar/CActiveFinder.php(151): CJoinElement->count(Object(CDbCriteria))
+#3 /home/pmahendro/public_html/yii/framework/db/ar/CActiveRecord.php(1605): CActiveFinder->count(Object(CDbCriteria))
+#4 /home/pmahendro/public_html/yii/framework/web/CActiveDataProvider.php(228): CActiveRecord->count(Object(CDbCriteria))
+#5 /home/pmahendro/public_html/yii/framework/web/CDataProvider.php(224): CActiveDataProvider->calculateTotalItemCount()
+#6 /home/pmahendro/public_html/yii/framework/web/CActiveDataProvider.php(178): CDataProvider->getTotalItemCount()
+#7 /home/pmahendro/public_html/yii/framework/web/CDataProvider.php(168): CActiveDataProvider->fetchData()
+#8 /home/pmahendro/public_html/yii/framework/zii/widgets/CBaseListView.php(111): CDataProvider->getData()
+#9 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridView.php(339): CBaseListView->init()
+#10 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(147): CGridView->init()
+#11 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(172): CBaseController->createWidget('zii.widgets.gri...', Array)
+#12 /home/pmahendro/public_html/sinarputra/protected/modules/accounting/views/manualSaleInvoice/indexCoretax.php(138): CBaseController->widget('zii.widgets.gri...', Array)
+#13 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require('/home/pmahendro...')
+#14 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): CBaseController->renderInternal('/home/pmahendro...', Array, true)
+#15 /home/pmahendro/public_html/yii/framework/web/CController.php(869): CBaseController->renderFile('/home/pmahendro...', Array, true)
+#16 /home/pmahendro/public_html/yii/framework/web/CController.php(782): CController->renderPartial('indexCoretax', Array, true)
+#17 /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/ManualSaleInvoiceController.php(380): CController->render('indexCoretax', Array)
+#18 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ManualSaleInvoiceController->actionIndexCoretax()
+#19 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#20 /home/pmahendro/public_html/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#21 /home/pmahendro/public_html/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#22 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): CController->run('indexCoretax')
+#23 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/manu...')
+#24 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#25 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#26 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/manualSaleInvoice/indexCoretax
+---
+2026/09/22 09:40:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:50:06 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:50:27 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:50:30 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/22 09:50:43 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accounting/materialSaleInvoice/indexCoretax".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accounting/mate...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/materialSaleInvoice/indexCoretax
+---
+2026/09/23 09:12:41 [error] [php] Undefined variable: startDate (/home/pmahendro/public_html/sinarputra/protected/modules/transaction/views/purchaseItem/admin.php:11)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): PurchaseItemController->renderFile()
+#1 /home/pmahendro/public_html/yii/framework/web/CController.php(782): PurchaseItemController->renderPartial()
+#2 /home/pmahendro/public_html/sinarputra/protected/modules/transaction/controllers/PurchaseItemController.php(143): PurchaseItemController->render()
+#3 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): PurchaseItemController->actionAdmin()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(286): PurchaseItemController->runAction()
+#6 /home/pmahendro/public_html/yii/framework/web/CController.php(265): PurchaseItemController->runActionWithFilters()
+#7 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): PurchaseItemController->run()
+#8 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#10 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/purchaseItem/admin
+in /home/pmahendro/public_html/sinarputra/protected/modules/transaction/views/purchaseItem/admin.php (11)
+in /home/pmahendro/public_html/sinarputra/protected/modules/transaction/controllers/PurchaseItemController.php (143)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/09/23 11:12:25 [error] [system.db.CDbCommand] CDbCommand::fetchColumn() failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.transaction_date' in 'where clause'. The SQL statement executed was: SELECT COUNT(DISTINCT `t`.`id`) FROM `tblsp_purchase_item_header` `t`  LEFT OUTER JOIN `tblsp_supplier` `supplier` ON (`t`.`supplier_id`=`supplier`.`id`) AND (supplier.is_inactive = :is_inactive)  WHERE ((t.is_inactive = :is_inactive) AND (t.transaction_date BETWEEN :ycp0 AND :ycp1)).
+in /home/pmahendro/public_html/sinarputra/protected/modules/transaction/views/purchaseItem/admin.php (94)
+in /home/pmahendro/public_html/sinarputra/protected/modules/transaction/controllers/PurchaseItemController.php (149)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/09/23 11:12:25 [error] [exception.CDbException] exception 'CDbException' with message 'CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.transaction_date' in 'where clause'. The SQL statement executed was: SELECT COUNT(DISTINCT `t`.`id`) FROM `tblsp_purchase_item_header` `t`  LEFT OUTER JOIN `tblsp_supplier` `supplier` ON (`t`.`supplier_id`=`supplier`.`id`) AND (supplier.is_inactive = :is_inactive)  WHERE ((t.is_inactive = :is_inactive) AND (t.transaction_date BETWEEN :ycp0 AND :ycp1))' in /home/pmahendro/public_html/yii/framework/db/CDbCommand.php:543
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/db/CDbCommand.php(433): CDbCommand->queryInternal('fetchColumn', 0, Array)
+#1 /home/pmahendro/public_html/yii/framework/db/ar/CActiveFinder.php(759): CDbCommand->queryScalar()
+#2 /home/pmahendro/public_html/yii/framework/db/ar/CActiveFinder.php(151): CJoinElement->count(Object(CDbCriteria))
+#3 /home/pmahendro/public_html/yii/framework/db/ar/CActiveRecord.php(1605): CActiveFinder->count(Object(CDbCriteria))
+#4 /home/pmahendro/public_html/yii/framework/web/CActiveDataProvider.php(228): CActiveRecord->count(Object(CDbCriteria))
+#5 /home/pmahendro/public_html/yii/framework/web/CDataProvider.php(224): CActiveDataProvider->calculateTotalItemCount()
+#6 /home/pmahendro/public_html/yii/framework/web/CActiveDataProvider.php(178): CDataProvider->getTotalItemCount()
+#7 /home/pmahendro/public_html/yii/framework/web/CDataProvider.php(168): CActiveDataProvider->fetchData()
+#8 /home/pmahendro/public_html/yii/framework/zii/widgets/CBaseListView.php(111): CDataProvider->getData()
+#9 /home/pmahendro/public_html/yii/framework/zii/widgets/grid/CGridView.php(339): CBaseListView->init()
+#10 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(147): CGridView->init()
+#11 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(172): CBaseController->createWidget('zii.widgets.gri...', Array)
+#12 /home/pmahendro/public_html/sinarputra/protected/modules/transaction/views/purchaseItem/admin.php(94): CBaseController->widget('zii.widgets.gri...', Array)
+#13 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require('/home/pmahendro...')
+#14 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): CBaseController->renderInternal('/home/pmahendro...', Array, true)
+#15 /home/pmahendro/public_html/yii/framework/web/CController.php(869): CBaseController->renderFile('/home/pmahendro...', Array, true)
+#16 /home/pmahendro/public_html/yii/framework/web/CController.php(782): CController->renderPartial('admin', Array, true)
+#17 /home/pmahendro/public_html/sinarputra/protected/modules/transaction/controllers/PurchaseItemController.php(149): CController->render('admin', Array)
+#18 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): PurchaseItemController->actionAdmin()
+#19 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#20 /home/pmahendro/public_html/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#21 /home/pmahendro/public_html/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#22 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): CController->run('admin')
+#23 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/pur...')
+#24 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#25 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#26 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction%2FpurchaseItem%2Fadmin&StartDate=2026-08-01&EndDate=2026-08-31&Submit=Show
+HTTP_REFERER=http://localhost/~pmahendro/sinarputra/index.php?r=transaction/purchaseItem/admin
+---
+2026/09/23 11:12:58 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "transaction/manualSalePayment/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/man...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/manualSalePayment/admin
+---
+2026/09/23 11:13:09 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accountin/manualSalePayment/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accountin/manua...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accountin/manualSalePayment/admin
+---
+2026/09/23 11:13:24 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accountin/manualSalePayment/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accountin/manua...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accountin/manualSalePayment/admin
+---
+2026/09/23 11:13:55 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "accountin/manualSalePayment/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('accountin/manua...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accountin/manualSalePayment/admin
+---
+2026/09/23 11:13:56 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "transaction/manualSalePayment/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/man...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/manualSalePayment/admin
+---

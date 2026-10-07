@@ -1,3 +1,75 @@
+<table>
+    <tr>
+        <th style="text-align: center; width: 50%">Purchasing</th>
+        <th style="text-align: center">Create</th>
+        <th style="text-align: center">Edit</th>
+        <th style="text-align: center">View</th>
+    </tr>
+    <tr>
+        <td>Purchase Order Material</td>
+        <td style="text-align: center">
+            <?php //echo $counter; ?>
+            <?php echo CHtml::checkBox("Admin[roles][purchaseCreate]", CHtml::resolveValue($model, "roles[purchaseCreate]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseCreate'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][purchaseEdit]", CHtml::resolveValue($model, "roles[purchaseEdit]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseEdit'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][purchaseView]", CHtml::resolveValue($model, "roles[purchaseView]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseView'
+            )); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>PO Barang Penunjang</td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][purchaseItemCreate]", CHtml::resolveValue($model, "roles[purchaseItemCreate]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseItemCreate'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][purchaseItemEdit]", CHtml::resolveValue($model, "roles[purchaseItemEdit]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseItemEdit'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][purchaseItemView]", CHtml::resolveValue($model, "roles[purchaseItemView]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'purchaseItemView'
+            )); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Penerimaan Barang Penunjang</td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][receiveItemCreate]", CHtml::resolveValue($model, "roles[receiveItemCreate]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'receiveItemCreate'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][receiveItemEdit]", CHtml::resolveValue($model, "roles[receiveItemEdit]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'receiveItemEdit'
+            )); ?>
+        </td>
+        <td style="text-align: center">
+            <?php echo CHtml::checkBox("Admin[roles][receiveItemView]", CHtml::resolveValue($model, "roles[receiveItemView]"), array(
+                'id' => 'Admin_roles_' . $counter++, 
+                'value' => 'receiveItemView'
+            )); ?>
+        </td>
+    </tr>
+</table>
 
 <table>
     <tr>
@@ -9,6 +81,7 @@
     <tr>
         <td>Surat Jalan</td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][deliveryCreate]", CHtml::resolveValue($model, "roles[deliveryCreate]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'deliveryCreate'
@@ -71,18 +144,7 @@
     </tr>
     <tr>
         <td>e-Faktur</td>
-        <td style="text-align: center">
-            <?php echo CHtml::checkBox("Admin[roles][eFakturCreate]", CHtml::resolveValue($model, "roles[eFakturCreate]"), array(
-                'id' => 'Admin_roles_' . $counter++, 
-                'value' => 'eFakturCreate'
-            )); ?>
-        </td>
-        <td style="text-align: center">
-            <?php echo CHtml::checkBox("Admin[roles][eFakturEdit]", CHtml::resolveValue($model, "roles[eFakturEdit]"), array(
-                'id' => 'Admin_roles_' . $counter++, 
-                'value' => 'eFakturEdit'
-            )); ?>
-        </td>
+        <td colspan="2">&nbsp;</td>
         <td style="text-align: center">
             <?php echo CHtml::checkBox("Admin[roles][eFakturView]", CHtml::resolveValue($model, "roles[eFakturView]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
@@ -102,6 +164,7 @@
     <tr>
         <td>Pelunasan Customer</td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][salePaymentCreate]", CHtml::resolveValue($model, "roles[salePaymentCreate]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'salePaymentCreate'
@@ -240,6 +303,7 @@
             )); ?>
         </td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][journalVoucherView]", CHtml::resolveValue($model, "roles[journalVoucherView]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'journalVoucherView'

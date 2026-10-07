@@ -31,7 +31,6 @@ class SaleOmzetSalesByGradeController extends Controller {
         $employeeName = (isset($_GET['EmployeeName'])) ? $_GET['EmployeeName'] : '';
   
         $saleOmzetSalesmanSummary = new SaleOmzetSalesmanSummary($employee->search());
-        
         $saleOmzetSalesmanSummary->setupLoading();
         $saleOmzetSalesmanSummary->setupPaging($pageSize, $currentPage);
         $saleOmzetSalesmanSummary->setupSorting();

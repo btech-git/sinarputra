@@ -78,7 +78,7 @@ class EmployeeBase extends ActiveRecord {
 
     public function rules() {
         return array(
-            array('code, name, start_date, birth_date, department_id, division_id, employment_type_id, ethnic_group_id, religion_id', 'required'),
+            array('code, name, start_date, birth_date, department_id, division_id, employment_type_id, religion_id', 'required'),
             array('email', 'email'),
             array('family_status, marital_status, tax_status, department_id, division_id, employee_category_id, employment_type_id, ethnic_group_id, religion_id, blood_type_id, is_female, is_inactive', 'numerical', 'integerOnly' => true),
             array('code, job_group', 'length', 'max' => 20),

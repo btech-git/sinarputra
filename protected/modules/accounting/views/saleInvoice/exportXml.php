@@ -16,7 +16,7 @@
             <BuyerDocument>TIN</BuyerDocument>
             <BuyerCountry>IDN</BuyerCountry>
             <BuyerDocumentNumber/>
-            <BuyerName><?php echo CHtml::value($saleInvoiceHeader, 'customer.company'); ?></BuyerName>
+            <BuyerName><?php echo CHtml::encode(CHtml::value($saleInvoiceHeader, 'customer.company')); ?></BuyerName>
             <BuyerAdress><?php echo htmlspecialchars(CHtml::value($saleInvoiceHeader, 'customer.address_main'), ENT_XML1); ?></BuyerAdress>
             <BuyerEmail><?php echo CHtml::value($saleInvoiceHeader, 'customer.email'); ?></BuyerEmail>
             <BuyerIDTKU><?php echo CHtml::value($saleInvoiceHeader, 'customer.tax_registration_number'); ?>000000</BuyerIDTKU>

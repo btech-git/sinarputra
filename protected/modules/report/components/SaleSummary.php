@@ -40,8 +40,9 @@ class SaleSummary extends CComponent {
     public function reportGrandTotal() {
         $grandTotal = 0.00;
 
-        foreach ($this->dataProvider->data as $data)
+        foreach ($this->dataProvider->data as $data) {
             $grandTotal += $data->grandTotalTransaction;
+        }
 
         return $grandTotal;
     }

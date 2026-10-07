@@ -469,6 +469,14 @@
         <div class="formLabel"><?php echo CHtml::label('Foto Tanda Tangan: ', FALSE); ?></div>
         <div class="formInput"><?php echo CHtml::fileField('file_signature'); // by this we can upload image             ?>  </div>
         <div class="formError"><?php echo CHtml::error($model->header, 'file_signature'); ?></div>
+    <?php else: ?>
+        <div class="formLabel"><?php echo CHtml::label('Foto: ', FALSE) . $model->header->file_extension; ?></div>
+        <div class="formInput"><?php echo CHtml::fileField('file'); // by this we can upload image             ?></div>
+        <div class="formError"><?php echo CHtml::error($model->header, 'file'); ?></div>
+        
+        <div class="formLabel"><?php echo CHtml::label('Signature: ', FALSE) . $model->header->file_extension_signature; ?></div>
+        <div class="formInput"><?php echo CHtml::fileField('file_signature'); // by this we can upload image             ?></div>
+        <div class="formError"><?php echo CHtml::error($model->header, 'file_signature'); ?></div>
         
         <div class="form-group">
             <?php echo $form->labelEx($model->header, 'status'); ?>
@@ -478,14 +486,6 @@
             )); ?>
             <?php echo $form->error($model->header, 'is_inactive'); ?>
         </div>
-    <?php else: ?>
-        <div class="formLabel"><?php echo CHtml::label('Foto: ', FALSE) . $model->header->file_extension; ?></div>
-        <div class="formInput"><?php echo CHtml::fileField('file'); // by this we can upload image             ?></div>
-        <div class="formError"><?php echo CHtml::error($model->header, 'file'); ?></div>
-        
-        <div class="formLabel"><?php echo CHtml::label('Signature: ', FALSE) . $model->header->file_extension_signature; ?></div>
-        <div class="formInput"><?php echo CHtml::fileField('file_signature'); // by this we can upload image             ?></div>
-        <div class="formError"><?php echo CHtml::error($model->header, 'file_signature'); ?></div>
     <?php endif; ?>
 
     <div class="row buttons">

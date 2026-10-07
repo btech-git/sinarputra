@@ -8,6 +8,7 @@
     <tr>
         <td>COA</td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][masterAccountCreate]", CHtml::resolveValue($model, "roles[masterAccountCreate]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'masterAccountCreate'
@@ -182,6 +183,7 @@
     <tr>
         <td>COA Category</td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][masterAccountCategoryCreate]", CHtml::resolveValue($model, "roles[masterAccountCategoryCreate]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'masterAccountCategoryCreate'
@@ -383,6 +385,7 @@
             )); ?>
         </td>
         <td style="text-align: center">
+            <?php //echo $counter; ?>
             <?php echo CHtml::checkBox("Admin[roles][masterUnitView]", CHtml::resolveValue($model, "roles[masterUnitView]"), array(
                 'id' => 'Admin_roles_' . $counter++, 
                 'value' => 'masterUnitView'

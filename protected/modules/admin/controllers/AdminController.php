@@ -6,7 +6,7 @@ class AdminController extends CrudController {
 
     public function filters() {
         return array(
-            'access',
+//            'access',
         );
     }
 
@@ -53,6 +53,13 @@ class AdminController extends CrudController {
 
         if (isset($_POST['Admin'])) {
             $model->attributes = $_POST['Admin'];
+            $employee = Employee::model()->findByPk($model->employee_id);
+            
+            $model->name = $employee->name;
+            $model->address = $employee->residential_address;
+            $model->phone = $employee->phone;
+            $model->cell_phone = null;
+            $model->email = $employee->email;
             $model->beforeSave();
             
             $fileSignature = CUploadedFile::getInstanceByName('file_signature');

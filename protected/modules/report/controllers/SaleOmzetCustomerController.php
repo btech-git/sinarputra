@@ -18,9 +18,9 @@ class SaleOmzetCustomerController extends Controller {
     }
 
     public function actionSummary() {
-		set_time_limit(0);
-		ini_set('memory_limit', '1024M');
-		
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
         $sql = SqlViewGenerator::customerMonthlySales();
 
         $resultSet = Yii::app()->db->createCommand($sql)->queryAll(true);
@@ -67,9 +67,9 @@ class SaleOmzetCustomerController extends Controller {
     }
 
     protected function saveToExcel($data, $records) {
-		set_time_limit(0);
-		ini_set('memory_limit', '1024M');
-		
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
         spl_autoload_unregister(array('YiiBase', 'autoload'));
         include_once Yii::getPathOfAlias('ext.phpexcel.Classes') . DIRECTORY_SEPARATOR . 'PHPExcel.php';
         spl_autoload_register(array('YiiBase', 'autoload'));
@@ -101,26 +101,23 @@ class SaleOmzetCustomerController extends Controller {
         $worksheet->setCellValue('A6', 'Code');
         $worksheet->setCellValue('B6', 'Customer');
         $worksheet->setCellValue('C6', 'SE');
-        
+
         $counter = 7;
         $column = 'C';
 
-        foreach ($records as $yearMonth => $record)
-        {
+        foreach ($records as $yearMonth => $record) {
             $worksheet->setCellValue("{$column}{$counter}", CHtml::encode(Yii::app()->dateFormatter->format('MMM yyyy', strtotime($yearMonth))));
             $column++;
         }
 
         $counter++;
 
-        foreach ($data as $customerId => $item)
-        {
+        foreach ($data as $customerId => $item) {
             $column = 'C';
             $worksheet->getStyle("C{$counter}:N{$counter}")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
             $worksheet->setCellValue("A{$counter}", CHtml::encode($item['code']));
             $worksheet->setCellValue("B{$counter}", CHtml::encode($item['company']));
-            foreach ($item['values'] as $yearMonth => $amount)
-            {
+            foreach ($item['values'] as $yearMonth => $amount) {
                 $worksheet->setCellValue("{$column}{$counter}", CHtml::encode($amount));
                 $column++;
             }
@@ -129,8 +126,8 @@ class SaleOmzetCustomerController extends Controller {
 
         for ($col = 'A'; $col !== 'N'; $col++) {
             $objPHPExcel->getActiveSheet()
-                ->getColumnDimension($col)
-                ->setAutoSize(true);
+                    ->getColumnDimension($col)
+                    ->setAutoSize(true);
         }
 
         header('Content-Type: application/xls');
@@ -144,4 +141,3 @@ class SaleOmzetCustomerController extends Controller {
     }
 
 }
-

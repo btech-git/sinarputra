@@ -175,7 +175,7 @@
                 <?php echo CHtml::error($detail, 'employee_id'); ?>
             </td>
             <td>
-                <?php if ($detail->isNewRecord): ?>
+                <?php /*if ($detail->isNewRecord): ?>
                     <?php echo CHtml::button('Delete', array(
                         'onclick' => CHtml::ajax(array(
                             'type' => 'POST',
@@ -187,7 +187,7 @@
                             'update' => '#detail_product_div',
                         )),
                     )); ?>
-                <?php endif; ?>
+                <?php endif;*/ ?>
             </td>
         </tr>
     <?php endforeach; ?>

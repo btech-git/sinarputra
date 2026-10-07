@@ -26,103 +26,6 @@
                 <div id="logo"><?php echo CHtml::encode(Yii::app()->name); ?></div>        
                 <nav>
                     <ul class="nav">
-                        <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster') ||
-                            Yii::app()->user->checkAccess('accountingCreateMaster') ||
-                            Yii::app()->user->checkAccess('inventoryCreateMaster') ||
-                            Yii::app()->user->checkAccess('hrgaCreateMaster') ||
-                            Yii::app()->user->checkAccess('productionCreateMaster') ||
-                            Yii::app()->user->checkAccess('purchaseEditMaster') ||
-                            Yii::app()->user->checkAccess('accountingEditMaster') ||
-                            Yii::app()->user->checkAccess('inventoryEditMaster') ||
-                            Yii::app()->user->checkAccess('hrgaEditMaster') ||
-                            Yii::app()->user->checkAccess('productionEditMaster') ||
-                            Yii::app()->user->checkAccess('purchaseViewMaster') ||
-                            Yii::app()->user->checkAccess('accountingViewMaster') ||
-                            Yii::app()->user->checkAccess('inventoryViewMaster') ||
-                            Yii::app()->user->checkAccess('hrgaViewMaster') ||
-                            Yii::app()->user->checkAccess('productionViewMaster')
-                        ): ?>
-                            <li class="dropdown">
-                                <?php echo CHtml::link('Master', array('/site/page', 'view' => 'master')); ?>
-                                <ul>
-                                    <li style="font-weight: bold; text-decoration: underline">DATA MASTER</li>
-                                    <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster') ||
-                                    Yii::app()->user->checkAccess('purchaseEditMaster') ||
-                                    Yii::app()->user->checkAccess('purchaseViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Item', array('/admin/item/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Item Category', array('/admin/itemCategory/admin')); ?></li>
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('accountingCreateMaster') ||
-                                    Yii::app()->user->checkAccess('accountingEditMaster') ||
-                                    Yii::app()->user->checkAccess('accountingViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Chart of Account', array('/admin/account/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Customer', array('/admin/customer/admin')); ?></li>    
-                                        <li><?php echo CHtml::link('Supplier', array('/admin/supplier/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Gudang', array('/admin/warehouse/admin')); ?></li>
-                                    <?php endif; ?>
-                                    <?php /*if (Yii::app()->user->checkAccess('inventoryCreateMaster') ||
-                                    Yii::app()->user->checkAccess('inventoryEditMaster') ||
-                                    Yii::app()->user->checkAccess('inventoryViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Material', array ('/admin/item/admin')); ?></li>
-                                    <?php endif;*/ ?>
-                                    <?php if (Yii::app()->user->checkAccess('hrgaCreateMaster') ||
-                                            Yii::app()->user->checkAccess('hrgaEditMaster') ||
-                                            Yii::app()->user->checkAccess('hrgaViewMaster')): ?>    
-                                        <li><?php echo CHtml::link('Employee', array('/admin/employee/admin')); ?></li>
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('productionCreateMaster') ||
-                                    Yii::app()->user->checkAccess('productionEditMaster') ||
-                                    Yii::app()->user->checkAccess('productionViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Employee Production', array('*')); ?></li>
-                                    <?php endif; ?>
-                                        
-                                    <li style="font-weight: bold; text-decoration: underline">DATA PEMBANTU</li>
-                                    <?php if (Yii::app()->user->checkAccess('productionCreateMaster') ||
-                                    Yii::app()->user->checkAccess('productionEditMaster') ||
-                                    Yii::app()->user->checkAccess('productionViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Mesin', array('/admin/machine/admin')); ?></li>
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('inventoryCreateMaster') ||
-                                    Yii::app()->user->checkAccess('inventoryEditMaster') ||
-                                    Yii::app()->user->checkAccess('inventoryViewMaster')): ?>  
-                                        <li><?php echo CHtml::link('Product Category', array('/admin/productCategory/admin')); ?></li>    
-                                        <li><?php echo CHtml::link('Location', array('/admin/location/admin')); ?></li>    
-                                        <li><?php echo CHtml::link('Kendaraan Operasional', array('/admin/deliveryVehicle/admin')); ?></li>
-                                    <?php endif; ?>    
-                                    <?php if (Yii::app()->user->checkAccess('accountingCreateMaster') ||
-                                    Yii::app()->user->checkAccess('accountingEditMaster') ||
-                                    Yii::app()->user->checkAccess('accountingViewMaster')): ?>
-                                        <li><?php echo CHtml::link('Akun Kategori', array('/admin/accountCategory/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Currency', array('/admin/currency/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Satuan', array('/admin/unit/admin')); ?></li>  
-                                        <li><?php echo CHtml::link('Payment Type', array('/admin/paymentType/admin')); ?></li>
-                                    <?php endif; ?>    
-                                    
-                                    <li style="font-weight: bold; text-decoration: underline">DATA PEMBANTU EMPLOYEE</li>
-                                    <?php if (Yii::app()->user->checkAccess('hrgaCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Employee Category', array('/admin/employeeCategory/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Employee Type', array('/admin/employmentType/admin')); ?></li>  
-                                        <li><?php echo CHtml::link('Ethnic Group', array('/admin/ethnicGroup/admin')); ?></li>   
-                                        <li><?php echo CHtml::link('Department', array('/admin/department/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Religion', array('/admin/religion/admin')); ?></li>    
-                                        <li><?php echo CHtml::link('Blood Type', array('/admin/bloodType/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Production Group', array('/admin/productionGroup/admin')); ?></li>
-                                    <?php endif; ?>             
-                                    
-                                    <li style="font-weight: bold; text-decoration: underline">EMPLOYEE</li>
-                                    <?php if (Yii::app()->user->checkAccess('hrgaCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Timesheet', array('/admin/employee/upload')); ?></li>
-                                    <?php endif; ?>           
-                                </ul>                        
-                            </li>
-                        <?php endif; ?>
-
-                        <?php if (Yii::app()->user->checkAccess('administrator')): ?> 
-                            <li class="dropdown">          
-                                <?php echo CHtml::link('User Profile', array('/admin/admin/admin')); ?>
-                            </li>
-                        <?php endif; ?>
-
                         <?php if (Yii::app()->user->checkAccess('saleCreate') ||
                             Yii::app()->user->checkAccess('quotationCreate') ||
                             Yii::app()->user->checkAccess('statusReviewCreate')
@@ -169,11 +72,6 @@
                                         <li><?php echo CHtml::link('Update Lembaran', array('/transaction/stockCheck/adminReceive')); ?></li>
                                         <li><?php echo CHtml::link('Update Sipot', array('/transaction/stockCheck/adminCutting')); ?></li>
                                     <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('inventoryCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Supplier Material', array('/admin/supplier/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Product Category', array('/admin/productCategory/admin')); ?></li>  
-                                        <li><?php echo CHtml::link('Location', array('/admin/location/admin')); ?></li>
-                                    <?php endif; ?>   
                                 </ul>
                             </li>
                         <?php endif; ?>
@@ -213,11 +111,7 @@
                                         <li><?php echo CHtml::link('Quality Control Miling', array('/manufacture/qualityControlMiling/productionMilingList')); ?></li>
                                     <?php endif; ?>
 
-                                    <li style="font-weight: bold; text-decoration: underline">PRODUCTION</li>
-                                    <?php if (Yii::app()->user->checkAccess('productionCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Employee Production', array('*')); ?></li>
-                                        <li><?php echo CHtml::link('Machine', array('/admin/machine/admin')); ?></li>
-                                    <?php endif; ?>
+                                    <li style="font-weight: bold; text-decoration: underline">STATUS REVIEW</li>
                                     <?php if (Yii::app()->user->checkAccess('statusReviewCreate')): ?> 
                                         <li><?php echo CHtml::link('Produksi Status Review', array('/manufacture/statusReview/summary')); ?></li>
                                     <?php endif; ?>
@@ -225,13 +119,32 @@
                             </li>     
                         <?php endif; ?>
 
+                        <?php if (
+                            Yii::app()->user->checkAccess('purchaseCreate') ||
+                            Yii::app()->user->checkAccess('purchaseItemCreate') ||
+                            Yii::app()->user->checkAccess('receiveItemCreate')
+                        ): ?> 
+                            <li class="dropdown"> 
+                                <?php echo CHtml::link('Purchasing', array('/site/page', 'view' => 'accounting')); ?>
+                                <ul>
+                                    <li style="font-weight: bold; text-decoration: underline">TRANSACTION</li>
+                                    <?php if (Yii::app()->user->checkAccess('purchaseCreate')): ?>
+                                        <li><?php echo CHtml::link('Purchase Order Material', array('/transaction/purchase/admin')); ?></li> 
+                                    <?php endif; ?>
+                                    <?php if (Yii::app()->user->checkAccess('purchaseItemCreate')): ?>
+                                        <li><?php echo CHtml::link('PO Barang Penunjang', array('/transaction/purchaseItem/admin')); ?></li> 
+                                    <?php endif; ?>
+                                    <?php if (Yii::app()->user->checkAccess('receiveItemCreate')): ?>
+                                        <li><?php echo CHtml::link('Penerimaan Barang Penunjang', array('/transaction/receiveItem/admin')); ?></li> 
+                                    <?php endif; ?>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+
                         <?php if (Yii::app()->user->checkAccess('deliveryCreate') ||
                             Yii::app()->user->checkAccess('saleInvoiceCreate') ||
                             Yii::app()->user->checkAccess('saleReceiptCreate') ||
                             Yii::app()->user->checkAccess('salePaymentCreate') ||
-                            Yii::app()->user->checkAccess('purchaseCreate') ||
-                            Yii::app()->user->checkAccess('purchaseItemCreate') ||
-                            Yii::app()->user->checkAccess('receiveItemCreate') ||
                             Yii::app()->user->checkAccess('purchaseInvoiceCreate') ||
                             Yii::app()->user->checkAccess('purchaseReceiptCreate') ||
                             Yii::app()->user->checkAccess('purchasePaymentCreate') ||
@@ -252,8 +165,8 @@
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleInvoiceCreate')): ?>
                                         <li><?php echo CHtml::link('Invoice Customer', array('/accounting/saleInvoice/workOrderList')); ?></li>
-                                        <li><?php echo CHtml::link('Invoice Manual', array('/accounting/manualSaleInvoice/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Penjualan Manual INV', array('/accounting/materialInvoice/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Invoice Customer Manual', array('/accounting/manualSaleInvoice/admin')); ?></li>
+                                        <li><?php echo CHtml::link('Invoice Customer Manual 2', array('/accounting/materialInvoice/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleReceiptCreate')): ?>
                                         <li><?php echo CHtml::link('Tanda Terima Penjualan', array('/accounting/saleReceipt/admin')); ?></li>
@@ -261,25 +174,11 @@
                                         <li><?php echo CHtml::link('Tanda Terima Penjualan Manual 2', array('/accounting/materialReceipt/admin')); ?></li>
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('saleInvoiceCreate')): ?>
-                                        <li><?php echo CHtml::link('e-Faktur Invoice', array('/accounting/saleInvoice/admin')); ?></li>
-                                        <li><?php echo CHtml::link('e-Faktur Invoice Manual', array('/accounting/manualSaleInvoice/admin')); ?></li>
-                                        <li><?php echo CHtml::link('e-Faktur Invoice Manual 2', array('/accounting/materialInvoice/admin')); ?></li>
+                                        <li><?php echo CHtml::link('e-Faktur Invoice', array('/accounting/saleInvoice/indexCoretax')); ?></li>
+                                        <li><?php echo CHtml::link('e-Faktur Invoice Manual', array('/accounting/manualSaleInvoice/indexCoretax')); ?></li>
+                                        <li><?php echo CHtml::link('e-Faktur Invoice Manual 2', array('/accounting/materialInvoice/indexCoretax')); ?></li>
                                     <?php endif; ?>
                                         
-                                    <li style="font-weight: bold; text-decoration: underline">PURCHASE</li>
-                                    <?php if (Yii::app()->user->checkAccess('purchaseCreate')): ?>
-                                        <li><?php echo CHtml::link('Purchase Order Material', array('/transaction/purchase/admin')); ?></li> 
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('purchaseItemCreate')): ?>
-                                        <li><?php echo CHtml::link('PO Barang Penunjang', array('/transaction/purchaseItem/admin')); ?></li> 
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('receiveItemCreate')): ?>
-                                        <li><?php echo CHtml::link('Penerimaan Barang Penunjang', array('/transaction/receiveItem/admin')); ?></li> 
-                                    <?php endif; ?>                            
-                                    <?php if (Yii::app()->user->checkAccess('accountingCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Supplier', array('/admin/supplier/admin')); ?></li>
-                                    <?php endif; ?>
-
                                     <li style="font-weight: bold; text-decoration: underline">FINANCE</li>
                                     <?php if (Yii::app()->user->checkAccess('salePaymentCreate')): ?>
                                         <li><?php echo CHtml::link('Pelunasan Customer', array('/accounting/salePayment/admin')); ?></li>
@@ -295,12 +194,6 @@
                                     <?php if (Yii::app()->user->checkAccess('purchasePaymentCreate')): ?>
                                         <li><?php echo CHtml::link('Pelunasan Supplier', array('/accounting/purchasePayment/admin')); ?></li> 
                                     <?php endif; ?>
-
-                                    <li style="font-weight: bold; text-decoration: underline">GENERAL</li>
-                                    <?php if (Yii::app()->user->checkAccess('accountingCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Customer', array('/admin/customer/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Gudang', array('/admin/warehouse/admin')); ?></li>
-                                    <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('expenseCreate')): ?>
                                         <li><?php echo CHtml::link('Pengeluaran Kas / Bank', array('/accounting/expense/admin')); ?></li>
                                     <?php endif; ?>
@@ -309,11 +202,6 @@
                                     <?php endif; ?>
                                     <?php if (Yii::app()->user->checkAccess('journalVoucherCreate')): ?>
                                         <li><?php echo CHtml::link('Jurnal Umum', array('/accounting/journalVoucher/create')); ?></li>
-                                    <?php endif; ?>
-                                    <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster')): ?>
-                                        <li><?php echo CHtml::link('Item', array('/admin/item/admin')); ?></li>
-                                        <li><?php echo CHtml::link('Supplier Non Material', array('*')); ?></li>
-                                        <li><?php echo CHtml::link('Item Category', array('/admin/itemCategory/admin')); ?></li>
                                     <?php endif; ?>
                                 </ul>
                             </li>
@@ -342,11 +230,38 @@
                             </li>
                         <?php endif; ?>
 
-                <li class="dropdown">                
-                    <?php if (Yii::app()->user->isGuest): ?>
-                    <?php echo CHtml::link('Login', array('/site/login'));?>
-                    <?php endif; ?>
-                </li>              
+                        <?php if (Yii::app()->user->checkAccess('purchaseCreateMaster') ||
+                            Yii::app()->user->checkAccess('accountingCreateMaster') ||
+                            Yii::app()->user->checkAccess('inventoryCreateMaster') ||
+                            Yii::app()->user->checkAccess('hrgaCreateMaster') ||
+                            Yii::app()->user->checkAccess('productionCreateMaster') ||
+                            Yii::app()->user->checkAccess('purchaseEditMaster') ||
+                            Yii::app()->user->checkAccess('accountingEditMaster') ||
+                            Yii::app()->user->checkAccess('inventoryEditMaster') ||
+                            Yii::app()->user->checkAccess('hrgaEditMaster') ||
+                            Yii::app()->user->checkAccess('productionEditMaster') ||
+                            Yii::app()->user->checkAccess('purchaseViewMaster') ||
+                            Yii::app()->user->checkAccess('accountingViewMaster') ||
+                            Yii::app()->user->checkAccess('inventoryViewMaster') ||
+                            Yii::app()->user->checkAccess('hrgaViewMaster') ||
+                            Yii::app()->user->checkAccess('productionViewMaster')
+                        ): ?>
+                            <li class="dropdown">
+                                <?php echo CHtml::link('Master', array('/site/page', 'view' => 'master')); ?>
+                            </li>
+                        <?php endif; ?>
+
+                        <?php if (Yii::app()->user->checkAccess('administrator')): ?> 
+                            <li class="dropdown">          
+                                <?php echo CHtml::link('User Profile', array('/admin/admin/admin')); ?>
+                            </li>
+                        <?php endif; ?>
+
+                    <li class="dropdown">                
+                        <?php if (Yii::app()->user->isGuest): ?>
+                        <?php echo CHtml::link('Login', array('/site/login'));?>
+                        <?php endif; ?>
+                    </li>
                 </ul>  
                  <!--            For Logout-->
                  <div class="nav-right">

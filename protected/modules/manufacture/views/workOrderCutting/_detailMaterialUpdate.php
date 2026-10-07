@@ -24,7 +24,7 @@
 
     <?php foreach ($workOrderCuttingDetailComponent->details as $i => $detail): ?>
         <tr>
-            <?php $detailTransaction = empty($detail->receive_detail_id) ? $detail->workOrderCuttingDetailMaterial : $detail->receiveDetail; ?> 
+            <?php $detailTransaction = !empty($detail->work_order_cutting_detail_material_id) ? $detail->workOrderCuttingDetailMaterial : $detail->receiveDetail; ?> 
             <td style="text-align: center;">
                 <?php echo CHtml::encode(CHtml::value($detailTransaction, 'product_name')); ?>
             </td>
