@@ -27,7 +27,7 @@ class PurchasePaymentHeaderBase extends MonthlyTransactionActiveRecord {
 
     public function rules() {
         return array(
-            array('cn_ordinal, cn_month, cn_year, date, purchase_receipt_header_id, admin_id', 'required'),
+            array('cn_ordinal, cn_month, cn_year, date, purchase_receipt_header_id', 'required'),
             array('cn_ordinal, cn_month, cn_year, purchase_receipt_header_id, admin_id, is_inactive, admin_id_updated', 'numerical', 'integerOnly' => true),
             array('note, created_datetime, updated_datetime', 'safe'),
             // The following rule is used by search().

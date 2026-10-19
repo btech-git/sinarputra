@@ -53,4 +53,29 @@ class JournalAccounting extends JournalAccountingBase {
         
         return $resultSet;
     }
+    
+    public static function getProfitLossLedgerReport($startDate, $endDate) {
+        
+        $params = array(
+            ':start_date' => $startDate,
+            ':end_date' => $endDate,
+        );
+        
+        $sql = "SELECT j.account_id, MAX(a.code) AS account_code, COALESCE(SUM(
+                    CASE a.normal_balance
+                    WHEN 'Debit' THEN j.debit - j.credit
+                    WHEN 'Credit' THEN j.credit - j.debit
+                    ELSE 0
+                    END
+                ), 0) AS balance
+                FROM " . JournalAccounting::model()->tableName() . " j 
+                INNER JOIN " . Account::model()->tableName() . " a ON a.id = j.account_id
+                WHERE a.code >= '4' AND j.date BETWEEN :start_date AND :end_date AND a.is_inactive = 0
+                GROUP BY j.account_id
+                ORDER BY a.code ASC";
+
+        $resultSet = Yii::app()->db->createCommand($sql)->queryAll(true, $params);
+
+        return $resultSet;
+    }
 }

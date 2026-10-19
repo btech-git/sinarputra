@@ -137,7 +137,7 @@ class PurchaseInvoiceController extends Controller {
             
             if ($model->save(Yii::app()->db)) {
                 PayableLedger::model()->deleteAllByAttributes(array(
-                    'transaction_number' => $model->getCodeNumber(PurchaseInvoiceHeader::CN_CONSTANT),
+                    'transaction_number' => $model->getCodeNumber(PurchaseInvoice::CN_CONSTANT),
                 ));
 
                 if (!empty($model->receive_item_header_id)) {

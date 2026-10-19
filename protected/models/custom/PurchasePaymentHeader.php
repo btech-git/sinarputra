@@ -1,21 +1,22 @@
 <?php
 
 class PurchasePaymentHeader extends PurchasePaymentHeaderBase {
+
     const CN_CONSTANT = 'PPAY';
 
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
 
-	public function getTotalAmount()
-	{
-		$total = 0.00;
-		
-		foreach ($this->purchasePaymentDetails as $detail)
-			$total += $detail->amount;
+    public function getTotalAmount() {
+        $total = 0.00;
 
-		return $total;
-	}
+        foreach ($this->purchasePaymentDetails as $detail) {
+            $total += $detail->amount;
+        }
+
+        return $total;
+    }
 
     public function searchWithPaging() {
         $criteria = new CDbCriteria;
@@ -39,5 +40,4 @@ class PurchasePaymentHeader extends PurchasePaymentHeaderBase {
             ),
         ));
     }
-
 }

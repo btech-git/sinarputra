@@ -136,10 +136,10 @@ class PurchasePaymentComponent extends CComponent {
         $payableLedger->transaction_number = $this->header->getCodeNumber(PurchasePaymentHeader::CN_CONSTANT);
         $payableLedger->transaction_date = $this->header->date; 
         $payableLedger->note = $this->header->note;
-        $payableLedger->memo = $this->header->supplier_document_number . ' - ' . $this->header->supplier_invoice_tax_number;
+        $payableLedger->memo = $this->header->purchaseReceiptHeader->getCodeNumber(PurchaseReceiptHeader::CN_CONSTANT);
         $payableLedger->debit = '0.00';
-        $payableLedger->credit = $this->header->grand_total;
-        $payableLedger->supplier_id = $this->header->supplier_id;
+        $payableLedger->credit = $this->header->totalAmount;
+        $payableLedger->supplier_id = $this->header->purchaseReceiptHeader->supplier_id;
         $payableLedger->admin_id = $this->header->admin_id;
         $payableLedger->posting_datetime = date('Y-m-d H:i:s');
         $valid = $payableLedger->save(false) && $valid;

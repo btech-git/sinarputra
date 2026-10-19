@@ -56,12 +56,28 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
 
 <table style="width: 60%; margin: 0 auto; border-spacing: 0pt">
     <?php foreach ($accountCategories as $accountCategory): ?>
+        <?php $totalCategoryAmount = '0.00'; ?>
         <tr>
-            <td style="padding-left: 25px; font-weight: bold; text-transform: capitalize">
+            <td style="padding-left: 5px; font-weight: bold; text-transform: capitalize" colspan="2">
                 <?php echo CHtml::encode(CHtml::value($accountCategory, 'name')); ?>
             </td>
-            <td style="text-align: right; font-weight: bold">
-                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $accountCategory->getBalanceTotal($startDate, $endDate))); ?>
+        </tr>
+        <?php foreach ($accountCategory->accounts as $account): ?>
+            <tr>
+                <?php $balanceTotal = $account->getBalanceTotal($startDate, $endDate); ?>
+                <td style="padding-left: 50px;">
+                    <?php echo CHtml::encode(CHtml::value($account, 'name')); ?>
+                </td>
+                <td style="text-align: right;">
+                    <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $balanceTotal)); ?>
+                </td>
+            </tr>
+            <?php $totalCategoryAmount += $balanceTotal; ?>
+        <?php endforeach; ?>
+        <tr>
+            <td style="padding-left: 25px; font-weight: bold;">TOTAL <?php echo CHtml::encode(CHtml::value($accountCategory, 'name')); ?></td>
+            <td style="text-align: right; font-weight: bold; border-top: 1px solid;">
+                <?php echo CHtml::encode(Yii::app()->numberFormatter->format('#,##0', $totalCategoryAmount)); ?>
             </td>
         </tr>
     <?php endforeach; ?>

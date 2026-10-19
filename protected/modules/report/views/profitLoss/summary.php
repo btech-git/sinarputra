@@ -64,12 +64,10 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/t
 <br /><br />
 
 <div id="data_div">
-    <?php
-    $this->renderPartial('_summary', array(
-        'accounts' => $accounts,
-        'row' => $row,
+    <?php $this->renderPartial('_summary', array(
+        'profitLossReportData' => $profitLossReportData,
+        'accountGroupSums' => $accountGroupSums,
         'startDate' => $startDate,
         'endDate' => $endDate,
-    ));
-    ?>
+    )); ?>
 </div>

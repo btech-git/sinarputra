@@ -1,113 +1,111 @@
 <?php
 
-class Account extends AccountBase
-{
+class Account extends AccountBase {
 
-	public $accountBalance;
+    public $accountBalance;
 
-	public static function model($className = __CLASS__)
-	{
-		return parent::model($className);
-	}
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
 
-	public function getBeginningBalance($accountId, $startDate)
-	{
-		$sql = SqlGenerator::beginningBalance();
+    public function getBeginningBalance($accountId, $startDate) {
+        $sql = SqlGenerator::beginningBalance();
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':start_date' => $startDate,
-			));
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':start_date' => $startDate,
+        ));
 
-		return ($value === false) ? 0 : $value;
-	}
+        return ($value === false) ? 0 : $value;
+    }
 
-	public function getEndingBalance($accountId, $endDate)
-	{
-		$sql = SqlGenerator::endingBalance();
+    public function getEndingBalance($accountId, $endDate) {
+        $sql = SqlGenerator::endingBalance();
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':end_date' => $endDate,
-			));
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':end_date' => $endDate,
+        ));
 
-		return ($value === false) ? 0 : $value;
-	}
+        return ($value === false) ? 0 : $value;
+    }
 
-	public function getBalanceTotal($startDate, $endDate)
-	{
-		$balanceTotal = 0.00;
+    public function getBalanceTotal($startDate, $endDate) {
+        
+        $sql = "SELECT SUM(IF(a.normal_balance = 'Debit', j.debit - j.credit, j.credit - j.debit)) AS journal_balance
+                FROM " . JournalAccounting::model()->tableName() . " j 
+                INNER JOIN " . Account::model()->tableName() . " a ON a.id = j.account_id
+                WHERE j.account_id = :account_id AND j.date BETWEEN :start_date AND :end_date";
+        
+        $resultSet = Yii::app()->db->createCommand($sql)->queryScalar(array(
+            ':start_date' => $startDate,
+            ':end_date' => $endDate,
+            ':account_id' => $this->id,
+        ));
 
-		$accountingJournals = $this->getRelated('journalAccountings', false, array(
-			'condition' => "date >= :startDate AND  date <= :endDate",
-			'params' => array(
-				':startDate' => $startDate,
-				':endDate' => $endDate,
-			),
-			));
+        return $resultSet;
+    }
 
-		if ($accountingJournals != null)
-		{
+    public function getBeginningBalanceLedger($accountId, $startDate) {
+        $sql = SqlGenerator::beginningBalanceLedger();
 
-			foreach ($accountingJournals as $accountingJournal)
-				$balanceTotal += $accountingJournal->credit - $accountingJournal->debit;
-		}
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':start_date' => $startDate,
+        ));
 
-		return $balanceTotal;
-	}
+        $this->accountBalance = $value;
 
-	public function getBeginningBalanceLedger($accountId, $startDate)
-	{
-		$sql = SqlGenerator::beginningBalanceLedger();
+        return ($value === false) ? 0 : $value;
+    }
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':start_date' => $startDate,
-			));
+    public function getEndBalanceLedger($accountId, $endDate) {
+        $sql = SqlGenerator::endBalanceLedger();
 
-		$this->accountBalance = $value;
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':end_date' => $endDate,
+        ));
 
-		return ($value === false) ? 0 : $value;
-	}
+        $this->accountBalance = $value;
 
-	public function getEndBalanceLedger($accountId, $endDate)
-	{
-		$sql = SqlGenerator::endBalanceLedger();
+        return ($value === false) ? 0 : $value;
+    }
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':end_date' => $endDate,
-			));
+    public function getEndDebitLedger($accountId, $startDate, $endDate) {
+        $sql = SqlGenerator::endDebitLedger();
 
-		$this->accountBalance = $value;
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':end_date' => $endDate,
+            ':start_date' => $startDate,
+        ));
 
-		return ($value === false) ? 0 : $value;
-	}
+        return ($value === false) ? 0 : $value;
+    }
 
-	public function getEndDebitLedger($accountId, $startDate, $endDate)
-	{
-		$sql = SqlGenerator::endDebitLedger();
+    public function getEndCreditLedger($accountId, $startDate, $endDate) {
+        $sql = SqlGenerator::endCreditLedger();
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':end_date' => $endDate,
-			':start_date' => $startDate,
-			));
+        $value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
+            ':account_id' => $accountId,
+            ':end_date' => $endDate,
+            ':start_date' => $startDate,
+        ));
 
-		return ($value === false) ? 0 : $value;
-	}
+        return ($value === false) ? 0 : $value;
+    }
+    
+    public static function getProfitLossCoaReport() {
+        
+        $sql = "SELECT a.id AS id, a.code AS code, a.name AS name, c.code AS parent_code
+                FROM " . Account::model()->tableName() . " a
+                INNER JOIN " . AccountCategory::model()->tableName() . " c ON c.id = a.account_category_id
+                WHERE a.code >= '4'
+                ORDER BY a.code ASC;";
 
-	public function getEndCreditLedger($accountId, $startDate, $endDate)
-	{
-		$sql = SqlGenerator::endCreditLedger();
+        $resultSet = Yii::app()->db->createCommand($sql)->queryAll(true);
 
-		$value = CActiveRecord::$db->createCommand($sql)->queryScalar(array(
-			':account_id' => $accountId,
-			':end_date' => $endDate,
-			':start_date' => $startDate,
-			));
-
-		return ($value === false) ? 0 : $value;
-	}
-
+        return $resultSet;
+    }
 }

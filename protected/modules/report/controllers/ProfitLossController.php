@@ -10,30 +10,55 @@ class ProfitLossController extends Controller {
 
     public function filterAccess($filterChain) {
         if ($filterChain->action->id === 'summary') {
-            if (!(Yii::app()->user->checkAccess('finance')))
+            if (!(Yii::app()->user->checkAccess('finance'))) {
                 $this->redirect(array('/site/login'));
+            }
         }
 
         $filterChain->run();
     }
 
     public function actionSummary() {
-		set_time_limit(0);
-		ini_set('memory_limit', '1024M');
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 		
         $startDate = (isset($_GET['StartDate'])) ? $_GET['StartDate'] : date('Y-m-d');
         $endDate = (isset($_GET['EndDate'])) ? $_GET['EndDate'] : date('Y-m-d');
 
-        $accounts = ProfitLossSummary::getAccountList();
-
-        $sql = SqlGenerator::profitLoss();
-        $params = array(':start_date' => $startDate, ':end_date' => $endDate);
-
-        $row = Yii::app()->db->createCommand($sql)->queryRow(true, $params);
-
+        $profitLossCoaReport = Account::getProfitLossCoaReport();
+        $profitLossLedgerReport = JournalAccounting::getProfitLossLedgerReport($startDate, $endDate);
+        
+        $profitLossReportData = array();
+        foreach ($profitLossCoaReport as $profitLossCoaReportItem) {
+            $profitLossReportData[$profitLossCoaReportItem['code']]['id'] = $profitLossCoaReportItem['id'];
+            $profitLossReportData[$profitLossCoaReportItem['code']]['name'] = $profitLossCoaReportItem['name'];
+            $profitLossReportData[$profitLossCoaReportItem['code']]['parent_code'] = $profitLossCoaReportItem['parent_code'];
+            $profitLossReportData[$profitLossCoaReportItem['code']]['level'] = 1;
+        }
+        foreach ($profitLossCoaReport as $profitLossCoaReportItem) {
+            $coaCode = $profitLossCoaReportItem['code'];
+            $currentCoaCode = $coaCode;
+            while (isset($profitLossReportData[$currentCoaCode]) && $profitLossReportData[$currentCoaCode]['parent_code'] !== null) {
+                $profitLossReportData[$coaCode]['level']++;
+                $currentCoaCode = $profitLossReportData[$currentCoaCode]['parent_code'];
+            }
+        }
+        foreach ($profitLossLedgerReport as $profitLossLedgerReportItem) {
+            $profitLossReportData[$profitLossLedgerReportItem['account_code']]['balance'] = $profitLossLedgerReportItem['balance'];
+        }
+        
+        $accountGroupSums = array();
+        foreach ($profitLossReportData as $coaCode => $profitLossReportDataItem) {
+            if (!isset($accountGroupSums[$coaCode[0]])) {
+                $accountGroupSums[$coaCode[0]] = '0.00';
+            }
+            $balance = isset($profitLossReportDataItem['balance']) ? $profitLossReportDataItem['balance'] : '0.00';
+            $accountGroupSums[$coaCode[0]] += $balance;
+        }
+        
         $this->render('summary', array(
-            'row' => $row,
-            'accounts' => $accounts,
+            'profitLossReportData' => $profitLossReportData,
+            'accountGroupSums' => $accountGroupSums,
             'startDate' => $startDate,
             'endDate' => $endDate,
         ));

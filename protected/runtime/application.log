@@ -3269,3 +3269,265 @@ Stack trace:
 #3 {main}
 REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/manualSalePayment/admin
 ---
+2026/10/15 15:05:36 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "transaction/purchaseReceipt/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/pur...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/purchaseReceipt/admin
+---
+2026/10/15 15:06:39 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "transaction/purchaseReceipt/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/pur...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/purchaseReceipt/admin
+---
+2026/10/15 15:06:53 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "transaction/purchaseReceipt/admin".' in /home/pmahendro/public_html/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('transaction/pur...')
+#1 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#2 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=transaction/purchaseReceipt/admin
+---
+2026/10/15 15:07:46 [error] [php] Trying to get property of non-object (/home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/PurchaseInvoiceController.php:125)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(47): CInlineAction->runWithParamsInternal()
+#1 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#2 /home/pmahendro/public_html/yii/framework/web/CController.php(286): PurchaseInvoiceController->runAction()
+#3 /home/pmahendro/public_html/yii/framework/web/CController.php(265): PurchaseInvoiceController->runActionWithFilters()
+#4 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): PurchaseInvoiceController->run()
+#5 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#6 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#7 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=accounting/purchaseInvoice/create&receiveHeaderId=3983&receiveItemHeaderId=
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/PurchaseInvoiceController.php (125)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/10/15 16:16:34 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'admin_id' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_purchase_payment_header` (`is_inactive`, `date`, `created_datetime`, `note`, `purchase_receipt_header_id`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7).
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (93)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (153)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/PurchasePaymentController.php (99)
+2026/10/15 16:16:52 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'admin_id' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_purchase_payment_header` (`is_inactive`, `date`, `created_datetime`, `note`, `purchase_receipt_header_id`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7).
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (93)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (153)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/PurchasePaymentController.php (99)
+2026/10/15 16:17:41 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[HY000]: General error: 1364 Field 'admin_id' doesn't have a default value. The SQL statement executed was: INSERT INTO `tblsp_purchase_payment_header` (`is_inactive`, `date`, `created_datetime`, `note`, `purchase_receipt_header_id`, `cn_ordinal`, `cn_month`, `cn_year`) VALUES (:yp0, :yp1, :yp2, :yp3, :yp4, :yp5, :yp6, :yp7).
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (93)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/components/PurchasePaymentComponent.php (153)
+in /home/pmahendro/public_html/sinarputra/protected/modules/accounting/controllers/PurchasePaymentController.php (99)
+2026/10/19 09:58:14 [error] [php] include(ZipArchive.php): failed to open stream: No such file or directory (/home/pmahendro/public_html/yii/framework/YiiBase.php:427)
+Stack trace:
+#0 /home/pmahendro/public_html/sinarputra/protected/extensions/phpexcel/Classes/PHPExcel/Writer/Excel2007.php(234): spl_autoload_call()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/PurchaseItemDetailController.php(169): PHPExcel_Writer_Excel2007->save()
+#2 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/PurchaseItemDetailController.php(46): PurchaseItemDetailController->saveToExcel()
+#3 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): PurchaseItemDetailController->actionSummary()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(286): PurchaseItemDetailController->runAction()
+#6 /home/pmahendro/public_html/yii/framework/web/CController.php(265): PurchaseItemDetailController->runActionWithFilters()
+#7 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): PurchaseItemDetailController->run()
+#8 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#10 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report%2FpurchaseItemDetail%2Fsummary&SupplierName=&PageSize=100&page=1&StartDate=2026-07-01&EndDate=2026-10-19&sort=&yt0=Show
+in /home/pmahendro/public_html/sinarputra/protected/extensions/phpexcel/Classes/PHPExcel/Writer/Excel2007.php (234)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/PurchaseItemDetailController.php (169)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/PurchaseItemDetailController.php (46)
+2026/10/19 14:49:47 [error] [php] array_merge(): Argument #2 is not an array (/home/pmahendro/public_html/yii/framework/db/CDbCommand.php:472)
+Stack trace:
+#0 /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php(44): CDbCommand->queryScalar()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php(68): Account->getBalanceTotal()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): BalanceSheetController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): BalanceSheetController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): BalanceSheetController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php(34): BalanceSheetController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): BalanceSheetController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): BalanceSheetController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): BalanceSheetController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): BalanceSheetController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report%2FbalanceSheet%2Fsummary&StartDate=2025-12-01&EndDate=2026-10-19&yt0=Show
+in /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php (44)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php (68)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php (34)
+2026/10/19 14:51:02 [error] [php] array_merge(): Argument #2 is not an array (/home/pmahendro/public_html/yii/framework/db/CDbCommand.php:472)
+Stack trace:
+#0 /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php(44): CDbCommand->queryScalar()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php(64): Account->getBalanceTotal()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): BalanceSheetController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): BalanceSheetController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): BalanceSheetController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php(34): BalanceSheetController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): BalanceSheetController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): BalanceSheetController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): BalanceSheetController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): BalanceSheetController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report%2FbalanceSheet%2Fsummary&StartDate=2025-12-01&EndDate=2026-10-19&yt0=Show
+in /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php (44)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php (64)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php (34)
+2026/10/19 14:51:45 [error] [system.db.CDbCommand] CDbCommand::fetchColumn() failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a.normal_balance = 'Debit', j.debit - j.credit, j.credit - j.debit) AS journal_b' at line 1. The SQL statement executed was: SELECT SUM(IF a.normal_balance = 'Debit', j.debit - j.credit, j.credit - j.debit) AS journal_balance
+                FROM tblsp_journal_accounting j 
+                INNER JOIN tblsp_account a ON a.id = j.account_id
+                WHERE j.account_id = :account_id AND j.date BETWEEN :start_date AND :end_date.
+in /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php (44)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php (64)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php (34)
+2026/10/19 14:51:45 [error] [exception.CDbException] exception 'CDbException' with message 'CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a.normal_balance = 'Debit', j.debit - j.credit, j.credit - j.debit) AS journal_b' at line 1. The SQL statement executed was: SELECT SUM(IF a.normal_balance = 'Debit', j.debit - j.credit, j.credit - j.debit) AS journal_balance
+                FROM tblsp_journal_accounting j 
+                INNER JOIN tblsp_account a ON a.id = j.account_id
+                WHERE j.account_id = :account_id AND j.date BETWEEN :start_date AND :end_date' in /home/pmahendro/public_html/yii/framework/db/CDbCommand.php:543
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/db/CDbCommand.php(433): CDbCommand->queryInternal('fetchColumn', 0, Array)
+#1 /home/pmahendro/public_html/sinarputra/protected/models/custom/Account.php(44): CDbCommand->queryScalar(Array)
+#2 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/balanceSheet/summary.php(64): Account->getBalanceTotal('2025-12-01', '2026-10-19')
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require('/home/pmahendro...')
+#4 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): CBaseController->renderInternal('/home/pmahendro...', Array, true)
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(869): CBaseController->renderFile('/home/pmahendro...', Array, true)
+#6 /home/pmahendro/public_html/yii/framework/web/CController.php(782): CController->renderPartial('summary', Array, true)
+#7 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/BalanceSheetController.php(34): CController->render('summary', Array)
+#8 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): BalanceSheetController->actionSummary()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#11 /home/pmahendro/public_html/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): CController->run('summary')
+#13 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('report/balanceS...')
+#14 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#15 /home/pmahendro/public_html/sinarputra/index.php(13): CApplication->run()
+#16 {main}
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report%2FbalanceSheet%2Fsummary&StartDate=2025-12-01&EndDate=2026-10-19&yt0=Show
+HTTP_REFERER=http://localhost/~pmahendro/sinarputra/index.php?r=report/balanceSheet/summary
+---
+2026/10/19 15:23:28 [error] [php] Undefined variable: accountCategories (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php:68)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#3 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#6 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#7 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#8 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#9 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#10 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (68)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
+in /home/pmahendro/public_html/sinarputra/index.php (13)
+2026/10/19 15:24:02 [error] [php] Undefined index: 900-000 (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php:83)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php(72): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): ProfitLossController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php (83)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (72)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
+2026/10/19 15:35:42 [error] [php] Undefined index: 900-000 (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php:83)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php(72): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): ProfitLossController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php (83)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (72)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
+2026/10/19 15:37:51 [error] [php] Undefined index: 900-000 (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php:77)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php(72): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): ProfitLossController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php (77)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (72)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
+2026/10/19 15:38:26 [error] [php] Undefined index: 900-000 (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php:77)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php(72): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): ProfitLossController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php (77)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (72)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
+2026/10/19 15:38:37 [error] [php] Undefined index: 900-000 (/home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php:77)
+Stack trace:
+#0 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#1 /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php(72): ProfitLossController->renderPartial()
+#2 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(126): require()
+#3 /home/pmahendro/public_html/yii/framework/web/CBaseController.php(95): ProfitLossController->renderInternal()
+#4 /home/pmahendro/public_html/yii/framework/web/CController.php(869): ProfitLossController->renderFile()
+#5 /home/pmahendro/public_html/yii/framework/web/CController.php(782): ProfitLossController->renderPartial()
+#6 /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php(64): ProfitLossController->render()
+#7 /home/pmahendro/public_html/yii/framework/web/actions/CInlineAction.php(49): ProfitLossController->actionSummary()
+#8 /home/pmahendro/public_html/yii/framework/web/CController.php(308): CInlineAction->runWithParams()
+#9 /home/pmahendro/public_html/yii/framework/web/CController.php(286): ProfitLossController->runAction()
+#10 /home/pmahendro/public_html/yii/framework/web/CController.php(265): ProfitLossController->runActionWithFilters()
+#11 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(282): ProfitLossController->run()
+#12 /home/pmahendro/public_html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#13 /home/pmahendro/public_html/yii/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#14 /home/pmahendro/public_html/sinarputra/index.php(13): CWebApplication->run()
+REQUEST_URI=/~pmahendro/sinarputra/index.php?r=report/profitLoss/summary
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/_summary.php (77)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/views/profitLoss/summary.php (72)
+in /home/pmahendro/public_html/sinarputra/protected/modules/report/controllers/ProfitLossController.php (64)
